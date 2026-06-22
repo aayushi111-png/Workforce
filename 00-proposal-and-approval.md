@@ -3,8 +3,8 @@
 | | |
 |---|---|
 | **Proposal** | Build the Workforce Operations Platform (WOP) for KATBOTZ |
-| **From** | (you) |
-| **To** | Technical Head, KATBOTZ |
+| **From** | Aayushi Pandey |
+| **To** | KATBOTZ |
 | **Date** | June 2026 |
 | **Decision required** | Approve the scope, the build plan, and the open decisions in Section 10 |
 
@@ -12,9 +12,9 @@
 
 ---
 
-## 1. What I am proposing
+## 1. What I am proposing:
 
-Build WOP as a custom platform that becomes the operational system of record for every KATBOTZ worker who is not on US payroll, and build it myself, solo, vibe coding about 4 hours a day.
+Build WOP as a custom platform that becomes the operational system of record for every KATBOTZ worker.
 
 ```
 Zoho Recruit  →  WOP  →  Gusto
