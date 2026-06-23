@@ -9,7 +9,8 @@
 | **Timeline** | 3 weeks (July 1 – August 20, 2026) |
 | **Go-Live Date** | September 1, 2026 |
 | **Build Budget** | Zero (developed as intern project) |
-| **Operating Cost** | ₹3–5 per month (Google Cloud only) |
+| **Operating Cost** | ₹3–5/month (50 workers) or ₹9–15/month (500 workers) |
+| **Deployment** | Connected to KATBOTZ main page (no Vercel/external deployment) |
 
 ---
 
@@ -403,39 +404,85 @@ One web application where:
 | Google Cloud setup | ₹0 | No setup fees |
 | **Total Build Cost** | **₹0** | No cost to KATBOTZ |
 
-### Operating Cost (Monthly)
+### Operating Cost (Monthly) - Scaling Analysis
+
+**Current Phase (Est. 50 workers):**
 
 | Service | Cost | Details |
 |---------|------|---------|
-| Firestore (Database) | ₹1-2 | 100M reads/month in free tier |
-| Cloud Storage (Backups) | ₹0.50 | First 5GB free, incremental cost after |
-| Cloud Run (Hosting) | ₹1-2 | 2M invocations/month in free tier |
+| Firestore (Database) | ₹1–2 | 100M reads/month in free tier |
+| Cloud Storage (Backups) | ₹0.50 | Daily exports, 30-day retention |
+| Cloud Run (Hosting) | ₹1–2 | 2M invocations/month in free tier |
 | Google Drive (Documents) | Free | KATBOTZ already has Workspace |
 | Google OAuth | Free | Google provides at no cost |
-| **Total Monthly** | **₹3-5** | Essentially free |
-| **Total Annual** | **₹36-60** | Less than ₹100 per year |
+| **Total Monthly** | **₹3–5** | Essentially free |
+| **Total Annual** | **₹36–60** | ~$0.50–0.75 USD per month |
+
+**Projected Growth Phase (500 workers):**
+
+| Service | Cost | Details |
+|---------|------|---------|
+| Firestore (Database) | ₹5–8 | Higher transaction volume |
+| Cloud Storage (Backups) | ₹2–3 | Larger daily exports (500 workers) |
+| Cloud Run (Hosting) | ₹2–4 | More concurrent requests |
+| Google Drive (Documents) | Free | Still within Workspace quota |
+| Google OAuth | Free | Google provides at no cost |
+| **Total Monthly** | **₹9–15** | **~$5–10 USD equivalent** |
+| **Total Annual** | **₹108–180** | Linear growth with headcount |
+
+**Cost Model:**
+- No per-employee licensing (unlike SaaS)
+- Cost grows with actual usage (reads, writes, storage)
+- Free tier covers usage up to ~200 workers
+- Predictable scaling: ₹3–5/month per 100 employees added
+
+### Backup Strategy
+
+**Daily Automatic Backup:**
+
+What gets backed up:
+- Firestore database (all worker profiles, goals, reviews, documents metadata)
+- Does NOT include actual document files (already in Google Drive with version history)
+- Backup size: ~50 MB per 50 workers
+
+Backup process:
+1. Firestore → Auto-export to JSON file
+2. Stored in: gs://katbotz-backups/ (Google Cloud Storage bucket)
+3. Frequency: Daily at 2 AM IST
+4. Retention: Keep 30 days (oldest auto-deleted)
+5. Encryption: CMEK (Customer-managed encryption key) in Google KMS
+
+How to restore (if needed):
+1. GCP Console → Firestore → Backups
+2. Select date to restore from
+3. Click "Restore"
+4. Estimated time: 5 minutes (no downtime)
+5. Data restored to point-in-time selected
+
+Disaster recovery:
+- RTO (Recovery Time Objective): 5 minutes
+- RPO (Recovery Point Objective): 1 day (latest backup)
+- Monthly test restore to staging environment (verification)
 
 ### Cost Comparison: WOP vs Zoho People
 
-Zoho People is industry-standard HRMS software with 100+ features.
+**At 50 workers (Current):**
 
-| Metric | Zoho People | WOP | Difference |
-|--------|-------------|-----|-----------|
-| **Monthly Cost (50 employees)** | ₹15,000 | ₹5 | ₹14,995/month cheaper |
-| **Annual Cost** | ₹180,000 | ₹60 | ₹179,940/year cheaper |
-| **5-Year Cost** | ₹900,000 | ₹300 | ₹899,700 cheaper |
-| **Cost per Employee per Year** | ₹3,600 | ₹1.20 | 3,000x cheaper |
-| **Features** | 100+ (many unused) | 15 (all used) | WOP more focused |
-| **Customization** | Locked (SaaS) | Full (custom) | WOP fully tailored |
-| **Data Ownership** | Zoho | KATBOTZ | WOP fully owned |
-| **Integration** | Limited APIs | Direct Zoho + Gusto | WOP fully integrated |
+| Metric | Zoho People | WOP | Savings |
+|--------|-------------|-----|----------|
+| Monthly Cost | ₹15,000 | ₹5 | ₹14,995 |
+| Annual Cost | ₹180,000 | ₹60 | ₹179,940 |
+| 5-Year Cost | ₹900,000 | ₹300 | ₹899,700 |
 
-**Key Insight:** Zoho charges per employee. WOP charges per transaction (essentially free at this scale).
+**At 500 workers (Projected Growth):**
 
-At 500 employees:
-- Zoho: ₹1.8M per year
-- WOP: ₹60 per year
-- Savings: ₹1.8M per year
+| Metric | Zoho People | WOP | Savings |
+|--------|-------------|-----|----------|
+| Monthly Cost | ₹150,000 | ₹12 | ₹149,988 |
+| Annual Cost | ₹1,800,000 | ₹144 | ₹1,799,856 |
+| 5-Year Cost | ₹9,000,000 | ₹720 | ₹8,999,280 |
+
+**Key Insight:** WOP cost scales logarithmically. Zoho cost scales linearly per employee. At 500 workers, WOP saves KATBOTZ ₹1.8M per year.
 
 ---
 
