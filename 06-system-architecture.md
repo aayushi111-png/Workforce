@@ -4,7 +4,7 @@
 
 ```mermaid
 flowchart TD
-    U[Users: Founder, HR, Manager, Worker]
+    U[Users: Founder, HR, Team Lead, Worker]
     U --> DOM[katbotz.com]
     DOM --> PORTAL[Workforce Portal]
     PORTAL --> FE[Next.js Frontend]

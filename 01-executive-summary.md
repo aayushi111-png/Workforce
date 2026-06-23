@@ -64,7 +64,7 @@ The marginal cost of onboarding worker 500 should be close to onboarding worker 
 |-----------|---------|
 | Replaces | Sheets, Drive and email for the non US workforce |
 | Worker types | Indian employee, Indian contractor, global contractor, global intern |
-| Primary users | Founder, Senior HR, HR Executive, Manager, plus self service for workers |
+| Primary users | Founder, Senior HR, HR Executive, Team Lead, plus self service for workers |
 | Frontend | Next.js |
 | Backend | FastAPI (Python) |
 | Records | Google Firestore |

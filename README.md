@@ -63,7 +63,7 @@ Same app — totally different experience depending on your role.
 | Founder | Company health dashboard, risk flags, headcount trends | View everything, run reports | Change anything |
 | Senior HR | Full queue: docs to verify, workers to activate, expiring contracts | Everything operational | Nothing is off limits |
 | HR Executive | Focused task list of documents to review | Review docs, request corrections | Activate workers (deliberate split: maker vs checker) |
-| Manager | Their own team only | Submit reviews, request offboarding | See any other team |
+| Team Lead | Their own team only | Submit reviews, request offboarding | See any other team |
 | Employee / Contractor / Intern | Their own record only | Upload docs, sign agreements, submit invoices | See anyone else |
 
 ---

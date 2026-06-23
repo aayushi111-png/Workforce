@@ -19,7 +19,7 @@ This is a real application: 12 modules, 7 role specific experiences, auth and ro
 | M3 Verification and M4 Compliance (queue, statuses, gating) | 30 |
 | M5 Access Management | 12 |
 | M6 Workforce Directory (search, filter, detail, history) | 30 |
-| 7 role experiences (Founder, Senior HR, HR Exec, Manager, Employee, Contractor, Intern) | 60 |
+| 7 role experiences (Founder, Senior HR, HR Exec, Team Lead, Employee, Contractor, Intern) | 60 |
 | M7 Contract Lifecycle plus invoices | 32 |
 | M8 Performance and Reviews | 25 |
 | M9 Asset Management | 12 |
@@ -68,7 +68,7 @@ Each week is about 28 hours of work. The rule for every week: **end the week wit
 | 7 | M3 and M4 | Verification queue with statuses, compliance gate blocks activation until complete |
 | 8 | M6 Directory | Search and filter the workforce, open a worker, see history |
 | 9 | Dashboards part 1 | Senior HR cockpit, HR Executive queue, Employee portal |
-| 10 | Dashboards part 2 | Founder overview, Manager (team only), Contractor and Intern views |
+| 10 | Dashboards part 2 | Founder overview, Team Lead (team only), Contractor and Intern views |
 | 11 | Migration and RBAC hardening | Existing workers imported from Sheets, every endpoint checks the role |
 | 12 | MVP polish | Responsive, bug bash. **MVP milestone: run a real onboarding on WOP, Sheets retired** |
 | 13 | M5 and M9 | Access tracking and asset tracking |
@@ -98,7 +98,7 @@ Each week is about 28 hours of work. The rule for every week: **end the week wit
 
 Because you build it, there is **no team cost.** Cash is cloud plus a couple of subscriptions, and it is near zero while you build.
 
-**The key insight:** cloud cost scales with active HR/manager sessions and always-on hosting, not with worker headcount. A worker logs in twice during onboarding and then rarely again. 500 stored workers with their documents is roughly 5 GB of Storage — about ₹10/mo in storage costs. The expensive variable is compute (Cloud Run), and Cloud Run bills only for requests — idle time is free on a scaled-to-zero setup.
+**The key insight:** cloud cost scales with active HR/team lead sessions and always-on hosting, not with worker headcount. A worker logs in twice during onboarding and then rarely again. 500 stored workers with their documents is roughly 5 GB of Storage — about ₹10/mo in storage costs. The expensive variable is compute (Cloud Run), and Cloud Run bills only for requests — idle time is free on a scaled-to-zero setup.
 
 | Item | Build phase (you, free tiers) | Live, 100 to 500 workers | Scale, 1,000 to 5,000 plus |
 |------|------|------|------|
@@ -114,7 +114,7 @@ Because you build it, there is **no team cost.** Cash is cloud plus a couple of 
 
 > **EDIT ME:** your AI coding subscription is the one real monthly cost during the build. Drop in your actual plan (for example your Claude subscription). Everything else is free tier until workers and traffic arrive.
 
-> **Why these numbers are lower than common estimates:** most SaaS cost calculators assume always-on VMs and heavy read/write workloads. WOP is a low-traffic internal tool — a few HR staff and managers, not thousands of concurrent users. Cloud Run scaled to zero means you pay only when a request arrives. At 500 workers, Firestore read/write volume stays well within the first paid tier. If KATBOTZ grows past 5,000 active workers with daily activity, revisit.
+> **Why these numbers are lower than common estimates:** most SaaS cost calculators assume always-on VMs and heavy read/write workloads. WOP is a low-traffic internal tool — a few HR staff and team leads, not thousands of concurrent users. Cloud Run scaled to zero means you pay only when a request arrives. At 500 workers, Firestore read/write volume stays well within the first paid tier. If KATBOTZ grows past 5,000 active workers with daily activity, revisit.
 
 All figures in INR, planning estimates pending a live cloud bill.
 

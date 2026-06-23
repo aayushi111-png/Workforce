@@ -65,7 +65,7 @@ Same application, a different system for every person who logs in.
 | Founder | Everything, read plus reports | Watches health and risk |
 | Senior HR | All workers | The only role that activates |
 | HR Executive | All workers, cannot activate | Reviews and flags documents |
-| Manager | Their team only | Submits reviews |
+| Team Lead | Their team only | Submits reviews |
 | Employee | Themselves only | Uploads, signs, completes tasks |
 | Contractor | Themselves only | Submits invoices |
 | Intern | Themselves only | Learning and reviews |
@@ -90,7 +90,7 @@ Week by week plan: [10 Build Plan and Budget](10-build-plan-and-budget.md).
 
 ## 7. What it costs (cash)
 
-Near zero while building (free tiers), rising with active HR/manager sessions — not with worker headcount. Stored workers are cheap; workers who log in twice and vanish cost almost nothing in compute.
+Near zero while building (free tiers), rising with active HR/team lead sessions — not with worker headcount. Stored workers are cheap; workers who log in twice and vanish cost almost nothing in compute.
 
 | Phase | Monthly cloud cash (INR) |
 |-------|--------------------------|

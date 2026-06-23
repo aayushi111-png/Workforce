@@ -8,7 +8,7 @@
 ## Authorization
 
 - **Role based access control (RBAC).** Permissions are tied to role, not to individuals. The full matrix is in [Roles and Experiences](03-user-roles-and-experiences.md).
-- Every backend endpoint checks the role before returning data. A Manager asking for another team's worker gets nothing.
+- Every backend endpoint checks the role before returning data. A Team Lead asking for another team's worker gets nothing.
 
 ## Encryption
 
@@ -63,7 +63,7 @@ The single most important security property is that **a person can only ever rea
 
 - Founder and Senior HR: all workers.
 - HR Executive: all workers, but cannot activate.
-- Manager: their team only.
+- Team Lead: their team only.
 - Worker, contractor, intern: themselves only.
 
 If this boundary holds, most privacy risk is contained by design.

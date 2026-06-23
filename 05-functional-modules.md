@@ -67,7 +67,7 @@ Module 11 (Notifications) and Module 12 (Reporting) are cross cutting: they sit 
 - **Purpose:** the searchable single source of truth for active workers
 - **Holds:** current details, department, manager, location, status, projects
 - **Output:** find any worker, see current state and full history
-- **Roles:** HR full, Manager scoped to team
+- **Roles:** HR full, Team Lead scoped to team
 
 ## Module 7 · Contract Lifecycle
 
@@ -82,7 +82,7 @@ Module 11 (Notifications) and Module 12 (Reporting) are cross cutting: they sit 
 - **Employee:** 30, 60, 90 day, probation, annual
 - **Intern:** weekly, monthly, PPO recommendation
 - **Contractor:** delivery evaluation, renewal recommendation
-- **Roles:** Manager submits, Senior HR oversees
+- **Roles:** Team Lead submits, Senior HR oversees
 
 ## Module 9 · Asset Management
 
@@ -96,7 +96,7 @@ Module 11 (Notifications) and Module 12 (Reporting) are cross cutting: they sit 
 - **Purpose:** run a clean exit with nothing left open
 - **Tracks:** access revocation, asset return, exit documents
 - **Rule:** cannot close while any access or asset remains outstanding
-- **Roles:** Senior HR runs, Manager can request
+- **Roles:** Senior HR runs, Team Lead can request
 
 ## Module 11 · Notification Engine
 

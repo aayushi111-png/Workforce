@@ -18,7 +18,7 @@ flowchart TD
       HE[HR Executive<br/>does the daily work]
     end
     subgraph Team
-      M[Manager<br/>sees only their team]
+      M[Team Lead<br/>sees only their team]
     end
     subgraph Self_service
       E[Employee]
@@ -39,7 +39,7 @@ flowchart TD
 
 Read this as the source of truth for who can do what. `Yes` = full, `Limited` = scoped to their own people or records, `No` = not available.
 
-| Capability | Founder | Senior HR | HR Exec | Manager | Employee | Contractor | Intern |
+| Capability | Founder | Senior HR | HR Exec | Team Lead | Employee | Contractor | Intern |
 |------------|:-------:|:---------:|:-------:|:-------:|:--------:|:----------:|:------:|
 | View all workers | Yes | Yes | Yes | No | No | No | No |
 | View own team | Yes | Yes | Yes | Yes | No | No | No |
@@ -117,19 +117,19 @@ Read this as the source of truth for who can do what. `Yes` = full, `Limited` = 
 
 ---
 
-## Manager
+## Team Lead
 
 **Purpose:** manage direct reports, and only direct reports.
 
 **What they see:** their team, nothing else.
 
-> Example: a manager with 10 engineers, 2 interns and 1 contractor sees exactly those 13 people. Other teams are invisible.
+> Example: a team lead with 10 engineers, 2 interns and 1 contractor sees exactly those 13 people. Other teams are invisible.
 
 **Can do:** submit reviews, approve team reviews, track team onboarding, initiate an offboarding request.
 
 **Cannot do:** view other teams, or offboard directly. Offboarding is a request that Senior HR completes.
 
-**The experience:** a small, personal dashboard scoped to their people. The manager never feels the size of the company. They see who on their team is onboarding, whose review is due, and whose contract is near expiry. Their main action is reviews.
+**The experience:** a small, personal dashboard scoped to their people. The team lead never feels the size of the company. They see who on their team is onboarding, whose review is due, and whose contract is near expiry. Their main action is reviews.
 
 ---
 

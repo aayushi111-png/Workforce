@@ -56,13 +56,13 @@ stateDiagram-v2
 
 ## Stage 6 · Workforce Management
 
-- **Who acts:** managers, HR, the worker
+- **Who acts:** team leads, HR, the worker
 - **The worker operates normally:** reviews, promotions, contract renewals, assets
 - **Exit when:** an exit is initiated
 
 ## Stage 7 · Offboarding
 
-- **Who acts:** Senior HR (managers can request it)
+- **Who acts:** Senior HR (team leads can request it)
 - **Trigger:** exit initiated
 - **System generates:** an exit checklist covering access revocation, asset return, exit documents
 - **Exit when:** every checklist item is closed
