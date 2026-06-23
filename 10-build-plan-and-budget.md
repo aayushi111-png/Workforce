@@ -33,7 +33,7 @@ This is a real application: 12 modules, 7 role specific experiences, auth and ro
 | **Subtotal** | **552** |
 | Contingency for learning and rework (about 15 percent) | 83 |
 | **Full platform total** | **~635** |
-| Optional Phase 4 integrations (Zoho webhook, Google Admin, GitHub, SAP) | 50 to 80 |
+| Optional Phase 4 integrations (Zoho webhook, Google Admin, GitHub) | 50 to 80 |
 
 **MVP subset** (the thing that retires Google Sheets): foundations, auth, data model, M1, M2, M3, M4, M6, four core dashboards, migration and polish, about **300 to 360 hours.**
 
@@ -80,7 +80,7 @@ Each week is about 28 hours of work. The rule for every week: **end the week wit
 | 19 | Security and compliance | DPDP and Aadhaar handling, signed URL hardening, audit coverage |
 | 20 | Connect to katbotz.com | WOP reachable from the main site, sign in scoped to the company, end to end test |
 | 21 | Final polish | Performance, backup and restore test. **Full platform milestone** |
-| 22+ | Integrations (optional) | Zoho webhook, Google Workspace, GitHub, SAP |
+| 22+ | Integrations (optional) | Zoho webhook, Google Workspace, GitHub |
 
 ---
 
@@ -98,18 +98,23 @@ Each week is about 28 hours of work. The rule for every week: **end the week wit
 
 Because you build it, there is **no team cost.** Cash is cloud plus a couple of subscriptions, and it is near zero while you build.
 
+**The key insight:** cloud cost scales with active HR/manager sessions and always-on hosting, not with worker headcount. A worker logs in twice during onboarding and then rarely again. 500 stored workers with their documents is roughly 5 GB of Storage — about ₹10/mo in storage costs. The expensive variable is compute (Cloud Run), and Cloud Run bills only for requests — idle time is free on a scaled-to-zero setup.
+
 | Item | Build phase (you, free tiers) | Live, 100 to 500 workers | Scale, 1,000 to 5,000 plus |
 |------|------|------|------|
-| Firestore (records) | 0, free tier | 1,500 to 6,000 / mo | 15,000 to 40,000 / mo |
-| Cloud Storage (files) | 0 to 500 / mo | 1,000 to 4,000 / mo | 5,000 to 20,000 / mo |
-| Cloud Run and Functions | 0, free tier | 1,000 to 6,000 / mo | 15,000 to 50,000 / mo |
-| Email (SendGrid) | 0, free tier | 0 to 1,500 / mo | 1,500 to 6,000 / mo |
-| Monitoring | 0 | 0 to 2,000 / mo | 3,000 to 8,000 / mo |
+| Firestore (records) | 0, free tier | 0 to 500 / mo | 500 to 3,000 / mo |
+| Cloud Storage (files, ~10 GB at Live) | 0 to 200 / mo | 200 to 800 / mo | 800 to 4,000 / mo |
+| Cloud Run (scale-to-zero) | 0, free tier | 0 to 1,000 / mo | 1,000 to 6,000 / mo |
+| Cloud Functions | 0, free tier | 0 to 200 / mo | 200 to 1,000 / mo |
+| Email (SendGrid) | 0, free tier | 0 to 500 / mo | 500 to 2,000 / mo |
+| Monitoring (Cloud Ops) | 0 | 0 to 500 / mo | 500 to 2,000 / mo |
 | Domain or subdomain | 0 (katbotz.com already owned) | 0 | 0 |
-| **Cloud subtotal** | **~0 to 1,000 / mo** | **~4,000 to 20,000 / mo** | **~40,000 to 1,20,000 / mo** |
+| **Cloud subtotal** | **~0 to 500 / mo** | **~0 to 3,000 / mo** | **~3,000 to 15,000 / mo** |
 | Your AI assistant subscription | see EDIT ME | same | same |
 
 > **EDIT ME:** your AI coding subscription is the one real monthly cost during the build. Drop in your actual plan (for example your Claude subscription). Everything else is free tier until workers and traffic arrive.
+
+> **Why these numbers are lower than common estimates:** most SaaS cost calculators assume always-on VMs and heavy read/write workloads. WOP is a low-traffic internal tool — a few HR staff and managers, not thousands of concurrent users. Cloud Run scaled to zero means you pay only when a request arrives. At 500 workers, Firestore read/write volume stays well within the first paid tier. If KATBOTZ grows past 5,000 active workers with daily activity, revisit.
 
 All figures in INR, planning estimates pending a live cloud bill.
 
@@ -120,7 +125,24 @@ All figures in INR, planning estimates pending a live cloud bill.
 
 ---
 
-## 6. What could blow the timeline
+## 6. After launch: ownership and maintenance
+
+Building solo keeps team cost at zero. That is the right trade-off for a startup, but the project head should approve it knowing what comes after the build.
+
+**What KATBOTZ owns after launch:**
+- A custom codebase hosted on your GCP account. No vendor manages it for you.
+- Security patches — Next.js, FastAPI, and GCP libraries release CVEs; someone has to apply them.
+- The 99.5 % uptime commitment in Section 5 of the architecture doc. That requires monitoring responses, not just monitoring alerts.
+- DPDP duties — if a data breach occurs, the Act requires timely notification. Someone needs to be the designated contact.
+- Aadhaar document custody for the retention period.
+
+**Bus factor:** right now that someone is the builder. Before launch, KATBOTZ should decide: (a) retainer arrangement with the builder for ongoing patches and support, or (b) the codebase and GCP project are handed over to an internal technical lead. Neither is expensive, but neither is zero cost, and leaving it undefined is how custom software rots.
+
+**Rough post-launch maintenance estimate (retainer model):** 4 to 8 hours per month for routine patches, dependency bumps, and minor fixes. A security incident or a major feature adds to that on demand.
+
+---
+
+## 7. What could blow the timeline
 
 | Risk | Effect | Guard |
 |------|--------|-------|

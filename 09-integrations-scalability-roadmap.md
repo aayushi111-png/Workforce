@@ -9,7 +9,7 @@ Phased deliberately. WOP delivers value with zero integrations at launch. Integr
 | Zoho Recruit | Manual trigger, HR creates the worker after offer acceptance | Zoho Recruit API: offer accepted auto creates the worker |
 | Google Workspace | Account creation tracked manually | Automated provisioning through Admin APIs |
 | GitHub | Repository and team access tracked | Auto team assignment and removal |
-| SAP | Access requests tracked | Provisioning where APIs allow |
+| SAP | *(include only if KATBOTZ uses SAP — confirm before launch)* | Provisioning where APIs allow |
 | Gusto | Reference only | Reference only, by design, never replaced |
 
 > **Design principle:** the platform is fully usable before any integration exists. Integrations remove typing and reduce error; they are never the thing that blocks launch.
@@ -44,7 +44,7 @@ This holds because the stack is serverless and pay per use (Firestore, Cloud Sto
 | 1 MVP | Worker creation, onboarding, upload, verification, compliance, directory, migrate off Sheets | July to mid October 2026 |
 | 2 Lifecycle | Contract lifecycle, performance, asset management, offboarding, access tracking | October 2026 to January 2027 |
 | 3 Automation | Dashboards, notifications, renewal and expiry alerts | January to February 2027 |
-| 4 Integrations | Zoho webhook, Google Workspace, GitHub, SAP | March to April 2027 |
+| 4 Integrations | Zoho webhook, Google Workspace, GitHub (SAP if applicable) | March to April 2027 |
 
 - **First usable release:** mid October 2026.
 - **Full platform:** end April 2027.

@@ -90,15 +90,15 @@ Week by week plan: [10 Build Plan and Budget](10-build-plan-and-budget.md).
 
 ## 7. What it costs (cash)
 
-Near zero while building (free tiers), rising with real headcount.
+Near zero while building (free tiers), rising with active HR/manager sessions — not with worker headcount. Stored workers are cheap; workers who log in twice and vanish cost almost nothing in compute.
 
-| Phase | Monthly cloud cash |
-|-------|--------------------|
-| Build phase | ~0 to 1,000 |
-| Live, 100 to 500 workers | ~4,000 to 20,000 |
-| Scale, 1,000 to 5,000 plus | ~40,000 to 1,20,000 |
+| Phase | Monthly cloud cash (INR) |
+|-------|--------------------------|
+| Build phase | ~0 to 500 |
+| Live, 100 to 500 workers | ~0 to 3,000 |
+| Scale, 1,000 to 5,000 plus | ~3,000 to 15,000 |
 
-The one real monthly cost during the build is my AI coding subscription. No team cost, because I build it. Detail and line items: [10 Build Plan and Budget](10-build-plan-and-budget.md).
+The one real monthly cost during the build is my AI coding subscription. No team cost, because I build it. Post-launch maintenance (patches, monitoring response) is a separate arrangement to confirm before go-live. Detail and line items: [10 Build Plan and Budget](10-build-plan-and-budget.md).
 
 ---
 
@@ -108,7 +108,7 @@ The one real monthly cost during the build is my AI coding subscription. No team
 - Files encrypted at rest, served only through short lived signed URLs.
 - An append only audit log on every sensitive action.
 - DPDP Act 2023 respected, with the Aadhaar approach settled before document checklists are built.
-- Daily backups and a tested restore.
+- Daily Firestore exports to a backup bucket, GCS versioning on the documents bucket, and a tested restore run before go-live.
 
 Detail: [08 Security and Compliance](08-security-and-compliance.md).
 
@@ -132,15 +132,17 @@ Stated plainly so there are no surprises later.
 
 No loopholes: every call that affects the build is listed here.
 
+**On decision 1 — why build instead of buying:** the honest comparison is Zoho People (₹120–250/user/month for the features needed) or a similar HRMS. At 50 staff users that is ₹6,000–12,500/month with zero maintenance cost and a vendor who owns security patches. The case for building rests on three specifics that off-the-shelf tools handle poorly: (a) four distinct worker types — Indian employee, foreign employee, contractor, intern — each with a different document checklist and compliance requirement; (b) the Aadhaar handling decision is sensitive enough that a custom-built, locked bucket with no Aadhaar number ever typed into a field is cleaner than trusting a third-party HRMS's compliance posture; (c) WOP is positioned as part of the katbotz.com product surface, which matters for the KATBOTZ brand and gives tighter control over the worker experience. If the document-type complexity were simpler, buying would win. It is not, so building is the right call — but this is a deliberate trade-off, not a default.
+
 | # | Decision | My default if you do not specify |
 |---|----------|----------------------------------|
-| 1 | Build over buy | Build custom |
+| 1 | Build over buy | Build custom (see rationale above) |
 | 2 | Worker types complete at four | Yes |
 | 3 | Coding cadence (7, 6 or 5 days) | 6 days a week |
 | 4 | Strictly solo, or help from Aayushi or Akshat | Solo |
 | 5 | Start date and any hard launch deadline | Start on approval, MVP in about 3.5 months |
 | 6 | katbotz.com hosting and subdomain vs path | Subdomain, for example workforce.katbotz.com |
-| 7 | Aadhaar handling under DPDP and UIDAI | Store the verification result, not the raw number |
+| 7 | Aadhaar handling under DPDP and UIDAI | Store the Aadhaar document image in the locked bucket for manual HR review; the Aadhaar number is never extracted, typed, or stored in any field |
 | 8 | HR Executive can verify, or only review and flag | Review and flag only |
 | 9 | Founder access read only, or read plus reports | Read plus reports |
 | 10 | Retention period before deletion | 3 years after archival |

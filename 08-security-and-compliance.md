@@ -32,9 +32,16 @@ KATBOTZ handles sensitive identity and financial data for Indian workers, so the
 - Keep it only as long as needed, then delete it (the retention and deletion stage).
 - Control who can reach it (RBAC), and prove who reached it (audit log).
 
-### Aadhaar caution
+### Aadhaar handling (manual verification, no number storage)
 
-> **DECISION NEEDED:** Aadhaar handling. Under UIDAI rules, storing raw Aadhaar numbers carries legal restrictions. Wherever possible, **store the verification result, not the raw Aadhaar number.** Settle the exact approach in Phase 0, before the document checklists are built, because it changes what the system is allowed to keep.
+WOP uses **manual verification** (Module 3, Decision #14). There is no automated KYC API, so there is no "verification result" to store. The approach is:
+
+- The Aadhaar document image (front/back scan or photo) is uploaded by the worker and stored in the **locked, private Cloud Storage bucket** — accessible only to Senior HR via a short-lived signed URL.
+- The Aadhaar number is **never extracted, typed into any form field, or stored in any database record** — not in Firestore, not in the audit log, not in any export.
+- The storage table entry labelled "Aadhaar reference" refers to the image file path only — not the number.
+- Senior HR views the document through the signed URL, checks it visually, and marks the verification status (Approved / Rejected). Only that status is written to Firestore.
+
+This satisfies UIDAI restrictions (no number stored) and DPDP data minimisation. Confirm the bucket permission policy and signed URL TTL in week 1, before M2 is built.
 
 ---
 
@@ -63,10 +70,16 @@ If this boundary holds, most privacy risk is contained by design.
 
 ---
 
+## Backups
+
+- **Firestore:** scheduled daily exports to a dedicated Cloud Storage backup bucket, using Firestore's managed export API. Retention: 30 days of daily snapshots.
+- **Cloud Storage (documents):** GCS Object Versioning enabled on the documents bucket. Previous versions of any file are retained for 30 days before deletion.
+- **Tested restore:** before go-live, a restore from backup to a staging environment is run and confirmed. "Daily backups" without a tested restore is not a backup strategy.
+
+---
+
 ## Recommended before go live
 
-> **EDIT ME:** not in the source notes, recommended as a technical head.
-
 - A security review or penetration test before launch.
-- A short compliance advisory to lock the Aadhaar and DPDP approach.
-- Documented incident and breach response, since the DPDP Act expects timely notification.
+- A short compliance advisory to confirm the Aadhaar and DPDP approach with a lawyer.
+- Documented incident and breach response: under the DPDP Act, a breach must be reported to the Data Protection Board promptly. Assign a named contact before launch.
