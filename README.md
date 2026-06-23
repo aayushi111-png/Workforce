@@ -121,13 +121,14 @@ The Aadhaar number is never typed or stored anywhere — only the document image
 
 Solo vibe coding — 4 to 5 hours a day, 5 days a week.
 
-| Phase | Scope | Target |
+All 12 modules ship in one build. No phases.
+
+| Milestone | Scope | Target |
 |---|---|---|
-| Build | Core HR loop: all 4 worker types, document upload, manual verification, compliance gate, activation, directory, all 7 role dashboards, data migration | July 1 – August 8, 2026 |
-| Test | HR dry run with real data, bug fixes, edge cases | August 11 – 22, 2026 |
-| **Launch** | **Go live — Sheets retired, real onboardings begin** | **~August 25, 2026** |
-| Phase 2 | Contracts, invoices, reviews, assets, offboarding | September – December 2026 |
-| Phase 3 | Notifications, reporting, katbotz.com connection, integrations | January – April 2027 |
+| Build | All 12 modules — full platform, all 4 worker types, all 7 role dashboards, data migration from Sheets | July 1 – August 15, 2026 |
+| Test | HR dry run with real data, bug fixes, edge cases | August 18 – 22, 2026 |
+| **Handover** | **Full platform handed to KATBOTZ** | **August 22, 2026** |
+| **Live use** | **Sheets retired. Real onboardings on WOP.** | **September 1, 2026** |
 
 **Cost:** near zero during the build (free tiers). 
 <br>Once live, roughly ₹0–3,000/month at 100–500 workers — because WOP is a low-traffic internal tool, not a consumer app. Cloud Run switches off when nobody is using it, so idle time costs nothing.

@@ -76,17 +76,14 @@ Full experiences, per persona: [03 User Roles and Experiences](03-user-roles-and
 
 ## 6. How I will build it (time)
 
-Solo vibe coding, 4 to 5 hours a day, 5 days a week. Submission in 6 weeks, testing in 2 weeks, launch by August 25.
+Solo vibe coding, 4 to 5 hours a day, 5 days a week, starting July 1. All 12 modules ship by handover. No phases.
 
 | Milestone | Target date |
 |---|---|
-| Build complete (submission) | ~August 8, 2026 |
-| Test phase complete | ~August 22, 2026 |
-| **Go live — Sheets retired** | **~August 25, 2026** |
-| Phase 2 (contracts, reviews, assets, offboarding) | September – December 2026 |
-| Phase 3 (notifications, reporting, katbotz.com) | January – April 2027 |
-
-The 6-week build covers the full core HR loop: all 4 worker types, document upload, manual verification, compliance gate, activation, directory, and all 7 role dashboards. Post-launch phases add the remaining modules without disrupting live operations.
+| Build complete — all 12 modules working | August 15, 2026 |
+| Test week — HR dry run, bug fixes | August 18 – 22, 2026 |
+| **Handover to KATBOTZ** | **August 22, 2026** |
+| **Live use begins — Sheets retired** | **September 1, 2026** |
 
 Week by week plan: [10 Build Plan and Budget](10-build-plan-and-budget.md).
 
@@ -144,7 +141,7 @@ No loopholes: every call that affects the build is listed here.
 | 2 | Worker types complete at four | Yes |
 | 3 | Coding cadence | 5 days a week, 4 to 5 hours a day |
 | 4 | Strictly solo, or help from Aayushi or Akshat | Solo |
-| 5 | Start date and any hard launch deadline | July 1, 2026 — launch target August 25, 2026 |
+| 5 | Start date and live-use deadline | July 1, 2026 build start — handover August 22, live September 1 |
 | 6 | katbotz.com hosting and subdomain vs path | Subdomain, for example workforce.katbotz.com |
 | 7 | Aadhaar handling under DPDP and UIDAI | Store the Aadhaar document image in the locked bucket for manual HR review; the Aadhaar number is never extracted, typed, or stored in any field |
 | 8 | HR Executive can verify, or only review and flag | Review and flag only |
