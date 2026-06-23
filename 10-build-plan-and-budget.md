@@ -56,11 +56,11 @@ Every module. Working, not polished to enterprise grade — but covering the rea
 |---|---|---|---|
 | 1 | July 1 – 5 | Foundations + Auth | Next.js and FastAPI talk to each other, Firestore and Storage connected, deployed to Cloud Run; Google sign-in works, roles exist, a page locks to a role |
 | 2 | July 7 – 11 | Data model + M1 Worker Creation | Full Firestore schema in place; create any of the 4 worker types, correct document checklist generates automatically for each |
-| 3 | July 14 – 18 | M2 Document Management + M3 Verification + M4 Compliance | File uploads via signed URL; worker self-service portal live; verification queue with per-document statuses; compliance gate blocks activation until all checks pass; Senior HR can activate a worker |
+| 3 | July 14 – 18 | M2 Document Management + M3 Verification + M4 Compliance | File uploads via signed URL; worker self-service portal skeleton live; verification queue with per-document statuses; compliance gate blocks activation until all checks pass. Portal UI wired to backend — basic version, not polished |
 | 4 | July 21 – 25 | M5 Access Management + M6 Workforce Directory + M7 Contracts | Access tracking per worker; searchable directory with filters; contract records with start, end, renewal dates and expiry alerts at 90, 60, 30, 7 days |
 | 5 | July 28 – Aug 1 | M7 Invoices + M8 Reviews + M9 Assets | Contractor invoice submission and approval flow; review schedules per worker type (30/60/90 day, probation, annual, intern weekly); asset assignment and return tracking |
-| 6 | Aug 4 – 8 | M10 Offboarding + M11 Notifications + M12 Reporting | Exit checklist with access revocation and asset return gate; automated reminders via SendGrid for missing docs, expiry alerts, review due dates; analytics dashboard, audit log view, export to PDF and spreadsheet |
-| 7 | Aug 11 – 15 | All 7 role dashboards + data migration + RBAC hardening + katbotz.com | Every role view complete and scoped correctly; existing workers imported from Sheets; every endpoint role-checked; WOP reachable on workforce.katbotz.com |
+| 6 | Aug 4 – 8 | M10 Offboarding + M11 Notifications + M12 Reporting | Exit checklist with access revocation and asset return gate; SendGrid integration for 5 email triggers (rejection, activation, 3-day reminder, contract expiry, review due); analytics dashboard and audit log view; **CSV export only — PDF is post-launch** |
+| 7 | Aug 11 – 15 | Dashboard polish + data migration + RBAC hardening + katbotz.com | Senior HR, Founder, Team Lead, and Employee dashboards completed and scoped correctly (others built incrementally in weeks 4–6); existing workers imported from Sheets (inspect real data in week 1 to estimate time); every endpoint role-checked; WOP reachable on workforce.katbotz.com |
 | 8 | Aug 18 – 22 | Testing + bug fixes + handover | Senior HR, HR Exec, one Team Lead, one employee do a full dry run on real data. Every bug fixed. Documentation handed over. **Platform ready for use.** |
 
 ---
@@ -83,6 +83,10 @@ The week between handover and live use (Aug 22 – Sept 1) is the window for HR 
 - **One vertical slice per session.** Screen, endpoint, database — all three, before moving on. A backend with no screen feels like nothing is done.
 - **Deploy from week one.** Live on Cloud Run from day one. No scary big-deploy moment at the end.
 - **Indian employee first.** Get that worker type fully working — the other three are variations, not new builds.
+- **Inspect the real data in week 1.** Look at the actual Sheets and Drive to see what data migration will really take. This informs week 7 planning and prevents surprises.
+- **Test integrations early.** SendGrid, signed URLs, and Aadhaar flow should be tested in weeks 2–3, not left to the last moment.
+- **Build dashboards incrementally.** Don't batch all 7 dashboards to week 7. Build Senior HR + Founder in weeks 5–6, others are simple variations.
+- **CSV first, PDF later.** Reporting exports with CSV in week 6, PDF as a post-launch feature if time permits.
 - **Keep a done log.** Nobody claps in a solo build. A written list of what shipped this week is the clap.
 - **Timebox rabbit holes.** One session stuck on a bug: note it, move on, come back. Never let a rabbit hole eat a week focus area.
 
@@ -125,8 +129,9 @@ All figures in INR, planning estimates pending a live cloud bill.
 
 | Risk | Effect | Guard |
 |---|---|---|
-| Notifications (M11) take longer than expected | Adds 2 to 3 days | SendGrid is well documented — timebox to one session per trigger type |
-| Reporting exports (M12) get complex | Eats into week 7 | Ship CSV export first, PDF is a nice-to-have within the week |
-| Migration data is messier than it looks | Adds a few days | Look at the actual Sheets in week 1, not week 7 |
-| Dashboard design balloons | Pushes handover | Build Senior HR and Founder views first — others are variations |
-| Bugs in test week exceed one week | Delays Sept 1 | Reserve sessions in week 7 as buffer before handing off for testing |
+| **File upload / signed URL bugs in week 3** | Delays M2–M4, cascades to week 4 | Test signed URLs end-to-end in week 2; isolate file upload testing to one focused session |
+| **SendGrid integration in week 6** | Adds 2–3 days if templates or error handling is complex | Use SendGrid's pre-built templates, not custom; timebox to one session per email trigger; test in week 5 if possible |
+| **Sheets migration data is messy** | Adds 3–5 days in week 7 | Inspect the actual Sheets, Drive, and data quality in week 1; estimate migration time upfront |
+| **Dashboard design balloons** | Pushes handover to week 8 | Build Senior HR and Founder dashboards first (2–3 hours each); others are simple variations; defer fancy filtering/analytics to post-launch |
+| **RBAC hardening finds security issues** | Requires rework in week 7 or week 8 | Add endpoint role-checks incrementally in weeks 2–6, not all at once in week 7; test RBAC early |
+| **Bugs in test week exceed 5 days** | Delays Sept 1 launch | Reserve 1–2 days in week 7 as buffer before handing off to HR for testing; only ship known-good features in week 8 |
