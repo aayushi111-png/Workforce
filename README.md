@@ -150,6 +150,7 @@ All 12 modules ship in one build. No phases.
 | 08 | [Security and Compliance](08-security-and-compliance.md) | Auth, encryption, audit, DPDP, Aadhaar handling, retention |
 | 09 | [Integrations, Scalability, Roadmap](09-integrations-scalability-roadmap.md) | What connects, how it grows, and by when |
 | 10 | [Build Plan and Budget](10-build-plan-and-budget.md) | Week-by-week plan, honest effort estimate, corrected cost figures |
+| 11 | [Screen Mockups](11-screen-mockups.md) | Rough wireframes of every key screen, per role |
 
 ---
 
