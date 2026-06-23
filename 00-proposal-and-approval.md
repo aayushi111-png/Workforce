@@ -131,28 +131,56 @@ Stated plainly so there are no surprises later.
 
 ---
 
-## 10. Open decisions I need sign-off on
+## 10. Decisions: already made vs need your sign-off
 
-Every call that affects the build is listed here with my working default.
+Most design decisions are already locked in based on the discovery session and build requirements. This section separates what's decided from what needs your confirmation.
+
+### Already Decided (locked in, no changes)
+
+These are the architecture and design choices that shaped the entire platform. They are set.
+
+| # | Decision | What I am building |
+|---|----------|---|
+| 1 | Build over buy | Custom build on Google Cloud (not Zoho People or similar HRMS) |
+| 2 | Worker types | Four types only: Indian Employee, Indian Contractor, Global Contractor, Global Intern |
+| 3 | Coding cadence | 5 days a week, 4 to 5 hours a day, solo build |
+| 4 | Timeline | July 1 start, August 22 handover, September 1 live — no phases |
+| 5 | Backend & database | FastAPI + Firestore + Cloud Storage, REST API, no GraphQL |
+| 6 | Search | Filter + prefix match at launch, no full-text search yet |
+| 7 | Verification | Manual only — Senior HR reviews documents visually, no automated KYC |
+| 8 | HR Executive role | Review and flag only, cannot activate (Senior HR activates only) |
+| 9 | Founder access | Read-only plus reports (cannot change anything) |
+| 10 | Access Management | Manual checklist only — WOP records what IT created, never creates accounts |
+| 11 | Notifications | Exactly 5 email triggers via SendGrid, nothing else (no Slack, SMS, calendar) |
+| 12 | Aadhaar handling | Document image stored in locked bucket, number never extracted or stored |
+| 13 | Database design | Sub-collections per worker + top-level collections for cross-cutting queries |
+| 14 | Hosting | Cloud Run, subdomain on katbotz.com (e.g. workforce.katbotz.com) |
 
 **On decision 1 — why build instead of buying:** the honest comparison is Zoho People (₹120–250/user/month for the features needed) or a similar HRMS. At 50 staff users that is ₹6,000–12,500/month with zero maintenance cost and a vendor who owns security patches. The case for building rests on three specifics that off-the-shelf tools handle poorly: <br>(a) four distinct worker types — Indian employee, foreign employee, contractor, intern — each with a different document checklist and compliance requirement; <br>(b) the Aadhaar handling decision is sensitive enough that a custom-built, locked bucket with no Aadhaar number ever typed into a field is cleaner than trusting a third-party HRMS's compliance posture; <br>(c) WOP is positioned as part of the katbotz.com product surface, which matters for the KATBOTZ brand and gives tighter control over the worker experience. If the document-type complexity were simpler, buying would win. It is not, so building is the right call — but this is a deliberate trade-off, not a default.
 
-| # | Decision | My working default |
-|---|----------|----------------------------------|
-| 1 | Build over buy | Build custom (see rationale above) |
-| 2 | Worker types complete at four | Yes |
-| 3 | Coding cadence | 5 days a week, 4 to 5 hours a day |
-| 4 | Building solo | Yes — I am building this myself |
-| 5 | Start date and live-use deadline | July 1, 2026 build start — handover August 22, live September 1 |
-| 6 | katbotz.com hosting and subdomain vs path | Subdomain, for example workforce.katbotz.com |
-| 7 | Aadhaar handling under DPDP and UIDAI | Store the Aadhaar document image in the locked bucket for manual HR review; the Aadhaar number is never extracted, typed, or stored in any field |
-| 8 | HR Executive can verify, or only review and flag | Review and flag only |
-| 9 | Founder access read only, or read plus reports | Read plus reports |
-| 10 | Retention period before deletion | 3 years after archival |
-| 11 | REST or GraphQL backend | REST |
-| 12 | Firestore sub collections or top level | Sub collections plus a few top level for cross cutting queries |
-| 13 | Full text search at launch | Filter plus prefix match first |
-| 14 | Verification approach | Manual — Senior HR reviews documents visually. No automated KYC planned. |
+---
+
+### Need your confirmation before July 1
+
+These four are final blockers. Once you confirm, I start July 1 with no ambiguity.
+
+| # | Decision | What I need confirmed |
+|---|----------|---|
+| **A** | Coding cadence | 5 days a week, 4 to 5 hours a day — yes or no? |
+| **B** | Start date | July 1, 2026 — yes or no? |
+| **C** | Live-use target | September 1, 2026 (with 3–5 day flex if needed) — yes or no? |
+| **D** | Aadhaar approach | Image in locked bucket, number never stored — yes or no? |
+
+---
+
+### Need before go-live (Week 7–8)
+
+These don't block the start, but they must be answered before September 1 launch.
+
+| # | Decision | What I need from you |
+|---|----------|---|
+| **1** | Retention period | Confirm 3 years after archival with legal advisor. This affects deletion logic. |
+| **2** | katbotz.com tech stack | What is katbotz.com built on? Who manages the DNS? Needed to point workforce.katbotz.com at Cloud Run. |
 
 ---
 
