@@ -49,7 +49,7 @@ One web application where:
 - Personal to-do lists
 - Automatic data deletion after 3 years (compliance requirement)
 - Integration with Zoho Recruit (auto-create workers from offers)
-- Integration with Gusto (auto-sync payroll and benefits)
+- Integration with Gusto (auto-sync payroll for US employees only)
 
 ---
 

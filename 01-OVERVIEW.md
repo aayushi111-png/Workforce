@@ -250,11 +250,14 @@ KATBOTZ Workforce/
 
 **Frequency:** Real-time (within 5 minutes)
 
-### Gusto Integration
+### Gusto Integration (US Employees Only)
+
+**Scope:** US-based employees only  
+**Does NOT apply to:** Indian employees, contractors, interns
 
 **Direction:** Outbound (WOP to Gusto)
 
-**Trigger:** When worker is activated in WOP (all documents verified)
+**Trigger:** When US employee is activated in WOP (all documents verified)
 
 **Data Transmitted:**
 - Full name
@@ -263,21 +266,27 @@ KATBOTZ Workforce/
 - Job title
 - Joining date
 - Salary (if provided)
+- Location: US
 
 **Action in Gusto:**
 - Create payroll record
-- Initiate tax form collection
+- Initiate tax form collection (W4, state taxes)
 - Set up direct deposit
 - Enable benefits enrollment
 - Set pay schedule
 
 **Frequency:** On activation, then on any update
 
-**Updates Synced:**
+**Updates Synced (US Employees Only):**
 - Salary change: WOP to Gusto (within 1 hour)
 - Department change: WOP to Gusto (within 1 hour)
 - Position change: WOP to Gusto (within 1 hour)
 - Marked for exit: WOP to Gusto (immediate termination date)
+
+**Indian Employees & Contractors:**
+- No automatic sync to Gusto
+- Payroll handled separately (out of scope for WOP)
+- HR manages payroll externally
 
 ---
 

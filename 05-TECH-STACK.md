@@ -359,39 +359,49 @@ KATBOTZ Workforce/
 - Invalid data → Return 400 error, don't create worker
 - Valid data → Create worker, return 200 + worker_id
 
-### Gusto Integration
+### Gusto Integration (US Employees Only)
 
-**Purpose:** Auto-sync worker data to payroll system
+**Purpose:** Auto-sync US employee data to Gusto payroll system
+
+**Applies To:** US-based employees only  
+**Does NOT apply to:** Indian employees, contractors, interns
 
 **Data Flow (WOP → Gusto):**
-1. Worker activated in WOP
+1. US employee activated in WOP
 2. WOP calls Gusto API: POST /employees
 3. Sends: name, email, department, joining date, salary
 4. Gusto creates payroll record
-5. Initiates tax form collection
+5. Initiates tax form collection (W4, state taxes, etc.)
 
 **Sync Endpoint:** `POST /api/integrations/gusto/sync`
 
-**Data Sent to Gusto:**
+**Data Sent to Gusto (US Employees Only):**
 ```json
 {
-  "first_name": "Rohan",
-  "last_name": "Mehta",
-  "email": "rohan@katbotz.com",
+  "first_name": "John",
+  "last_name": "Smith",
+  "email": "john@katbotz.com",
   "department": "Engineering",
   "start_date": "2026-06-15",
-  "salary": 50000
+  "salary": 120000,
+  "location": "US"
 }
 ```
+
+**Indian Employees & Contractors:**
+- NO automatic sync to Gusto
+- Payroll handled separately (not in scope)
+- WOP tracks salary info for reference only
+- HR manages Indian payroll externally
 
 **Error Handling:**
 - Sync fails → Log error, alert Senior HR, retry hourly for 24h
 - Sync succeeds → Record gusto_id, mark synced
 
-**Updates Synced:**
+**Updates Synced (US Employees Only):**
 - Salary change: Within 1 hour
 - Department change: Within 1 hour
-- Marked for exit: Immediate (sets termination date)
+- Marked for exit: Immediate (sets termination date in Gusto)
 
 ---
 
