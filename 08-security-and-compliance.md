@@ -32,16 +32,41 @@ KATBOTZ handles sensitive identity and financial data for Indian workers, so the
 - Keep it only as long as needed, then delete it (the retention and deletion stage).
 - Control who can reach it (RBAC), and prove who reached it (audit log).
 
-### Aadhaar handling (manual verification, no number storage)
+### Aadhaar handling (manual verification, image only, never the number)
 
-WOP uses **manual verification** (Module 3, Decision #14). There is no automated KYC API, so there is no "verification result" to store. The approach is:
+WOP uses **pure manual verification** — no KYC API, no number extraction, no data processing.
 
-- The Aadhaar document image (front/back scan or photo) is uploaded by the worker and stored in the **locked, private Cloud Storage bucket** — accessible only to Senior HR via a short-lived signed URL.
-- The Aadhaar number is **never extracted, typed into any form field, or stored in any database record** — not in Firestore, not in the audit log, not in any export.
-- The storage table entry labelled "Aadhaar reference" refers to the image file path only — not the number.
-- Senior HR views the document through the signed URL, checks it visually, and marks the verification status (Approved / Rejected). Only that status is written to Firestore.
+**What happens:**
 
-This satisfies UIDAI restrictions (no number stored) and DPDP data minimisation. Confirm the bucket permission policy and signed URL TTL in week 1, before M2 is built.
+1. Worker uploads Aadhaar image (JPG or PDF of front and back, or photo) to their portal
+2. Image is stored as-is in a **locked, private Cloud Storage bucket** (no one can read it except via WOP)
+3. Firestore record stores ONLY: { document_type: "Aadhaar", file_path: "gs://locked-bucket/...", status: "Pending", uploaded_date: "..." }
+4. Senior HR views the image through a short-lived signed URL (expires in 30 seconds) — cannot be copied, printed, or shared
+5. HR checks the image visually (is it real? is it clear? matching worker?) and marks:
+   - ☑ Verified → Firestore updates: { status: "Verified" }
+   - ✗ Rejected → Firestore updates: { status: "Rejected", reason: "blurry" }
+6. **The Aadhaar number is never typed, extracted, read by code, or stored anywhere.** Not in Firestore, not in any log, not in any export.
+
+**What is NOT stored:**
+- ✗ Aadhaar number (12-digit)
+- ✗ Any extracted data from the image
+- ✗ Hash of the number
+- ✗ Verification API result
+- ✗ KYC status
+
+**What IS stored:**
+- ✓ Image file path
+- ✓ Verification status (Pending / Verified / Rejected)
+- ✓ Who verified it
+- ✓ When it was verified
+
+**Why:** Aadhaar is sensitive identity data. UIDAI (issuing authority) does not allow number storage without licensed KYC API. DPDP Act 2023 requires data minimisation — store only what you need. Visual verification is sufficient; the number is not needed.
+
+**Before go-live, confirm:**
+- Cloud Storage bucket is locked (not public)
+- Signed URL TTL is 30 seconds (cannot be shared or reused)
+- No code extracts or reads the Aadhaar number
+- Audit logs do not record the number
 
 ---
 

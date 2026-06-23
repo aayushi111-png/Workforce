@@ -47,15 +47,66 @@ One cloud, one backend language, one frontend framework. Deliberately simple to 
 
 ---
 
-## Request lifecycle, one example
+## Request lifecycle: document upload and verification
 
 A worker uploads a PAN card:
 
-1. Browser hits the portal on `katbotz.com`, Next.js serves the worker view.
-2. The upload calls a FastAPI endpoint. OAuth confirms identity, RBAC confirms this worker may upload to their own record only.
-3. The file streams to Cloud Storage. A signed URL reference, not the file, is what gets stored.
-4. A document record is written to Firestore: type, status Pending, expiry if any, and the storage reference.
-5. If Senior HR later rejects the document, FastAPI triggers a SendGrid email to the worker automatically with the reason and a re-upload link.
+1. Worker logs in via Google OAuth. Next.js loads their onboarding checklist. They see: ○ PAN card, ○ Aadhaar image, ○ Degree, ○ Relieving letter, ○ Agreements
+2. Worker clicks on "PAN card", selects a file from their computer, and clicks [Upload]
+3. Browser sends the file to FastAPI backend. OAuth confirms worker identity, RBAC confirms they can only upload to their own record.
+4. **File is saved as-is in Cloud Storage** — no processing, no extraction, no transformation. The file becomes an immutable record.
+5. FastAPI writes a document record to Firestore: { worker_id, document_type: "PAN", file_path: "gs://...", status: "Pending", uploaded_date: "2026-07-15" }
+6. Worker sees in their portal: ✓ PAN uploaded, status: ○ Pending (waiting for HR review)
+7. Senior HR opens verification queue and sees: "Rohan Mehta: PAN pending, Aadhaar pending, ..."
+8. HR clicks on the Rohan's PAN document, views it (image viewer), and decides:
+   - ☑ Verified → Firestore updates: { status: "Verified", verified_by: "Priya", verified_date: "2026-07-16" }. Worker sees ✓ Verified in their portal.
+   - ✗ Rejected with reason "blurry" → Firestore updates: { status: "Rejected", rejected_reason: "blurry", rejected_by: "Priya" }. FastAPI triggers SendGrid email to worker with reason and re-upload link.
+9. Worker re-uploads → cycle repeats until ☑ Verified
+10. Once ALL documents ☑ Verified, compliance gate unlocks and Activate button appears for Senior HR
+
+**Key point:** Documents are stored as files. WOP never reads the file content, extracts data, or sends it to any external service. Documents stay in Cloud Storage as immutable blobs.
+
+---
+
+## Request lifecycle: access creation and tracking
+
+A worker is activated and HR needs to create accounts:
+
+1. Senior HR opens the worker record, sees "Ready for activation", clicks [Activate]
+2. FastAPI updates Firestore: { worker_id, status: "Active", access_checklist: [ { system: "Google Workspace", status: "Pending" }, { system: "GitHub", status: "Pending" }, ... ] }
+3. Access checklist appears in worker record and in HR's task list
+4. HR (or IT person) manually creates accounts in each system:
+   - Opens Google Workspace admin console, creates rohan@katbotz.com, sets password, assigns groups
+   - Opens GitHub KATBOTZ org, adds rohan as a team member
+   - Opens Slack admin, adds rohan@slack.com to KATBOTZ workspace, assigns channels
+   - **WOP is not involved in any of these steps.** No API calls, no webhooks, no integrations. All manual in each system.
+5. Once the account is created, IT person returns to WOP and ticks ☑ Done:
+   - Enters the created email (rohan@katbotz.com) in the Google Workspace field
+   - Enters the GitHub username in the GitHub field
+   - Clicks ☑ Done
+6. FastAPI updates Firestore: { system: "Google Workspace", status: "Done", created_id: "rohan@katbotz.com", created_date: "2026-07-18", created_by: "Priya" }
+7. Worker sees in their portal: [2 of 3 systems ready]. Worker can now log in with Google account.
+8. When all ☑ Done, HR is notified worker is fully onboarded and ready to work
+
+**Key point:** WOP is a recording system, not an automation system. It tracks what was created manually in other systems. It never creates accounts, sends invites, or integrates with external APIs.
+
+---
+
+## Request lifecycle: access revocation at offboarding
+
+1. Worker exits, last day is August 31. Senior HR clicks [Begin Offboarding]
+2. FastAPI creates a revocation checklist in Firestore: { system: "Google Workspace", status: "Pending", action: "revoke" }, etc.
+3. HR (or IT) manually revokes access in each system:
+   - Google Workspace admin: suspends rohan@katbotz.com, removes from all groups
+   - GitHub: removes rohan from KATBOTZ org
+   - Slack: deactivates rohan account
+4. HR returns to WOP and ticks ☑ Revoked for each system
+5. FastAPI updates Firestore: { system: "Google Workspace", status: "Revoked", revoked_date: "2026-08-31", revoked_by: "Priya" }
+6. HR collects physical assets (laptop, monitor, SIM), ticks ☑ Returned
+7. HR confirms exit interview and relieving letter, ticks ☑ Complete
+8. Once all ☑, offboarding is finalized. Worker record moves to Archive stage.
+
+**Key point:** Same principle. WOP records the revocation checklist, but IT does the actual revocation in each system.
 
 ---
 

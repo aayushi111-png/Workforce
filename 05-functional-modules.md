@@ -43,27 +43,50 @@ Module 11 (Notifications) and Module 12 (Reporting) are cross cutting: they sit 
 
 ## Module 3 · Verification Engine
 
-- **Purpose:** track the verification status of each document
-- **Mode:** manual review — Senior HR checks each document visually and marks it
-- **Status per document:** Pending, Verified, Rejected
-- **On rejection:** an email is sent automatically to the worker with the reason
-- **Roles:** Senior HR verifies, HR Executive reviews and flags
+- **Purpose:** store all uploaded documents and track manual verification status — nothing happens to the documents themselves, they are stored as-is
+- **How it works:** 
+  - Worker uploads PAN, Aadhaar image, passport, etc. Files are saved in Cloud Storage in their original form — no processing, no extraction, no transformation
+  - Senior HR sees a verification queue showing all documents per worker
+  - Senior HR opens each document (image viewer for Aadhaar, PDF viewer for others), checks it visually, and marks one of: ☑ Verified, ☐ Rejected
+  - If rejected, HR provides reason (e.g. "blurry", "missing signature") — reason is emailed to worker automatically
+  - If approved, document status moves to Verified; worker sees green checkmark in their portal
+- **Status per document:** ○ Pending (uploaded, not reviewed yet), ☑ Verified (HR approved), ✗ Rejected (HR rejected, worker must re-upload)
+- **What does NOT happen:** No automated KYC, no API calls to verify documents, no extraction of Aadhaar number, no processing. Just storage + manual review + status tracking.
+- **Roles:** Senior HR does all verification; HR Executive can view but does not verify
 
 ## Module 4 · Compliance Engine
 
-- **Purpose:** decide whether a worker is ready to be active
-- **Checks:** documents complete, verification complete, agreements signed
-- **Output:** ready for activation, or a clear list of what is missing
-- **Roles:** system
+- **Purpose:** automatic gate — checks if all requirements are met before a worker can be activated
+- **What it checks:**
+  - ☑ All required documents uploaded (e.g. PAN, Aadhaar image, degree — depends on worker type)
+  - ☑ All documents verified (every document status is ☑ Verified, none are ○ Pending or ✗ Rejected)
+  - ☑ All required agreements signed (employment agreement, NDA, etc.)
+- **Output:** 
+  - If ALL boxes ☑: "Ready for activation" — Senior HR can now activate the worker
+  - If ANY box ☐: Shows exactly which documents are missing or which are still pending/rejected, what agreements are not signed. Worker and HR both see this list.
+- **No manual intervention:** This is automatic. The system checks the checklist status in real time. No HR action needed.
+- **Roles:** System only (no role interaction)
 
 ## Module 5 · Access Management
 
-- **Purpose:** track which systems a worker has been given access to, as a checklist HR ticks off manually
-- **How it works:** when a worker is activated, a checklist appears in their record — one checkbox per system (Google Workspace, GitHub, Slack, and any others relevant to their role). Senior HR or IT marks each one as done in WOP after provisioning it manually in the actual system. WOP does not create accounts in any external system.
-- **Checklist items (configurable per worker type):** Google Workspace account, GitHub team, Slack workspace, any internal tools
-- **Status per item:** Pending, Done
-- **At offboarding:** the same checklist reappears as a revocation checklist — every item must be marked revoked before the offboarding can be closed
-- **Roles:** Senior HR ticks the checklist
+- **Purpose:** track that each required system account has been manually created for a worker — by recording a checklist of what was done in each system
+- **How it works:** 
+  - When a worker is activated, a **Checklist** appears in their record showing required systems per role/worker type
+  - The checklist shows: Google Workspace, GitHub (KATBOTZ org), Slack, any internal tools
+  - For EACH system, Senior HR or an IT person:
+    1. Creates the account manually in that system (Google Workspace admin, GitHub settings, Slack admin, etc.) — WOP does NOT create accounts
+    2. Returns to WOP and ticks ☑ Done in the checklist
+    3. Enters the created ID (e.g. rohan@katbotz.com, rohan-github, rohan.slack) so it's recorded
+  - **Status per system:** ☐ Pending (not done yet), ☑ Done (account created, ID recorded)
+  - If a system is not relevant for this worker type, HR can skip it or mark Not Applicable
+  - Checklist is **not complete** until all required boxes are ☑ Done
+- **At offboarding:** the same checklist reappears as a **Revocation Checklist** — for each system, HR:
+  1. Removes/disables the account manually in that system
+  2. Returns to WOP and ticks ☑ Revoked
+  3. Records the revocation date
+- **Cannot close offboarding** until all revocation boxes are ☑ Revoked
+- **Manual creation rule:** WOP records what was done. It does NOT provision accounts, send invites, or create users in any external system. That is always manual IT work.
+- **Roles:** Senior HR manages the checklist; IT person who creates accounts ticks it off
 
 ## Module 6 · Workforce Directory
 
@@ -103,20 +126,21 @@ Module 11 (Notifications) and Module 12 (Reporting) are cross cutting: they sit 
 
 ## Module 11 · Notification Engine
 
-- **Purpose:** send automated emails at key moments in the workflow — nothing more
-- **What triggers an email:**
+- **Purpose:** send exactly 5 automated reminder emails at specific moments — nothing else. No Slack, no SMS, no calendar invites, no automated account creation triggers.
+- **Exactly 5 email triggers:**
 
-| Trigger | Recipient | Email says |
+| Trigger | Sent to | Email content |
 |---|---|---|
-| Document rejected in verification | Worker | Which document was rejected and why, with a re-upload link |
-| Onboarding complete and worker activated | Worker + Senior HR | Welcome confirmation, access checklist opened for HR |
-| Document not uploaded after 3 days | Worker | Reminder to complete their checklist |
-| Contract expiring in 30 days | Senior HR | Contractor name, contract end date, renewal action needed |
-| Review due | Team Lead | Which worker's review is due and by when |
+| **Document rejected in verification** | Worker (the person whose document was rejected) | "Your [Document Name] was rejected. Reason: [HR's reason]. Please re-upload here: [link]" |
+| **Onboarding complete — worker activated** | Worker + Senior HR | "Welcome [Worker Name]! You are now active. Access setup checklist opens now for your IT team." |
+| **Document not uploaded after 3 days** | Worker | "Reminder: You have [X] documents still pending in your onboarding checklist. Please upload by [date]: [link to portal]" |
+| **Contract expiring in 30 days** | Senior HR (the HR person) | "Contractor [Name] contract expires on [date]. Action: Review renewal or exit plan. Worker record: [link]" |
+| **Review due** | Team Lead | "Performance review due for [Worker Name] by [date]. Review type: [30-day/60-day/annual/etc]. Start here: [link]" |
 
-- **What it does not do:** no Slack bots, no calendar invites, no automated provisioning triggers, no SMS. Email only.
-- **Tech:** SendGrid for delivery, triggered directly from the FastAPI backend on the relevant event — no separate Cloud Functions scheduler needed for these
-- **Roles:** system fires emails automatically; no manual action required
+- **How it works:** When any of these 5 events happen, SendGrid automatically sends the email. No HR needs to click anything. No delays.
+- **What does NOT happen:** No Slack messages, no SMS, no calendar invites. WOP never creates accounts in external systems (those emails don't trigger provisioning). Email only.
+- **Tech:** SendGrid integration in the FastAPI backend. When an event occurs (document rejected, worker activated, etc.), the backend calls SendGrid directly and sends the email. No Cloud Functions, no schedulers, no queues.
+- **Roles:** System only. No one manually sends these — they fire automatically when the event happens.
 
 ## Module 12 · Reporting and Analytics
 

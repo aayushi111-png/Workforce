@@ -2,17 +2,35 @@
 
 ## Integrations
 
-WOP does not automate account creation or provisioning in any external system. That is intentional — the access checklist in M5 gives HR full visibility and control without WOP needing API access to Google, GitHub, or Slack. The integrations below describe how WOP relates to each system today and always.
+WOP is a **standalone system** — it does not integrate with, call, or automate anything in external systems. The access checklist and notifications are the entire "integration":
 
-| System | How WOP relates to it |
-|---|---|
-| Zoho Recruit | HR manually creates the worker in WOP after an offer is accepted in Zoho. No API connection. |
-| Google Workspace | Google OAuth is used for sign-in only. Account creation in Google Workspace is done manually by IT and ticked off in WOP's access checklist. |
-| GitHub | GitHub team access is tracked as a checklist item. Assignment is done manually by IT and marked done in WOP. |
-| Slack | Slack access is tracked as a checklist item. Done manually, marked in WOP. |
-| Gusto | Reference only. WOP records that a US worker exists; Gusto handles their payroll independently. |
+| System | Connection | Who acts | How it works |
+|---|---|---|---|
+| **Zoho Recruit** | None | Senior HR | An offer is signed in Zoho. HR manually enters the worker into WOP (name, email, worker type, etc.). No API, no sync. |
+| **Google Workspace** | None | IT person | IT creates the account in Google admin console (rohan@katbotz.com). IT returns to WOP and ticks ☑ Done. WOP stores only the email, not any data from Google. |
+| **GitHub** | None | IT person | IT adds the user to the KATBOTZ org in GitHub settings. IT returns to WOP and ticks ☑ Done. WOP stores only the username, not any data from GitHub. |
+| **Slack** | None | IT person | IT adds the user to the KATBOTZ workspace in Slack admin. IT returns to WOP and ticks ☑ Done. WOP stores only the Slack ID, not any data from Slack. |
+| **Gusto** | None | HR | US workers' payroll is handled in Gusto independently. WOP has a "worker_type: global_employee" flag. That's it. No data exchange. |
+| **SendGrid** | Email only | System | SendGrid is called directly from FastAPI when 5 specific events occur (document rejected, worker activated, doc overdue, contract expiring, review due). No other data is sent. |
 
-> **The principle:** WOP tracks what happened. Humans do the provisioning. The checklist is the record.
+**What WOP does NOT do:**
+- ✗ Create accounts in Google Workspace, GitHub, or Slack
+- ✗ Call Google Workspace API to provision users
+- ✗ Call GitHub API to add team members
+- ✗ Call Slack API to invite users
+- ✗ Sync data with Zoho, Gusto, or any other system
+- ✗ Push or pull worker data from any external system
+- ✗ Automate any provisioning or deprovisioning
+
+**What WOP DOES:**
+- ✓ Records that IT created accounts manually
+- ✓ Shows a checklist of required systems per worker type
+- ✓ Sends 5 automated emails (via SendGrid) at key moments
+- ✓ Stores documents as files (not processed)
+- ✓ Tracks verification status (Pending / Verified / Rejected)
+- ✓ Tracks access checklist status (Pending / Done / Revoked)
+
+> **Design principle:** WOP is the system of record. It does not automate external systems. It records what humans did manually in other systems.
 
 ---
 

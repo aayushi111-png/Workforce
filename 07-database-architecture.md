@@ -40,7 +40,7 @@ The rule of thumb: **records in Firestore, files in Storage, and the record carr
 | Entity | Stores | Links to |
 |--------|--------|----------|
 | Worker | Profile, type, status, department, team lead, location, lifecycle state | documents, verifications, reviews, contracts, assets, tasks, access |
-| Document | File reference, type, verification status, expiry date | a worker, a verification |
+| Document | File path (e.g. gs://bucket/worker-123/pan.pdf), type (PAN, Aadhaar, etc.), verification status (Pending / Verified / Rejected), rejection reason if any, uploaded date, verified date | a worker |
 | Verification | Category, status, reviewer, timestamp | a worker, a document |
 | Contract | Agreement, SOW, NDA, start, end, renewal, payment terms | a contractor, many invoices |
 | Invoice | Amount, status, submitted and paid dates | a contract |
