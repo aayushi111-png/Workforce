@@ -1,4 +1,4 @@
-# 03 · User Roles and Experiences
+# 03 · USER ROLES AND EXPERIENCES
 
 > Same application. Different permissions. **A different system for every person who logs in.**
 
