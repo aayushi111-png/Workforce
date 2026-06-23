@@ -24,7 +24,7 @@ stateDiagram-v2
 - **Who acts:** Senior HR
 - **Trigger:** offer accepted in Zoho, HR clicks Create Worker
 - **System generates:** Worker ID, profile, tasks, document checklist, verification checklist
-- **Exit when:** the worker record and workspace exist, ready to invite
+- **Exit when:** the worker record is created and the portal invitation is sent to the worker
 
 ## Stage 2 · Onboarding
 
@@ -51,7 +51,7 @@ stateDiagram-v2
 
 - **Who acts:** Senior HR
 - **Trigger:** Senior HR activates the worker (a deliberate, approved step)
-- **Result:** the worker becomes Active, and access provisioning begins
+- **Result:** the worker becomes Active, and the access checklist opens in their record for Senior HR to tick off each system manually
 - **Why a separate stage:** it gives one clean, auditable point where a worker officially joins
 
 ## Stage 6 · Workforce Management
@@ -79,7 +79,7 @@ stateDiagram-v2
 - **After the retention period:** delete documents, personal data and banking data
 - **Keep:** anonymized analytics only
 
-> **EDIT ME:** the retention period. This document assumes **3 years** after archival, per the source notes. Confirm against the DPDP position in [Security and Compliance](08-security-and-compliance.md).
+> **Pending legal confirmation:** retention period is assumed at 3 years after archival. This needs to be confirmed against KATBOTZ's DPDP position before go-live. See [Security and Compliance](08-security-and-compliance.md).
 
 ---
 

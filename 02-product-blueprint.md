@@ -15,7 +15,7 @@ One platform that owns the worker journey from the moment an offer is accepted t
 | Worker creation and profile | Job posting, interviews, offer (Zoho Recruit) |
 | Onboarding and document collection | US payroll, tax, benefits (Gusto) |
 | Verification and compliance | Salary disbursement and accounting (finance) |
-| Activation and access tracking | Actual account creation in Google, GitHub, SAP |
+| Activation and access checklist tracking | Actual account creation in Google, GitHub, Slack (done by IT, ticked off in WOP) |
 | Active records, contracts, reviews, assets | Rating policy (HR decides, WOP records) |
 | Offboarding, reporting, notifications | Statutory filings |
 
@@ -78,4 +78,4 @@ A fair question from any founder. The honest version:
 - Indian HRMS tools (Darwinbox, Keka, Zoho People) are built around full time Indian employees, not a mixed contractor, intern and global workforce with custom verification and access tracking.
 - A thin custom layer that orchestrates Zoho and Gusto fits the exact KATBOTZ flow, keeps one home for all four worker types, and KATBOTZ owns the data and the roadmap.
 
-> **DECISION NEEDED:** confirm build over buy. The rest of this repository assumes a custom build on Google Cloud.
+> **Confirmed:** custom build on Google Cloud. Full rationale is in [00 Proposal and Approval](00-proposal-and-approval.md), Decision 1.

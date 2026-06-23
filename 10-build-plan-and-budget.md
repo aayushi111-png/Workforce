@@ -109,14 +109,11 @@ No team cost — I am building it. Cash is cloud plus subscriptions, near zero w
 | Firestore | 0, free tier | 0–500 / mo | 500–3,000 / mo |
 | Cloud Storage (~10 GB at Live) | 0–200 / mo | 200–800 / mo | 800–4,000 / mo |
 | Cloud Run (scale-to-zero) | 0, free tier | 0–1,000 / mo | 1,000–6,000 / mo |
-| Cloud Functions | 0, free tier | 0–200 / mo | 200–1,000 / mo |
-| Email (SendGrid) | 0, free tier | 0–500 / mo | 500–2,000 / mo |
+| SendGrid (email notifications) | 0, free tier | 0–500 / mo | 500–2,000 / mo |
 | Monitoring (Cloud Ops) | 0 | 0–500 / mo | 500–2,000 / mo |
 | Domain / subdomain | 0 (katbotz.com owned) | 0 | 0 |
 | **Cloud subtotal** | **~0–500 / mo** | **~0–3,000 / mo** | **~3,000–15,000 / mo** |
-| AI coding subscription | see EDIT ME | same | same |
-
-> **EDIT ME:** drop in your actual AI subscription cost. Everything else is free tier until real traffic arrives.
+| AI coding subscription (Claude) | ~₹1,500–2,000 / mo | same | same |
 
 All figures in INR, planning estimates pending a live cloud bill.
 

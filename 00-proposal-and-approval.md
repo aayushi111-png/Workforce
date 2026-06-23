@@ -129,9 +129,9 @@ Stated plainly so there are no surprises later.
 
 ---
 
-## 10. Open decisions needing your approval
+## 10. Open decisions I need sign-off on
 
-No loopholes: every call that affects the build is listed here.
+Every call that affects the build is listed here with my working default.
 
 **On decision 1 — why build instead of buying:** the honest comparison is Zoho People (₹120–250/user/month for the features needed) or a similar HRMS. At 50 staff users that is ₹6,000–12,500/month with zero maintenance cost and a vendor who owns security patches. The case for building rests on three specifics that off-the-shelf tools handle poorly: (a) four distinct worker types — Indian employee, foreign employee, contractor, intern — each with a different document checklist and compliance requirement; (b) the Aadhaar handling decision is sensitive enough that a custom-built, locked bucket with no Aadhaar number ever typed into a field is cleaner than trusting a third-party HRMS's compliance posture; (c) WOP is positioned as part of the katbotz.com product surface, which matters for the KATBOTZ brand and gives tighter control over the worker experience. If the document-type complexity were simpler, buying would win. It is not, so building is the right call — but this is a deliberate trade-off, not a default.
 
@@ -140,7 +140,7 @@ No loopholes: every call that affects the build is listed here.
 | 1 | Build over buy | Build custom (see rationale above) |
 | 2 | Worker types complete at four | Yes |
 | 3 | Coding cadence | 5 days a week, 4 to 5 hours a day |
-| 4 | Strictly solo, or help from Aayushi or Akshat | Solo |
+| 4 | Building solo | Yes — I am building this myself |
 | 5 | Start date and live-use deadline | July 1, 2026 build start — handover August 22, live September 1 |
 | 6 | katbotz.com hosting and subdomain vs path | Subdomain, for example workforce.katbotz.com |
 | 7 | Aadhaar handling under DPDP and UIDAI | Store the Aadhaar document image in the locked bucket for manual HR review; the Aadhaar number is never extracted, typed, or stored in any field |
@@ -150,7 +150,7 @@ No loopholes: every call that affects the build is listed here.
 | 11 | REST or GraphQL backend | REST |
 | 12 | Firestore sub collections or top level | Sub collections plus a few top level for cross cutting queries |
 | 13 | Full text search at launch | Filter plus prefix match first |
-| 14 | Verification manual or automated at launch | Manual first |
+| 14 | Verification approach | Manual — Senior HR reviews documents visually. No automated KYC planned. |
 
 ---
 
@@ -159,7 +159,7 @@ No loopholes: every call that affects the build is listed here.
 | Risk | Guard |
 |------|-------|
 | Scope creep | The week plan is the contract, new ideas go to a backlog |
-| Burnout from a 7 day pace | 6 days a week, one rest day |
+| Burnout | 5 days a week — weekends off, that is what keeps an 8 week build alive |
 | Aadhaar decision drags | Settle it in week 1, before M2 |
 | Role experiences balloon | Build HR and Employee first, others are variations |
 | Migration data messier than it looks | Inspect the real Sheets in week 1 |

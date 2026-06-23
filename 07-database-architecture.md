@@ -39,7 +39,7 @@ The rule of thumb: **records in Firestore, files in Storage, and the record carr
 
 | Entity | Stores | Links to |
 |--------|--------|----------|
-| Worker | Profile, type, status, department, manager, location, lifecycle state | documents, verifications, reviews, contracts, assets, tasks, access |
+| Worker | Profile, type, status, department, team lead, location, lifecycle state | documents, verifications, reviews, contracts, assets, tasks, access |
 | Document | File reference, type, verification status, expiry date | a worker, a verification |
 | Verification | Category, status, reviewer, timestamp | a worker, a document |
 | Contract | Agreement, SOW, NDA, start, end, renewal, payment terms | a contractor, many invoices |
@@ -73,17 +73,17 @@ workers/{workerId}
 auditLogs/{logId}        (top level, append only, references workerId)
 ```
 
-> **DECISION NEEDED:** sub collections under each worker, or top level collections keyed by workerId. Sub collections read naturally per worker; top level collections make cross worker queries (for example "all expiring contracts") simpler. A common answer is sub collections for worker scoped data plus a few top level collections for cross cutting queries (audit log, all contracts).
+> **Confirmed:** sub collections under each worker for worker-scoped data, plus a few top-level collections for cross-cutting queries (audit log, all contracts for expiry scanning).
 
 ---
 
 ## Search and indexing
 
-- The Workforce Directory needs fast filter by type, department, manager, location and status.
+- The Workforce Directory needs fast filter by type, department, team lead, location and status.
 - Firestore composite indexes cover the common filters.
 - For free text search across names and documents, consider a search index later if Firestore queries are not enough.
 
-> **EDIT ME:** decide if launch needs full text search, or whether filter plus prefix match is enough for the first 500 workers.
+> **Confirmed:** filter plus prefix match at launch. Full text search can be added later if Firestore composite indexes are not enough at scale.
 
 ---
 
@@ -95,4 +95,4 @@ Tied to the lifecycle (see [Workforce Lifecycle](04-workforce-lifecycle.md), Sta
 - After the retention period, the system deletes documents, personal data and banking data.
 - Anonymized analytics are kept, so headcount and trend history survive deletion.
 
-> **EDIT ME:** retention period assumed at **3 years**. Confirm with the DPDP position in [Security](08-security-and-compliance.md).
+> **Pending legal confirmation:** retention period assumed at 3 years after archival. Confirm before go-live.

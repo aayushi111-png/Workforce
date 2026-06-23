@@ -55,13 +55,13 @@ A worker uploads a PAN card:
 2. The upload calls a FastAPI endpoint. OAuth confirms identity, RBAC confirms this worker may upload to their own record only.
 3. The file streams to Cloud Storage. A signed URL reference, not the file, is what gets stored.
 4. A document record is written to Firestore: type, status Pending, expiry if any, and the storage reference.
-5. A document record is written to Firestore: type, status Pending, expiry if any, and the storage reference. If a document is later rejected, FastAPI triggers a SendGrid email to the worker automatically.
+5. If Senior HR later rejects the document, FastAPI triggers a SendGrid email to the worker automatically with the reason and a re-upload link.
 
 ---
 
 ## Environments and engineering practice
 
-> **EDIT ME:** confirm these. They are recommended defaults, not in the source notes.
+> These are the engineering practices I am building to. Confirming them before week 1 would be ideal.
 
 - Three environments: development, staging, production, kept identical so what is tested is what ships.
 - Source control and review on every change (GitHub), with a continuous integration and deployment pipeline.
@@ -75,7 +75,7 @@ A worker uploads a PAN card:
 
 The backend is API first: every capability is an endpoint, so future integrations and automation (see [Integrations](09-integrations-scalability-roadmap.md)) are straightforward.
 
-> **DECISION NEEDED:** REST or GraphQL for the backend API. This document assumes REST via FastAPI for simplicity.
+> **Confirmed:** REST via FastAPI. Simple, well-documented, and the right fit for this workflow.
 
 ---
 
@@ -95,4 +95,4 @@ flowchart LR
     AUTH --> APP[Role specific view]
 ```
 
-> **DECISION NEEDED:** what is katbotz.com built on, and do you want WOP as a subdomain (`workforce.katbotz.com`) or a path (`katbotz.com/workforce`). A subdomain is recommended and is what this document assumes. The domain registrar (for example GoDaddy) holds the DNS record that points the subdomain at Cloud Run.
+> **Confirmed:** WOP will be hosted at `workforce.katbotz.com`. A DNS record at the domain registrar points the subdomain at Cloud Run.

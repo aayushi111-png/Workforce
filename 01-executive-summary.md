@@ -52,7 +52,7 @@ A single workforce platform that:
 - manages the full lifecycle
 - maintains compliance
 - provides analytics
-- supports future automation
+- sends automated email notifications on key events (document rejection, onboarding complete, contract expiry, review due)
 
 The marginal cost of onboarding worker 500 should be close to onboarding worker 5.
 
@@ -81,4 +81,4 @@ The marginal cost of onboarding worker 500 should be close to onboarding worker 
 - **Technical Head:** read [System Architecture](06-system-architecture.md), [Database Architecture](07-database-architecture.md), [Security](08-security-and-compliance.md).
 - **HR leads:** read [Workforce Lifecycle](04-workforce-lifecycle.md) and [Functional Modules](05-functional-modules.md).
 
-> **DECISION NEEDED:** confirm the four worker types are the complete set for launch, or whether a fifth (for example global employee on EOR) is in scope.
+> **Confirmed:** the four worker types above are the complete set for launch.

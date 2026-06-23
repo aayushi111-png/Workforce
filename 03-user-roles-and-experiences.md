@@ -57,7 +57,7 @@ Read this as the source of truth for who can do what. `Yes` = full, `Limited` = 
 | Upload own documents | No | No | No | No | Yes | Yes | Yes |
 | Submit invoices | No | No | No | No | No | Yes | No |
 
-> **DECISION NEEDED:** confirm whether HR Executive can verify, or only review and flag. This document assumes review and flag, with verification reserved for Senior HR.
+> **Confirmed:** HR Executive can review and flag only. Verification and activation are reserved for Senior HR.
 
 ---
 
@@ -207,4 +207,4 @@ A single action, a document being verified, is felt differently depending on who
 | Senior HR | The worker moved one step closer to being ready for activation. |
 | Founder | The compliance issues counter on the dashboard ticked down by one. |
 
-> **DECISION NEEDED:** confirm whether Founder access is strictly read only, or whether the Founder can also generate and export board reports directly. This document assumes read plus reports.
+> **Confirmed:** Founder access is read plus reports — view everything, generate and export reports, no operational actions.

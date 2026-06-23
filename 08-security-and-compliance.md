@@ -53,7 +53,7 @@ This satisfies UIDAI restrictions (no number stored) and DPDP data minimisation.
 | Retention period passes | Delete documents, personal data, banking data |
 | Always | Keep anonymized analytics only |
 
-> **EDIT ME:** retention period assumed at **3 years** after archival. Confirm with legal.
+> **Pending legal confirmation:** 3 years after archival. Confirm with a DPDP-aware legal advisor before go-live.
 
 ---
 
