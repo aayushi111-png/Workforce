@@ -1,155 +1,163 @@
 # 10 · Build Plan and Budget
 
-> The scenario: **you build WOP yourself, solo, vibe coding about 4 hours a day with an AI assistant.**
-> The headline: your real cost is **time, not cash.** The cloud runs on free tiers while you build, and your spend stays small until real headcount arrives.
+> **The scenario:** vibe coding solo, 4 to 5 hours a day, 5 days a week.
+> **The constraint:** submission in 1.5 months (~6 weeks), then 2 weeks of testing, then launch.
+> **The headline:** 135 hours is enough to build the core HR loop — onboarding, documents, verification, compliance, activation, directory, and all 7 role dashboards. Everything else (contracts, reviews, assets, notifications, reporting) ships post-launch in a second phase.
 
 ---
 
-## 1. Honest effort estimate
+## 1. What fits in 135 hours
 
-This is a real application: 12 modules, 7 role specific experiences, auth and role based access, file storage, dashboards, notifications and a lifecycle engine. AI assistance speeds the typing, not the thinking, so these are realistic solo hours, not optimistic ones.
+| Phase | Hours available | What ships |
+|---|---:|---|
+| Build (6 weeks) | ~135 | Core platform — the thing that retires Google Sheets |
+| Test (2 weeks) | — | Internal HR dry run, bug fixes, edge cases |
+| Launch (week 9) | — | Go live, Sheets retired, real onboardings begin |
+| Post-launch (months 3–5) | ongoing | Contracts, invoices, reviews, assets, offboarding, notifications, reporting |
 
-| Area | Hours |
-|------|------:|
-| Foundations: repo, Next.js plus FastAPI scaffold, GCP project, Firestore and Storage wired, deploy to Cloud Run | 45 |
-| Auth plus role based access control (Google OAuth, role model, guarded routes) | 30 |
-| Data model and base CRUD | 30 |
-| M1 Worker Creation (ID, profile, type driven checklists and tasks) | 25 |
-| M2 Document Management plus the worker self service portal (upload, signed URLs) | 40 |
-| M3 Verification and M4 Compliance (queue, statuses, gating) | 30 |
-| M5 Access Management | 12 |
-| M6 Workforce Directory (search, filter, detail, history) | 30 |
-| 7 role experiences (Founder, Senior HR, HR Exec, Team Lead, Employee, Contractor, Intern) | 60 |
-| M7 Contract Lifecycle plus invoices | 32 |
-| M8 Performance and Reviews | 25 |
-| M9 Asset Management | 12 |
-| M10 Offboarding | 20 |
-| M11 Notifications (Cloud Functions, SendGrid, templates, schedules) | 30 |
-| M12 Reporting and Analytics plus exports and audit view | 35 |
-| Data migration from Sheets and Drive | 17 |
-| Security, DPDP and Aadhaar handling | 22 |
-| Connect to katbotz.com (subdomain, sign in, linking) | 12 |
-| Testing, polish, responsive (spread across the build) | 45 |
-| **Subtotal** | **552** |
-| Contingency for learning and rework (about 15 percent) | 83 |
-| **Full platform total** | **~635** |
-| Optional Phase 4 integrations (Zoho webhook, Google Admin, GitHub) | 50 to 80 |
+**What the core platform covers:**
+- All 4 worker types with type-driven document checklists
+- Worker self-service upload portal
+- Manual verification queue (Senior HR)
+- Compliance gate and activation
+- Workforce directory (search, filter, worker detail)
+- All 7 role dashboards (Founder, Senior HR, HR Exec, Team Lead, Employee, Contractor, Intern)
+- Data migration from Sheets
+- RBAC enforced on every endpoint
 
-**MVP subset** (the thing that retires Google Sheets): foundations, auth, data model, M1, M2, M3, M4, M6, four core dashboards, migration and polish, about **300 to 360 hours.**
+**What ships post-launch (not cut, just sequenced):**
+- Contract lifecycle and invoices
+- Performance reviews
+- Asset management
+- Offboarding checklist engine
+- Notification engine (automated reminders)
+- Reporting and analytics exports
+- katbotz.com subdomain connection
 
 ---
 
-## 2. How long, at 4 hours a day
+## 2. Cadence
 
-| Cadence | Hours per week | MVP | Full platform | With integrations |
-|---------|---------------:|-----|---------------|-------------------|
-| 7 days a week | 28 | 11 to 13 weeks (~3 months) | 20 to 23 weeks (~5 months) | 24 to 27 weeks (~6 months) |
-| 6 days a week | 24 | 13 to 15 weeks | 23 to 27 weeks | 28 to 31 weeks |
-| 5 days a week | 20 | 16 to 18 weeks | 28 to 32 weeks | 33 to 38 weeks |
+| Metric | Value |
+|---|---|
+| Days per week | 5 |
+| Hours per day | 4 to 5 (average 4.5) |
+| Hours per week | ~22.5 |
+| Build weeks | 6 |
+| Total build hours | ~135 |
 
-> **My recommendation:** plan at **6 days a week.** "Every day" sounds good in week one and breaks by week six. One rest day a week is what keeps a five month solo build alive. The plan below is written in weeks of work, so a rest day just means a week takes slightly longer in calendar time, not that the plan changes.
-
-> **DECISION NEEDED:** confirm your cadence (7, 6 or 5 days), so I can put real calendar dates on the milestones.
-
----
-
-## 3. Week by week goal plan
-
-Each week is about 28 hours of work. The rule for every week: **end the week with something that runs**, not something half wired.
-
-| Week | Focus | Done means |
-|------|-------|-----------|
-| 1 | Foundations | Next.js and FastAPI talk to each other, Firestore and Storage connected, a "hello worker" page is live on Cloud Run |
-| 2 | Auth and RBAC | Google sign in works, roles exist, a page can be locked to a role |
-| 3 | Data model | You can create and read a Worker record, Firestore rules in place |
-| 4 | M1 Worker Creation | Create any of the four worker types, correct checklist and tasks generate automatically |
-| 5 | M2 part 1 | A file uploads to Cloud Storage, a document record is written, served by signed URL only |
-| 6 | M2 part 2 | The worker self service portal: a worker logs in, uploads, sees their own progress |
-| 7 | M3 and M4 | Verification queue with statuses, compliance gate blocks activation until complete |
-| 8 | M6 Directory | Search and filter the workforce, open a worker, see history |
-| 9 | Dashboards part 1 | Senior HR cockpit, HR Executive queue, Employee portal |
-| 10 | Dashboards part 2 | Founder overview, Team Lead (team only), Contractor and Intern views |
-| 11 | Migration and RBAC hardening | Existing workers imported from Sheets, every endpoint checks the role |
-| 12 | MVP polish | Responsive, bug bash. **MVP milestone: run a real onboarding on WOP, Sheets retired** |
-| 13 | M5 and M9 | Access tracking and asset tracking |
-| 14 | M7 contracts | Contracts with start, end, renewal and expiry alerts |
-| 15 | M7 invoices, M8 part 1 | Invoice flow, review scheduling begins |
-| 16 | M8 and M10 | Reviews per worker type, offboarding checklist with revocation and asset return |
-| 17 | M11 Notifications | Cloud Functions plus SendGrid, the full reminder set fires |
-| 18 | M12 Reporting | Dashboards, audit log view, PDF and spreadsheet export |
-| 19 | Security and compliance | DPDP and Aadhaar handling, signed URL hardening, audit coverage |
-| 20 | Connect to katbotz.com | WOP reachable from the main site, sign in scoped to the company, end to end test |
-| 21 | Final polish | Performance, backup and restore test. **Full platform milestone** |
-| 22+ | Integrations (optional) | Zoho webhook, Google Workspace, GitHub |
+> **The rule for each session:** ship something that runs by the end of it. Not a half-wired backend. A working screen, even if basic.
 
 ---
 
-## 4. Momentum rules for a solo vibe build
+## 3. Week by week plan
 
-- **Ship a vertical slice, not a layer.** Build one feature end to end (screen, endpoint, database) before starting the next. A half built backend with no screen kills motivation.
-- **Deploy from week one.** If it is live from day one, you never face a scary "big deploy" later.
+### Build phase — 6 weeks to submission
+
+| Week | Calendar target | Focus | Done means |
+|---|---|---|---|
+| 1 | Week of July 7 | Foundations + Auth | Next.js and FastAPI talk to each other, Firestore and Storage connected, deployed to Cloud Run; Google sign-in works, roles exist, a page locks to a role |
+| 2 | Week of July 14 | Data model + Worker Creation (M1) | Full Firestore schema in place; create any of the 4 worker types, correct checklist generates automatically |
+| 3 | Week of July 21 | Document Management (M2) | File uploads to Cloud Storage, document record written, served by signed URL only; worker self-service portal live — worker logs in, uploads, sees their checklist |
+| 4 | Week of July 28 | Verification (M3) + Compliance (M4) + Activation | Verification queue with per-document statuses; compliance gate blocks activation until all checks pass; Senior HR can activate a worker |
+| 5 | Week of Aug 4 | Workforce Directory (M6) + all 7 dashboards | Search and filter the workforce; all 7 role views live (Founder overview, Senior HR cockpit, HR Exec queue, Team Lead team view, Employee portal, Contractor portal, Intern portal) |
+| 6 | Week of Aug 11 | Migration + RBAC hardening + polish | Existing workers imported from Sheets; every endpoint role-checked; responsive layout, bug bash. **Submission milestone — hand off for review** |
+
+### Test phase — 2 weeks
+
+| Week | Calendar target | What happens |
+|---|---|---|
+| 7 | Week of Aug 18 | Senior HR and HR Exec do a full dry run: create a real worker, upload real documents, run through the verification queue, activate. Every bug found gets fixed same day. |
+| 8 | Week of Aug 25 | Team Lead and employee portals tested with real team members. Edge cases: rejected documents, re-uploads, wrong role access attempts. Final bug bash. |
+
+### Launch
+
+| Milestone | Target date |
+|---|---|
+| **Go live — Sheets retired** | ~September 1, 2026 |
+| First real onboarding on WOP | Week of September 1 |
+| Post-launch phase 2 begins | September onwards |
+
+---
+
+## 4. Post-launch roadmap (phase 2)
+
+These are not cut features — they are the right things to build *after* the core loop is proven with real workers.
+
+| Module | Builds on | Target |
+|---|---|---|
+| M7 Contract Lifecycle + invoices | Workers are activated, contractor records exist | October 2026 |
+| M8 Performance and Reviews | Active workers, team lead dashboards working | October–November 2026 |
+| M9 Asset Management | Active workers | November 2026 |
+| M10 Offboarding | Full lifecycle proven end to end | December 2026 |
+| M11 Notifications (SendGrid + Cloud Functions) | All triggers exist, now automate the reminders | December 2026 |
+| M12 Reporting and Analytics | Data has been accumulating since launch | January 2027 |
+| Connect to katbotz.com subdomain | Full platform stable | January–February 2027 |
+| Integrations (Zoho webhook, Google Workspace, GitHub) | After the platform is stable | March–April 2027 |
+
+---
+
+## 5. Momentum rules for a solo vibe build
+
+- **One vertical slice per session.** Build one feature end to end — screen, endpoint, database — before starting the next. Half-built backends kill motivation.
+- **Deploy from week one.** Live on Cloud Run from day one so there is never a scary big-deploy moment later.
 - **One worker type first.** Get the Indian employee flow fully working, then the other three are variations, not new builds.
-- **Keep a "done" log.** Solo builds feel slow because nobody claps. A visible list of finished weeks is the clap.
-- **Timebox the rabbit holes.** If a bug eats more than one session, park it, write it down, move on, come back fresh.
-
----
-
-## 5. Budget: what it actually costs in cash
-
-Because you build it, there is **no team cost.** Cash is cloud plus a couple of subscriptions, and it is near zero while you build.
-
-**The key insight:** cloud cost scales with active HR/team lead sessions and always-on hosting, not with worker headcount. A worker logs in twice during onboarding and then rarely again. 500 stored workers with their documents is roughly 5 GB of Storage — about ₹10/mo in storage costs. The expensive variable is compute (Cloud Run), and Cloud Run bills only for requests — idle time is free on a scaled-to-zero setup.
-
-| Item | Build phase (you, free tiers) | Live, 100 to 500 workers | Scale, 1,000 to 5,000 plus |
-|------|------|------|------|
-| Firestore (records) | 0, free tier | 0 to 500 / mo | 500 to 3,000 / mo |
-| Cloud Storage (files, ~10 GB at Live) | 0 to 200 / mo | 200 to 800 / mo | 800 to 4,000 / mo |
-| Cloud Run (scale-to-zero) | 0, free tier | 0 to 1,000 / mo | 1,000 to 6,000 / mo |
-| Cloud Functions | 0, free tier | 0 to 200 / mo | 200 to 1,000 / mo |
-| Email (SendGrid) | 0, free tier | 0 to 500 / mo | 500 to 2,000 / mo |
-| Monitoring (Cloud Ops) | 0 | 0 to 500 / mo | 500 to 2,000 / mo |
-| Domain or subdomain | 0 (katbotz.com already owned) | 0 | 0 |
-| **Cloud subtotal** | **~0 to 500 / mo** | **~0 to 3,000 / mo** | **~3,000 to 15,000 / mo** |
-| Your AI assistant subscription | see EDIT ME | same | same |
-
-> **EDIT ME:** your AI coding subscription is the one real monthly cost during the build. Drop in your actual plan (for example your Claude subscription). Everything else is free tier until workers and traffic arrive.
-
-> **Why these numbers are lower than common estimates:** most SaaS cost calculators assume always-on VMs and heavy read/write workloads. WOP is a low-traffic internal tool — a few HR staff and team leads, not thousands of concurrent users. Cloud Run scaled to zero means you pay only when a request arrives. At 500 workers, Firestore read/write volume stays well within the first paid tier. If KATBOTZ grows past 5,000 active workers with daily activity, revisit.
-
-All figures in INR, planning estimates pending a live cloud bill.
-
-**One time and optional**
-
-- Security review before go live: optional, only if you want outside eyes (skip if budget is tight, the RBAC and signed URL design already covers the basics).
-- Compliance advisory for the Aadhaar and DPDP call: a short paid consult is worth it given the legal stakes.
+- **Keep a done log.** Solo builds feel slow because nobody claps. A visible list of finished sessions is the clap.
+- **Timebox rabbit holes.** If a bug eats more than one session, park it, write it down, move on.
 
 ---
 
 ## 6. After launch: ownership and maintenance
 
-Building solo keeps team cost at zero. That is the right trade-off for a startup, but the project head should approve it knowing what comes after the build.
+Building solo keeps team cost at zero — the right trade-off for a startup. But the project head should approve it knowing what comes after.
 
 **What KATBOTZ owns after launch:**
-- A custom codebase hosted on your GCP account. No vendor manages it for you.
-- Security patches — Next.js, FastAPI, and GCP libraries release CVEs; someone has to apply them.
-- The 99.5 % uptime commitment in Section 5 of the architecture doc. That requires monitoring responses, not just monitoring alerts.
-- DPDP duties — if a data breach occurs, the Act requires timely notification. Someone needs to be the designated contact.
+- A custom codebase on your GCP account. No vendor manages it.
+- Security patches — Next.js, FastAPI, and GCP libraries release CVEs; someone applies them.
+- The 99.5% uptime commitment requires monitoring responses, not just monitoring alerts.
+- DPDP duties — a breach requires timely notification to the Data Protection Board. Someone needs to be the named contact.
 - Aadhaar document custody for the retention period.
 
-**Bus factor:** right now that someone is the builder. Before launch, KATBOTZ should decide: (a) retainer arrangement with the builder for ongoing patches and support, or (b) the codebase and GCP project are handed over to an internal technical lead. Neither is expensive, but neither is zero cost, and leaving it undefined is how custom software rots.
+**Bus factor:** right now that someone is the builder. Before launch, confirm: (a) retainer arrangement for ongoing patches and support, or (b) handover to an internal technical lead.
 
-**Rough post-launch maintenance estimate (retainer model):** 4 to 8 hours per month for routine patches, dependency bumps, and minor fixes. A security incident or a major feature adds to that on demand.
+**Rough post-launch estimate (retainer model):** 4 to 8 hours per month for routine patches, dependency bumps, and minor fixes. A security incident or major feature adds to that on demand.
 
 ---
 
-## 7. What could blow the timeline
+## 7. Budget: what it actually costs in cash
+
+Because you build it, there is **no team cost.** Cash is cloud plus subscriptions — near zero while building.
+
+**The key insight:** cloud cost scales with active HR/team lead sessions and always-on hosting, not with worker headcount. A worker logs in twice during onboarding and then rarely again. 500 stored workers with their documents is roughly 5 GB of Storage — about ₹10/mo in storage costs. Cloud Run is scaled to zero and bills only per request.
+
+| Item | Build phase | Live, 100–500 workers | Scale, 1,000–5,000+ |
+|---|---|---|---|
+| Firestore (records) | 0, free tier | 0–500 / mo | 500–3,000 / mo |
+| Cloud Storage (~10 GB at Live) | 0–200 / mo | 200–800 / mo | 800–4,000 / mo |
+| Cloud Run (scale-to-zero) | 0, free tier | 0–1,000 / mo | 1,000–6,000 / mo |
+| Cloud Functions | 0, free tier | 0–200 / mo | 200–1,000 / mo |
+| Email (SendGrid) | 0, free tier | 0–500 / mo | 500–2,000 / mo |
+| Monitoring (Cloud Ops) | 0 | 0–500 / mo | 500–2,000 / mo |
+| Domain / subdomain | 0 (katbotz.com owned) | 0 | 0 |
+| **Cloud subtotal** | **~0–500 / mo** | **~0–3,000 / mo** | **~3,000–15,000 / mo** |
+| AI coding subscription | see EDIT ME | same | same |
+
+> **EDIT ME:** drop in your actual AI subscription cost (e.g. your Claude plan). Everything else is free tier until real traffic arrives.
+
+All figures in INR, planning estimates pending a live bill.
+
+**One-time and optional**
+- Compliance advisory for the Aadhaar and DPDP approach before launch.
+- Security review or pen test before going live (skip if budget is tight — the RBAC and signed URL design already covers the basics).
+
+---
+
+## 8. What could blow the timeline
 
 | Risk | Effect | Guard |
-|------|--------|-------|
-| The 7 role experiences are more design work than expected | Adds 1 to 2 weeks | Build the HR and Employee views first, treat the rest as variations |
-| Aadhaar and DPDP decision drags | Blocks the document checklist | Settle it in week 1, before you build M2 |
-| Scope creep ("just one more feature") | Pushes full platform past 6 months | The week plan is the contract, new ideas go to a backlog, not into the current week |
-| Burnout from "every day" | Stops the build entirely | Six days a week, one real rest day |
-| Migration data is messier than it looks | Adds a few days | Look at the actual Sheets in week 1, not week 11 |
-
-> **DECISION NEEDED:** is this strictly solo, or will Aayushi or Akshat take any part (for example design, or the migration)? A second person on dashboards alone could pull the full platform in by 3 to 4 weeks.
+|---|---|---|
+| Dashboard design takes longer than expected | Adds 3 to 5 days | Build Senior HR and Employee views first — others are variations |
+| Aadhaar and DPDP decision drags | Blocks M2 checklist | Settle it in week 1, before any document work starts |
+| Migration data messier than it looks | Adds a few days | Look at the actual Sheets in week 1, not week 5 |
+| Scope creep during build | Pushes submission past week 6 | Week plan is the contract — new ideas go to a post-launch backlog |
+| Bugs found in test phase exceed 2 weeks | Delays launch | Reserve a few sessions in week 6 as buffer before handing off |

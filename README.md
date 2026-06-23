@@ -117,15 +117,17 @@ The Aadhaar number is never typed or stored anywhere — only the document image
 
 ---
 
-## How it gets built?
+## How it gets built
 
-Solo build at roughly 4 hours a day.
+Solo vibe coding — 4 to 5 hours a day, 5 days a week.
 
-| Phase | Scope | Timeline |
+| Phase | Scope | Target |
 |---|---|---|
-| MVP | Retires Google Sheets: onboarding, document upload, manual verification, compliance gate, directory, four dashboards | ~13 to 15 weeks |
-| Full platform | Contracts, invoices, reviews, offboarding, notifications, reporting, connect to katbotz.com | ~23 to 27 weeks total |
-| Integrations (optional) | Zoho webhook, Google Workspace, GitHub | ~28 to 31 weeks total |
+| Build | Core HR loop: all 4 worker types, document upload, manual verification, compliance gate, activation, directory, all 7 role dashboards, data migration | July 7 – August 15, 2026 |
+| Test | HR dry run with real data, bug fixes, edge cases | August 18 – 29, 2026 |
+| **Launch** | **Go live — Sheets retired, real onboardings begin** | **~September 1, 2026** |
+| Phase 2 | Contracts, invoices, reviews, assets, offboarding | September – December 2026 |
+| Phase 3 | Notifications, reporting, katbotz.com connection, integrations | January – April 2027 |
 
 **Cost:** near zero during the build (free tiers). 
 <br>Once live, roughly ₹0–3,000/month at 100–500 workers — because WOP is a low-traffic internal tool, not a consumer app. Cloud Run switches off when nobody is using it, so idle time costs nothing.

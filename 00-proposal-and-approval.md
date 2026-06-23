@@ -76,13 +76,17 @@ Full experiences, per persona: [03 User Roles and Experiences](03-user-roles-and
 
 ## 6. How I will build it (time)
 
-Solo, about 4 hours a day. The real cost is time, not cash.
+Solo vibe coding, 4 to 5 hours a day, 5 days a week. Submission in 6 weeks, testing in 2 weeks, launch by September 1.
 
-| Target | Effort | At 6 days a week |
-|--------|-------:|------------------|
-| MVP (retires Sheets) | 300 to 360 hours | about 13 to 15 weeks |
-| Full platform | about 635 hours | about 23 to 27 weeks (~5.5 months) |
-| With integrations | plus 50 to 80 hours | about 28 to 31 weeks |
+| Milestone | Target date |
+|---|---|
+| Build complete (submission) | ~August 15, 2026 |
+| Test phase complete | ~August 29, 2026 |
+| **Go live — Sheets retired** | **~September 1, 2026** |
+| Phase 2 (contracts, reviews, assets, offboarding) | September – December 2026 |
+| Phase 3 (notifications, reporting, katbotz.com) | January – April 2027 |
+
+The 6-week build covers the full core HR loop: all 4 worker types, document upload, manual verification, compliance gate, activation, directory, and all 7 role dashboards. Post-launch phases add the remaining modules without disrupting live operations.
 
 Week by week plan: [10 Build Plan and Budget](10-build-plan-and-budget.md).
 
@@ -138,7 +142,7 @@ No loopholes: every call that affects the build is listed here.
 |---|----------|----------------------------------|
 | 1 | Build over buy | Build custom (see rationale above) |
 | 2 | Worker types complete at four | Yes |
-| 3 | Coding cadence (7, 6 or 5 days) | 6 days a week |
+| 3 | Coding cadence | 5 days a week, 4 to 5 hours a day |
 | 4 | Strictly solo, or help from Aayushi or Akshat | Solo |
 | 5 | Start date and any hard launch deadline | Start on approval, MVP in about 3.5 months |
 | 6 | katbotz.com hosting and subdomain vs path | Subdomain, for example workforce.katbotz.com |

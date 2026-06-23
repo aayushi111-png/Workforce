@@ -36,17 +36,19 @@ This holds because the stack is serverless and pay per use (Firestore, Cloud Sto
 
 ## Roadmap
 
-> **EDIT ME:** dates assume a project start of July 2026 and a small dedicated team. They are planning targets, not commitments.
+Dates assume a build start of July 2026, solo vibe coding at 4 to 5 hours a day, 5 days a week. Planning targets, not commitments.
 
-| Phase | What ships | Window |
-|-------|-----------|--------|
-| 0 Discovery | Design, data model, Aadhaar and DPDP decision, environments | July 2026, about 3 weeks |
-| 1 MVP | Worker creation, onboarding, upload, verification, compliance, directory, migrate off Sheets | July to mid October 2026 |
-| 2 Lifecycle | Contract lifecycle, performance, asset management, offboarding, access tracking | October 2026 to January 2027 |
-| 3 Automation | Dashboards, notifications, renewal and expiry alerts | January to February 2027 |
-| 4 Integrations | Zoho webhook, Google Workspace, GitHub (SAP if applicable) | March to April 2027 |
+| Phase | What ships | Target |
+|---|---|---|
+| 1 · Core build | Worker creation, document upload, manual verification, compliance gate, activation, workforce directory, all 7 role dashboards, data migration from Sheets | July 7 – August 15, 2026 (6 weeks) |
+| 2 · Test | Internal HR dry run, bug fixes, edge case hardening | August 18 – August 29, 2026 (2 weeks) |
+| 3 · Launch | Go live — Sheets retired, real onboardings begin on WOP | ~September 1, 2026 |
+| 4 · Lifecycle | Contracts + invoices, performance reviews, asset management, offboarding engine | September – December 2026 |
+| 5 · Automation | Notification engine, renewal and expiry alerts, reporting and analytics exports | December 2026 – January 2027 |
+| 6 · Connect + integrate | katbotz.com subdomain, Zoho webhook, Google Workspace, GitHub | February – April 2027 |
 
-- **First usable release:** mid October 2026.
+- **Submission:** mid August 2026.
+- **Launch (Sheets retired):** ~September 1, 2026.
 - **Full platform:** end April 2027.
 
 ---
@@ -76,8 +78,8 @@ The full version of this list, with my default for each, is in [00 Proposal and 
 
 ## Next steps to start the build
 
-1. Settle the Aadhaar and DPDP approach (Phase 0 compliance call).
-2. Confirm worker types, checklists and the role permission matrix with HR.
-3. Decide manual verification first, or automated from day one.
-4. Lock the design, data model and environments in the three week Phase 0.
-5. Build the MVP, aiming for real onboardings on WOP by mid October 2026.
+1. Settle the Aadhaar and DPDP approach before week 1 — it determines what the document checklist can store.
+2. Confirm worker types, document checklists and the role permission matrix with HR.
+3. Confirm manual verification at launch (Decision #14 — already the default).
+4. Start week 1: scaffold, auth, deploy to Cloud Run.
+5. Aim for real onboardings on WOP by September 1, 2026. Sheets retired on that date.
