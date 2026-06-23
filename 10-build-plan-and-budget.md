@@ -92,6 +92,27 @@ The week between handover and live use (Aug 22 – Sept 1) is the window for HR 
 
 ---
 
+## 5b. Data Migration Plan (Week 7)
+
+**What gets migrated from Google Sheets to WOP:**
+
+| Item | How | Handled by |
+|---|---|---|
+| **Worker records** | Automated script reads Sheets, validates data, creates worker records in WOP (name, email, type, dept, team lead, joining date) | Script + manual verification of any problem rows |
+| **Documents already uploaded** | Manual: if PAN, passport, etc. are in Drive, they are downloaded and re-uploaded to WOP's Cloud Storage with metadata. If just listed in Sheets, skipped (worker re-uploads in WOP) | HR (assisted by script for bulk upload) |
+| **Contract records** | Manual: contract dates and SOWs are transcribed into WOP contracts module (no bulk import — too risky) | HR Executive (takes 1-2 hours for 20-30 contracts) |
+| **Historical reviews** | Not migrated (reviews start fresh in WOP). Archive Sheets for reference. | None (historical stays in Sheets) |
+| **Archive** | Old Sheets tabs stay as read-only reference, not imported | None |
+
+**Timing:**
+- Week 1: Inspect actual Sheets data quality, estimate migration complexity
+- Week 7: Run migration script for worker records, manual entry for contracts
+- Test week: Verify 100% of workers imported correctly, all records populated
+
+**Risk guard:** If migration data is messier than expected (missing emails, inconsistent types, etc.), timeline extends by 2-3 days (within the 3-5 day flex).
+
+---
+
 ## 6. After handover: ownership and maintenance
 
 **What KATBOTZ owns after handover:**

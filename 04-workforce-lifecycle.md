@@ -79,6 +79,10 @@ Every worker moves through nine stages from creation to deletion. Each stage has
   - Worker sees in their portal: "Your access is being set up. [2 of 3 systems ready]"
 - **Important:** WOP never creates accounts. It only records that you (the IT person) created them manually.
 - **Blocker:** Cannot move forward until ALL access boxes ☑ Done (all accounts created and recorded)
+- **Important — Worker login timing:**
+  - Before activation: Worker has no Google Workspace account, cannot log in
+  - During activation (access setup in progress): Google Workspace account is being created, but WOP might not recognize it immediately (takes ~15 min for Google to propagate)
+  - After ALL access ☑ Done: Worker can log in with their Google Workspace account (e.g. rohan@katbotz.com)
 - **Exit condition:** All access boxes ☑ → Stage 6 starts
 
 ---

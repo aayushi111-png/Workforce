@@ -40,6 +40,12 @@ Module 11 (Notifications) and Module 12 (Reporting) are cross cutting: they sit 
 - **Stores:** PAN, Aadhaar, passport, agreements, certificates
 - **Output:** a complete, per worker document set, files in Cloud Storage, metadata in Firestore
 - **Roles:** worker uploads, HR reviews
+- **If upload fails (network error, file too large, etc.):**
+  - Error message shown to worker in portal with reason (e.g. "File too large. Max 10 MB.")
+  - Firestore records the failed attempt in audit log
+  - Document status stays "Not uploaded yet"
+  - Worker can retry immediately (no cooldown)
+  - No email notification for failures (worker sees error in real time)
 
 ## Module 3 · Verification Engine
 
@@ -141,6 +147,13 @@ Module 11 (Notifications) and Module 12 (Reporting) are cross cutting: they sit 
 - **What does NOT happen:** No Slack messages, no SMS, no calendar invites. WOP never creates accounts in external systems (those emails don't trigger provisioning). Email only.
 - **Tech:** SendGrid integration in the FastAPI backend. When an event occurs (document rejected, worker activated, etc.), the backend calls SendGrid directly and sends the email. No Cloud Functions, no schedulers, no queues.
 - **Roles:** System only. No one manually sends these — they fire automatically when the event happens.
+- **If SendGrid fails or is down:**
+  - FastAPI will log the error to the audit log
+  - HR can see in the audit log that the email was attempted but failed
+  - HR can manually send the email from their email client if urgent (e.g. for rejection reasons)
+  - No automatic retry is configured (to avoid duplicate emails)
+  - This is acceptable because these are reminder emails, not critical business functions
+  - **Note:** Document rejection reason email is the most critical; if SendGrid is down for >1 hour, HR should manually email the worker
 
 ## Module 12 · Reporting and Analytics
 

@@ -126,8 +126,23 @@ If this boundary holds, most privacy risk is contained by design.
 
 ---
 
+## Incident & Breach Response
+
+Before go-live, establish:
+
+1. **Incident commander:** Named person who is notified immediately if a security incident occurs (data breach, unauthorized access, system compromise)
+2. **Response steps:**
+   - Disable affected user accounts immediately (if credential compromise)
+   - Restore from backup if data corruption or loss
+   - Audit log will show exactly what happened and when
+   - Notify affected workers within 24 hours (for DPDP compliance)
+   - Report to Data Protection Board within 72 hours (required by law)
+3. **Tested recovery:** Restore from backup bucket before go-live to verify restore procedure works
+4. **Legal escalation:** Breach of Aadhaar data especially critical — requires legal notification within 48 hours
+
 ## Recommended before go live
 
 - A security review or penetration test before launch.
 - A short compliance advisory to confirm the Aadhaar and DPDP approach with a lawyer.
-- Documented incident and breach response: under the DPDP Act, a breach must be reported to the Data Protection Board promptly. Assign a named contact before launch.
+- Documented incident and breach response plan (see above — incident commander, response steps, notification procedures)
+- A data breach response contact assigned and communicated to KATBOTZ leadership
