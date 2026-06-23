@@ -23,7 +23,7 @@
 | At 50 employees | **₹3–5/month** | **₹36–60/year** |
 | **Annual Total** | **₹36–60/year** | Basically free |
 
-### **SAVINGS: ₹199,940–299,964 per year** 💰
+### **SAVINGS: ₹199,940–299,964 per year**
 
 ---
 
@@ -54,16 +54,16 @@
 
 | Feature | Zoho | WOP | Better? |
 |---------|------|-----|---------|
-| **Cost** | ₹200–300/emp/month | ₹3–5/month total | **WOP** 🔥 |
-| **Simplicity** | Complex, many features | Simple, focused | **WOP** ✓ |
-| **Customization** | Limited (SaaS) | Fully customizable | **WOP** ✓ |
-| **Data ownership** | Zoho owns it | You own it (Google Cloud) | **WOP** ✓ |
-| **Integration** | Limited APIs | Direct Zoho + Gusto sync | **WOP** ✓ |
-| **Weekly summaries** | No | Yes | **WOP** ✓ |
-| **Goals tracking** | Basic | Full lifecycle | **WOP** ✓ |
-| **Document verification** | Basic | Advanced (verified/rejected/clarify) | **WOP** ✓ |
-| **Auto-create from Zoho** | No | Yes | **WOP** ✓ |
-| **Auto-delete after 3 years** | Manual | Automatic | **WOP** ✓ |
+| **Cost** | ₹200–300/emp/month | ₹3–5/month total | **WOP (Better)** |
+| **Simplicity** | Complex, many features | Simple, focused | **WOP (Better)** |
+| **Customization** | Limited (SaaS) | Fully customizable | **WOP (Better)** |
+| **Data ownership** | Zoho owns it | You own it (Google Cloud) | **WOP (Better)** |
+| **Integration** | Limited APIs | Direct Zoho + Gusto sync | **WOP (Better)** |
+| **Weekly summaries** | No | Yes | **WOP (Better)** |
+| **Goals tracking** | Basic | Full lifecycle | **WOP (Better)** |
+| **Document verification** | Basic | Advanced (verified/rejected) | **WOP (Better)** |
+| **Auto-create from Zoho** | No | Yes | **WOP (Better)** |
+| **Auto-delete after 3 years** | Manual | Automatic | **WOP (Better)** |
 
 ---
 

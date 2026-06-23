@@ -26,8 +26,8 @@ Current state:
 - Documents scattered across Google Drive (difficult to locate, difficult to verify)
 - No centralized project or goal tracking
 - Performance reviews done via email (no history, no structure)
-- No automatic compliance checks
-- Manual data entry across multiple systems (Zoho Recruit, Gusto, WOP if it existed)
+- No automatic compliance checks for required documents
+- Manual data entry across multiple systems (Zoho Recruit, Gusto, spreadsheets)
 
 Impact:
 - HR spends 5-10 hours per week on administrative tasks
@@ -40,7 +40,7 @@ Impact:
 One web application where:
 - Workers log in with company email (Google OAuth)
 - Upload required documents (stored in Google Drive)
-- HR verifies documents with three options: Verified, Rejected, Clarification Needed
+- HR verifies documents with two options: Verified or Rejected
 - Project assignment and goal tracking (auto-synced with team lead)
 - Weekly progress summaries (written by worker, read by HR)
 - Automated performance reviews (scheduled at 30, 60, 90 days, and annually)
@@ -130,16 +130,9 @@ One web application where:
 2. Rejected
    - HR has determined document does not meet requirements
    - Reason provided (e.g., "Passport expired, must be valid")
-   - Worker receives email with rejection reason
+   - Worker receives notification with rejection reason
    - Worker must upload complete new document
    - Document returns to "Pending" status for re-review
-
-3. Clarification Needed
-   - HR determines document is mostly acceptable but needs improvement
-   - Specific clarification requested (e.g., "Aadhaar is blurry, please send clearer image")
-   - Worker uploads improved version (same document type, same document ID)
-   - HR reviews clarified version
-   - Result: Verified or Rejected after clarification
 
 ---
 
@@ -160,8 +153,8 @@ One web application where:
 ### Detailed Permission Matrix
 
 **Document Verification**
-- Senior HR: Can mark Verified, Rejected, or Clarification Needed
-- HR: Can mark Verified, Rejected, or Clarification Needed
+- Senior HR: Can mark Verified or Rejected
+- HR: Can mark Verified or Rejected
 - Team Lead: Can view documents (read-only)
 - All Others: Cannot view other workers' documents
 
@@ -355,7 +348,7 @@ One web application where:
 **Week 2: Core Features (July 7-11)**
 - Day 1: Worker self-service portal, document upload form (to Drive)
 - Day 2: Document storage implementation, status tracking in Firestore
-- Day 3: HR document verification UI, mark Verified/Rejected/Clarification
+- Day 3: HR document verification UI, mark Verified or Rejected
 - Day 4: Project assignment form, goals management interface
 - Day 5: Performance form, testing end-to-end
 - Status: Workers can upload, HR can verify, projects can be assigned

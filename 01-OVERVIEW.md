@@ -34,7 +34,7 @@ When a worker (Employee, Contractor, or Intern) logs in, they see their personal
 **4. Documents Section**
 - Checklist of required documents based on worker type
 - Upload buttons for each document
-- Current status of each document (Pending, Verified, Rejected, Clarification Needed)
+- Current status of each document (Pending, Verified, Rejected)
 - View verification reason if rejected
 - Links to Google Drive folder
 
@@ -87,10 +87,9 @@ When HR (HR or Senior HR role) logs in, they see administrative dashboard contai
 **3. Document Verification Interface**
 - List of documents pending verification
 - View document link (opens Google Drive)
-- Three action buttons:
+- Two action buttons:
   - Mark Verified (approve document)
   - Reject (with reason text field)
-  - Request Clarification (with specific request text field)
 - Status history shows all previous reviews
 
 **4. Analytics and Reporting**

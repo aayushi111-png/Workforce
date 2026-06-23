@@ -29,27 +29,14 @@
 4. Worker sees ✓ Done
 
 **Status:**
-- ☐ Pending (not uploaded yet)
-- ⏳ Submitted (uploaded, waiting for verification)
-- ✓ Verified (HR approved)
-- ✗ Rejected (HR rejected, must re-upload)
-- 🤔 Clarification Needed (upload clearer version)
+- Pending (not uploaded yet)
+- Submitted (uploaded, waiting for verification)
+- Verified (HR approved)
+- Rejected (HR rejected, must re-upload)
 
 **HR Options:**
-1. ✓ Mark Verified (document is good)
-2. ✗ Reject with reason (document is invalid, must re-upload)
-3. 🤔 Request Clarification (e.g., "passport blurry, send clearer scan")
-   - Worker gets email: "Please upload clearer version"
-   - Worker re-uploads same document
-   - HR reviews again
-
-**Example:**
-```
-Aadhaar submitted, but blurry
-
-HR option 1: ✗ Reject → Worker re-uploads completely
-HR option 2: 🤔 Clarify → Worker uploads clearer scan (same Aadhaar)
-```
+1. Mark Verified (document is acceptable)
+2. Reject with reason (document is invalid, worker must re-upload new document)
 
 ---
 
@@ -320,6 +307,21 @@ June 22, 04:45 PM — Priya verified Degree (Rohan)
 
 ---
 
-## That's It
+## Feature Summary
 
-15 features. No complexity. Zoho + Gusto connected. Auto-delete. Everything organized.
+15 features implemented:
+1. Worker profiles and types
+2. Document management and verification
+3. Project assignment and tracking
+4. Goals management
+5. Weekly progress summaries
+6. Performance reviews
+7. Contract tracking
+8. Personal to-do lists
+9. Automatic data deletion after 3 years
+10. Zoho Recruit integration
+11. Gusto integration
+12. 7-role access control
+13. Audit trail and logging
+14. In-portal notifications
+15. Offboarding workflows
