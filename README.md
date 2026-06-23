@@ -6,64 +6,162 @@
 
 ---
 
-## What this is
+## What is WOP
 
-WOP is the central workforce layer for KATBOTZ. It sits between recruitment and payroll and becomes the operational system of record for every worker who is not handled by US payroll.
+KATBOTZ currently runs its non-US workforce on Google Sheets, Drive, and email. That works until it doesn't — missing documents, no audit trail, missed contract renewals, inconsistent offboarding.
+
+WOP fixes all of that in one platform. It sits between two tools that already exist and stay untouched:
 
 ```
 Zoho Recruit  →  WOP  →  Gusto
-   (hire)      (operate)  (US pay)
+  (hiring)    (operate)  (US payroll)
 ```
 
-This repository is the full architecture, written to be read and edited by you. Every document is plain Markdown so it can live on GitHub, be diffed, and be changed by anyone on the team.
+- **Zoho Recruit** handles hiring. WOP does not touch it.
+- **Gusto** handles US payroll. WOP does not touch it.
+- **WOP** owns everything in between — from the moment someone accepts an offer to the moment their record is permanently deleted.
 
 ---
 
-## How to read it
+## The four worker types
 
-Start at `01` and move down. Each document is self contained and scannable: short lines, tables, and diagrams rather than walls of text.
+Every feature is shaped around four types, because each has a different document checklist and legal situation.
+
+| Type | Key documents | What makes them different |
+|---|---|---|
+| Indian employee | Aadhaar image, PAN, degree, relieving letter | Probation reviews, employment agreement |
+| Indian contractor | Aadhaar image, PAN, bank proof | Contract + SOW, invoice cycle |
+| Global contractor | Passport, tax ID, international banking | No Aadhaar, international payment |
+| Global intern | Passport, student ID, university letter | Internship agreement, mentor track |
+
+---
+
+## The nine stages every worker goes through
+
+A worker always has a status. The system enforces what can happen at each stage.
+
+| Stage | Name | Who acts | What happens |
+|---|---|---|---|
+| 1 | Created | Senior HR | Record created after offer accepted |
+| 2 | Onboarding | Worker | Worker uploads their own documents through their portal |
+| 3 | Verification | Senior HR | HR manually checks every document — PAN, Aadhaar image, passport |
+| 4 | Compliance | System | Auto-checks: all docs uploaded? All verified? Agreements signed? |
+| 5 | Activation | Senior HR | Senior HR flips the switch. The only deliberate human approval. Worker is officially in. |
+| 6 | Active | Everyone | Normal working life: reviews, contracts, assets, invoices |
+| 7 | Offboarding | Senior HR | Exit checklist: revoke access, return assets, sign exit documents |
+| 8 | Archive | System | Record kept for 3 years (legal requirement) |
+| 9 | Deletion | System | Personal data deleted, only anonymised stats kept |
+
+---
+
+## Who logs in and what they see
+
+Same app — totally different experience depending on your role.
+
+| Role | Sees | Can do | Cannot do |
+|---|---|---|---|
+| Founder | Company health dashboard, risk flags, headcount trends | View everything, run reports | Change anything |
+| Senior HR | Full queue: docs to verify, workers to activate, expiring contracts | Everything operational | Nothing is off limits |
+| HR Executive | Focused task list of documents to review | Review docs, request corrections | Activate workers (deliberate split: maker vs checker) |
+| Manager | Their own team only | Submit reviews, request offboarding | See any other team |
+| Employee / Contractor / Intern | Their own record only | Upload docs, sign agreements, submit invoices | See anyone else |
+
+---
+
+## How it is built
+
+Think of it like a restaurant — the diner sees the menu, the waiter takes the order, the kitchen cooks, the fridge stores ingredients.
+
+| Layer | Technology | Simple job |
+|---|---|---|
+| Frontend | Next.js | Draws the right screen for your role |
+| Login | Google OAuth + RBAC | Proves who you are, assigns your role, guards every page and endpoint |
+| Backend | FastAPI (Python) | Applies all business rules, checks permissions, processes every action |
+| Records | Google Firestore | Stores worker profiles, document metadata, contracts, reviews, audit logs |
+| Files | Google Cloud Storage | Stores the actual uploaded files — never public, only via a short-lived signed URL |
+| Automation | Google Cloud Functions | Sends reminders, fires expiry alerts, runs scheduled jobs |
+| Hosting | Google Cloud Run | Runs the app on Google's servers, charges only when someone actually uses it |
+
+One cloud, one backend language, one frontend framework — deliberately simple to build, run, and hand over.
+
+### The one design rule that explains everything
+
+**Everything hangs off the Worker record.**
+
+```
+Worker
+ ├── Documents      (PAN, Aadhaar image, passport...)
+ ├── Verifications  (did HR check each one?)
+ ├── Contracts + Invoices
+ ├── Reviews
+ ├── Assets         (laptop, monitor)
+ ├── Tasks          (onboarding to-do list)
+ ├── Access log     (what systems they were given)
+ └── Audit log      (every action ever taken, append-only, never editable)
+```
+
+Files live in Cloud Storage. The database stores a pointer to the file, not the file itself. The Aadhaar number is never typed or stored anywhere — only the document image goes into a locked bucket, and Senior HR checks it visually.
+
+---
+
+## The 12 modules
+
+| Group | Modules | What they do |
+|---|---|---|
+| Bring them in | Worker Creation, Document Management | Create the record, collect the documents |
+| Check and activate | Verification, Compliance, Access Management | HR reviews docs manually, system checks completeness, HR activates |
+| Run the workforce | Directory, Contracts, Performance, Assets | Day-to-day operations |
+| Exit and oversee | Offboarding, Notifications, Reporting | Clean exits, reminders, analytics |
+
+---
+
+## How it gets built
+
+Solo build at roughly 4 hours a day.
+
+| Phase | Scope | Timeline |
+|---|---|---|
+| MVP | Retires Google Sheets: onboarding, document upload, manual verification, compliance gate, directory, four dashboards | ~13 to 15 weeks |
+| Full platform | Contracts, invoices, reviews, offboarding, notifications, reporting, connect to katbotz.com | ~23 to 27 weeks total |
+| Integrations (optional) | Zoho webhook, Google Workspace, GitHub | ~28 to 31 weeks total |
+
+**Cost:** near zero during the build (free tiers). Once live, roughly ₹0–3,000/month at 100–500 workers — because WOP is a low-traffic internal tool, not a consumer app. Cloud Run switches off when nobody is using it, so idle time costs nothing.
+
+---
+
+## Documents in this repo
 
 | # | Document | What it answers |
-|---|----------|-----------------|
-| 00 | [Proposal and Approval](00-proposal-and-approval.md) | Everything in one, with a sign off page. **Read this first.** |
+|---|---|---|
+| 00 | [Proposal and Approval](00-proposal-and-approval.md) | Everything in one place, with a sign-off page. **Read this first.** |
 | 01 | [Executive Summary](01-executive-summary.md) | What WOP is, why it is needed, what changes |
-| 02 | [Product Blueprint](02-product-blueprint.md) | Scope, principles, the worker types, the capabilities |
-| 03 | [User Roles and Experiences](03-user-roles-and-experiences.md) | How each person sees and feels a different system |
+| 02 | [Product Blueprint](02-product-blueprint.md) | Scope, principles, worker types, capabilities |
+| 03 | [User Roles and Experiences](03-user-roles-and-experiences.md) | How each person sees a different system |
 | 04 | [Workforce Lifecycle](04-workforce-lifecycle.md) | The nine stages a worker moves through |
 | 05 | [Functional Modules](05-functional-modules.md) | The twelve modules and how they connect |
 | 06 | [System Architecture](06-system-architecture.md) | The stack, the layers, the request path, the katbotz.com link |
 | 07 | [Database Architecture](07-database-architecture.md) | The data model and where every byte is stored |
-| 08 | [Security and Compliance](08-security-and-compliance.md) | Auth, encryption, audit, DPDP, retention |
+| 08 | [Security and Compliance](08-security-and-compliance.md) | Auth, encryption, audit, DPDP, Aadhaar handling, retention |
 | 09 | [Integrations, Scalability, Roadmap](09-integrations-scalability-roadmap.md) | What connects, how it grows, and by when |
-| 10 | [Build Plan and Budget](10-build-plan-and-budget.md) | Solo build planner at 4 hours a day, and what it costs |
+| 10 | [Build Plan and Budget](10-build-plan-and-budget.md) | Week-by-week plan, honest effort estimate, corrected cost figures |
 
----
+### How to edit
 
-## How to edit it
+- Edit any `.md` file directly. Tables, headings, and bullet lists are standard Markdown.
+- Diagrams are written in **Mermaid** inside code blocks — GitHub renders them automatically.
+- Anything needing a real decision or a real number is marked:
 
-- Edit any `.md` file directly. Headings, tables and bullet lists are standard Markdown.
-- Diagrams are written in **Mermaid** inside fenced code blocks. GitHub renders them automatically. Change the text, the picture updates.
-- Anything that needs a real decision or a real number is marked with a callout:
+> **DECISION NEEDED:** the call you need to make.
 
-> **DECISION NEEDED:** text describing the call you need to make.
-
-> **EDIT ME:** a placeholder value to replace with the real one.
-
----
-
-## Conventions
-
-- This document set avoids dashes as punctuation by house style. Compound terms are written open (for example "role based access", "self service", "single source of truth").
-- "Worker" is the umbrella term for an employee, contractor or intern.
-- "Non US workforce" means everyone not run through Gusto: Indian employees, Indian contractors, global contractors and global interns.
+> **EDIT ME:** a placeholder to replace with the real value.
 
 ---
 
 ## Status
 
 | Field | Value |
-|-------|-------|
+|---|---|
 | Version | v1 (architecture draft) |
 | Owner | Technical Head, KATBOTZ |
-| Prepared by | (you) |
+| Prepared by | Aayushi Pandey |
 | Last updated | June 2026 |
