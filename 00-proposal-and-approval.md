@@ -1,4 +1,4 @@
-# 00 · Proposal and Approval
+# 00 · PROPOSAL AND APPROVAL
 
 | | |
 |---|---|
@@ -25,7 +25,7 @@ WOP owns everything from the moment an offer is accepted to the moment the recor
 
 ---
 
-## 2. Why
+## 2. Why?
 
 Today the non US workforce runs on Google Sheets, Drive, email and manual follow ups. That gives no single source of truth, no audit trail, missing documents, missed renewals, inconsistent offboarding and real compliance risk. The pain doubles every time headcount doubles.
 
@@ -33,7 +33,7 @@ WOP replaces all of that with one platform that tracks workers, stores documents
 
 ---
 
-## 3. What gets built
+## 3. What gets built?
 
 Twelve modules, grouped by job:
 
@@ -48,7 +48,7 @@ Full detail: [05 Functional Modules](05-functional-modules.md). Worker types and
 
 ---
 
-## 4. How it is built
+## 4. How will it be built?
 
 - **Frontend:** Next.js. **Backend:** FastAPI (Python). **Records:** Firestore. **Files:** Cloud Storage. **Automation:** Cloud Functions. **Auth:** Google OAuth plus role based access control. **Hosting:** Cloud Run. One cloud, one backend language, one frontend framework.
 - **Where data lives:** records in Firestore, files in Cloud Storage, and the record carries the pointer to the file. Nothing stays in Sheets or Drive. Detail: [07 Database Architecture](07-database-architecture.md).
