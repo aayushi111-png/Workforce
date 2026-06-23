@@ -92,7 +92,7 @@ The week between handover and live use (Aug 22 – Sept 1) is the window for HR 
 - A custom codebase on GCP. No vendor manages it — patches, monitoring responses, and DPDP breach notification duties need a named owner at KATBOTZ.
 - Aadhaar document custody for the 3-year retention period.
 
-**Confirm before go-live:** retainer arrangement with the builder for ongoing patches and support, or handover to an internal technical lead.
+**Confirm before go-live:** whether KATBOTZ wants a retainer arrangement with me for ongoing patches and support, or handover to an internal technical lead.
 
 **Rough post-handover estimate (retainer model):** 4 to 8 hours per month for routine patches, dependency bumps, and minor fixes.
 
@@ -100,7 +100,7 @@ The week between handover and live use (Aug 22 – Sept 1) is the window for HR 
 
 ## 7. Budget: what it actually costs in cash
 
-No team cost — you build it. Cash is cloud plus subscriptions, near zero while building.
+No team cost — I am building it. Cash is cloud plus subscriptions, near zero while building.
 
 **Cloud cost scales with active HR/team lead sessions, not worker headcount.** A worker logs in twice during onboarding and then rarely again. 500 stored workers with their documents is roughly 5 GB — about ₹10/mo in storage. Cloud Run is scaled to zero and bills only per request.
 

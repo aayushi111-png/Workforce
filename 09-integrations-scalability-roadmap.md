@@ -49,7 +49,7 @@ Solo vibe coding, 4 to 5 hours a day, 5 days a week, starting July 1. All 12 mod
 
 ## Open decisions, collected
 
-Everything marked across this repository that needs your call, in one place:
+Every open decision across this repository, collected in one place:
 
 | From | Decision |
 |------|----------|

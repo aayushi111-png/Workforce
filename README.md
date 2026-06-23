@@ -1,8 +1,8 @@
 # KATBOTZ Workforce Operations Platform (WOP)
 
-> Architecture and product repository.
-> Prepared for KATBOTZ.
-> Source: Aayushi Pandey
+> Designed, architected, and built by Aayushi Pandey.
+> Submitted to KATBOTZ for approval and handover.
+> Discovery session: June 16, 2026 (Akshat Mishra, Aayushi Pandey).
 
 ---
 

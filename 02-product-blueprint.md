@@ -40,7 +40,7 @@ flowchart TD
     W --- L[Audit Logs]
 ```
 
-If you remember one thing about the architecture, remember this picture. Detail is in [Database Architecture](07-database-architecture.md).
+The one thing to remember about the architecture: this picture. Detail is in [Database Architecture](07-database-architecture.md).
 
 ---
 
@@ -74,8 +74,8 @@ Twelve modules, grouped by what they do. Full detail in [Functional Modules](05-
 
 A fair question from any founder. The honest version:
 
-- Tools like Deel or Rippling are strong but priced per worker per month and you adapt to their workflow.
+- Tools like Deel or Rippling are strong but priced per worker per month and KATBOTZ adapts to their workflow.
 - Indian HRMS tools (Darwinbox, Keka, Zoho People) are built around full time Indian employees, not a mixed contractor, intern and global workforce with custom verification and access tracking.
-- A thin custom layer that orchestrates Zoho and Gusto fits the exact KATBOTZ flow, keeps one home for all four worker types, and you own the data and the roadmap.
+- A thin custom layer that orchestrates Zoho and Gusto fits the exact KATBOTZ flow, keeps one home for all four worker types, and KATBOTZ owns the data and the roadmap.
 
 > **DECISION NEEDED:** confirm build over buy. The rest of this repository assumes a custom build on Google Cloud.

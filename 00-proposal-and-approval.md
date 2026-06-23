@@ -124,7 +124,7 @@ Stated plainly so there are no surprises later.
 - Google Cloud is the platform.
 - katbotz.com is already owned and available for a subdomain.
 - The existing workforce data in Sheets and Drive is clean enough to migrate.
-- I build solo, about 4 hours a day, starting on a date we confirm.
+- I am building this solo, 4 to 5 hours a day, starting July 1, 2026.
 - Cloud figures are planning estimates pending a live bill.
 
 ---
@@ -168,20 +168,20 @@ No loopholes: every call that affects the build is listed here.
 
 ## 12. Approval
 
-Sign off on what you are approving. Tick or strike through.
+Please tick or strike through what is being approved.
 
 - [ ] **Scope** as in Sections 3 to 5
 - [ ] **Stack and data design** as in Section 4
 - [ ] **Build plan and timeline** as in Section 6
 - [ ] **Budget** as in Section 7
 - [ ] **Security and compliance** commitments as in Section 8
-- [ ] **Open decisions** in Section 10 (mark any you want to change)
+- [ ] **Open decisions** in Section 10 (mark any to change)
 
-**Your answers to the four that need a real call:**
+**Four decisions I need confirmed before July 1:**
 
-1. Cadence (7 / 6 / 5 days): ____
-2. Start date: ____
-3. katbotz.com is built on: ____  and I want WOP at: ____
+1. Cadence confirmed as 5 days a week, 4 to 5 hours a day: ____
+2. Start date confirmed as July 1, 2026: ____
+3. katbotz.com is built on: ____  and WOP should live at: ____
 4. Aadhaar approach confirmed: ____
 
-> Once this page is signed, week 1 begins. Detail for every section is in the linked documents in this repository.
+> Once this page is signed, I start on July 1. Full detail for every section is in the linked documents in this repository.
