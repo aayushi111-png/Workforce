@@ -76,13 +76,13 @@ Full experiences, per persona: [03 User Roles and Experiences](03-user-roles-and
 
 ## 6. How I will build it (time)
 
-Solo vibe coding, 4 to 5 hours a day, 5 days a week. Submission in 6 weeks, testing in 2 weeks, launch by September 1.
+Solo vibe coding, 4 to 5 hours a day, 5 days a week. Submission in 6 weeks, testing in 2 weeks, launch by August 25.
 
 | Milestone | Target date |
 |---|---|
-| Build complete (submission) | ~August 15, 2026 |
-| Test phase complete | ~August 29, 2026 |
-| **Go live — Sheets retired** | **~September 1, 2026** |
+| Build complete (submission) | ~August 8, 2026 |
+| Test phase complete | ~August 22, 2026 |
+| **Go live — Sheets retired** | **~August 25, 2026** |
 | Phase 2 (contracts, reviews, assets, offboarding) | September – December 2026 |
 | Phase 3 (notifications, reporting, katbotz.com) | January – April 2027 |
 
@@ -144,7 +144,7 @@ No loopholes: every call that affects the build is listed here.
 | 2 | Worker types complete at four | Yes |
 | 3 | Coding cadence | 5 days a week, 4 to 5 hours a day |
 | 4 | Strictly solo, or help from Aayushi or Akshat | Solo |
-| 5 | Start date and any hard launch deadline | Start on approval, MVP in about 3.5 months |
+| 5 | Start date and any hard launch deadline | July 1, 2026 — launch target August 25, 2026 |
 | 6 | katbotz.com hosting and subdomain vs path | Subdomain, for example workforce.katbotz.com |
 | 7 | Aadhaar handling under DPDP and UIDAI | Store the Aadhaar document image in the locked bucket for manual HR review; the Aadhaar number is never extracted, typed, or stored in any field |
 | 8 | HR Executive can verify, or only review and flag | Review and flag only |

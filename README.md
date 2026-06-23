@@ -123,9 +123,9 @@ Solo vibe coding — 4 to 5 hours a day, 5 days a week.
 
 | Phase | Scope | Target |
 |---|---|---|
-| Build | Core HR loop: all 4 worker types, document upload, manual verification, compliance gate, activation, directory, all 7 role dashboards, data migration | July 7 – August 15, 2026 |
-| Test | HR dry run with real data, bug fixes, edge cases | August 18 – 29, 2026 |
-| **Launch** | **Go live — Sheets retired, real onboardings begin** | **~September 1, 2026** |
+| Build | Core HR loop: all 4 worker types, document upload, manual verification, compliance gate, activation, directory, all 7 role dashboards, data migration | July 1 – August 8, 2026 |
+| Test | HR dry run with real data, bug fixes, edge cases | August 11 – 22, 2026 |
+| **Launch** | **Go live — Sheets retired, real onboardings begin** | **~August 25, 2026** |
 | Phase 2 | Contracts, invoices, reviews, assets, offboarding | September – December 2026 |
 | Phase 3 | Notifications, reporting, katbotz.com connection, integrations | January – April 2027 |
 

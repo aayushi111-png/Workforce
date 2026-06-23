@@ -56,26 +56,26 @@
 
 | Week | Calendar target | Focus | Done means |
 |---|---|---|---|
-| 1 | Week of July 7 | Foundations + Auth | Next.js and FastAPI talk to each other, Firestore and Storage connected, deployed to Cloud Run; Google sign-in works, roles exist, a page locks to a role |
-| 2 | Week of July 14 | Data model + Worker Creation (M1) | Full Firestore schema in place; create any of the 4 worker types, correct checklist generates automatically |
-| 3 | Week of July 21 | Document Management (M2) | File uploads to Cloud Storage, document record written, served by signed URL only; worker self-service portal live — worker logs in, uploads, sees their checklist |
-| 4 | Week of July 28 | Verification (M3) + Compliance (M4) + Activation | Verification queue with per-document statuses; compliance gate blocks activation until all checks pass; Senior HR can activate a worker |
-| 5 | Week of Aug 4 | Workforce Directory (M6) + all 7 dashboards | Search and filter the workforce; all 7 role views live (Founder overview, Senior HR cockpit, HR Exec queue, Team Lead team view, Employee portal, Contractor portal, Intern portal) |
-| 6 | Week of Aug 11 | Migration + RBAC hardening + polish | Existing workers imported from Sheets; every endpoint role-checked; responsive layout, bug bash. **Submission milestone — hand off for review** |
+| 1 | Week of July 1 | Foundations + Auth | Next.js and FastAPI talk to each other, Firestore and Storage connected, deployed to Cloud Run; Google sign-in works, roles exist, a page locks to a role |
+| 2 | Week of July 7 | Data model + Worker Creation (M1) | Full Firestore schema in place; create any of the 4 worker types, correct checklist generates automatically |
+| 3 | Week of July 14 | Document Management (M2) | File uploads to Cloud Storage, document record written, served by signed URL only; worker self-service portal live — worker logs in, uploads, sees their checklist |
+| 4 | Week of July 21 | Verification (M3) + Compliance (M4) + Activation | Verification queue with per-document statuses; compliance gate blocks activation until all checks pass; Senior HR can activate a worker |
+| 5 | Week of July 28 | Workforce Directory (M6) + all 7 dashboards | Search and filter the workforce; all 7 role views live (Founder overview, Senior HR cockpit, HR Exec queue, Team Lead team view, Employee portal, Contractor portal, Intern portal) |
+| 6 | Week of Aug 4 | Migration + RBAC hardening + polish | Existing workers imported from Sheets; every endpoint role-checked; responsive layout, bug bash. **Submission milestone — hand off for review** |
 
 ### Test phase — 2 weeks
 
 | Week | Calendar target | What happens |
 |---|---|---|
-| 7 | Week of Aug 18 | Senior HR and HR Exec do a full dry run: create a real worker, upload real documents, run through the verification queue, activate. Every bug found gets fixed same day. |
-| 8 | Week of Aug 25 | Team Lead and employee portals tested with real team members. Edge cases: rejected documents, re-uploads, wrong role access attempts. Final bug bash. |
+| 7 | Week of Aug 11 | Senior HR and HR Exec do a full dry run: create a real worker, upload real documents, run through the verification queue, activate. Every bug found gets fixed same day. |
+| 8 | Week of Aug 18 | Team Lead and employee portals tested with real team members. Edge cases: rejected documents, re-uploads, wrong role access attempts. Final bug bash. |
 
 ### Launch
 
 | Milestone | Target date |
 |---|---|
-| **Go live — Sheets retired** | ~September 1, 2026 |
-| First real onboarding on WOP | Week of September 1 |
+| **Go live — Sheets retired** | ~August 25, 2026 |
+| First real onboarding on WOP | Week of August 25 |
 | Post-launch phase 2 begins | September onwards |
 
 ---

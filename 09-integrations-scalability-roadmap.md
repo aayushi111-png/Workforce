@@ -40,15 +40,15 @@ Dates assume a build start of July 2026, solo vibe coding at 4 to 5 hours a day,
 
 | Phase | What ships | Target |
 |---|---|---|
-| 1 · Core build | Worker creation, document upload, manual verification, compliance gate, activation, workforce directory, all 7 role dashboards, data migration from Sheets | July 7 – August 15, 2026 (6 weeks) |
-| 2 · Test | Internal HR dry run, bug fixes, edge case hardening | August 18 – August 29, 2026 (2 weeks) |
-| 3 · Launch | Go live — Sheets retired, real onboardings begin on WOP | ~September 1, 2026 |
+| 1 · Core build | Worker creation, document upload, manual verification, compliance gate, activation, workforce directory, all 7 role dashboards, data migration from Sheets | July 1 – August 8, 2026 (6 weeks) |
+| 2 · Test | Internal HR dry run, bug fixes, edge case hardening | August 11 – August 22, 2026 (2 weeks) |
+| 3 · Launch | Go live — Sheets retired, real onboardings begin on WOP | ~August 25, 2026 |
 | 4 · Lifecycle | Contracts + invoices, performance reviews, asset management, offboarding engine | September – December 2026 |
 | 5 · Automation | Notification engine, renewal and expiry alerts, reporting and analytics exports | December 2026 – January 2027 |
 | 6 · Connect + integrate | katbotz.com subdomain, Zoho webhook, Google Workspace, GitHub | February – April 2027 |
 
-- **Submission:** mid August 2026.
-- **Launch (Sheets retired):** ~September 1, 2026.
+- **Submission:** early August 2026.
+- **Launch (Sheets retired):** ~August 25, 2026.
 - **Full platform:** end April 2027.
 
 ---
@@ -82,4 +82,4 @@ The full version of this list, with my default for each, is in [00 Proposal and 
 2. Confirm worker types, document checklists and the role permission matrix with HR.
 3. Confirm manual verification at launch (Decision #14 — already the default).
 4. Start week 1: scaffold, auth, deploy to Cloud Run.
-5. Aim for real onboardings on WOP by September 1, 2026. Sheets retired on that date.
+5. Aim for real onboardings on WOP by August 25, 2026. Sheets retired on that date.
