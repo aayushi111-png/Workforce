@@ -1,4 +1,4 @@
-# 01 · Executive Summary
+# 01 · EXECUTIVE SUMMARY
 
 ## What WOP is
 
