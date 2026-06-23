@@ -79,7 +79,7 @@ Think of it like a restaurant — the diner sees the menu, the waiter takes the 
 | Backend | FastAPI (Python) | Applies all business rules, checks permissions, processes every action |
 | Records | Google Firestore | Stores worker profiles, document metadata, contracts, reviews, audit logs |
 | Files | Google Cloud Storage | Stores the actual uploaded files — never public, only via a short-lived signed URL |
-| Automation | Google Cloud Functions | Sends reminders, fires expiry alerts, runs scheduled jobs |
+| Email notifications | SendGrid (called from FastAPI) | Sends automated emails on rejection, activation, contract expiry, review due |
 | Hosting | Google Cloud Run | Runs the app on Google's servers, charges only when someone actually uses it |
 
 One cloud, one backend language, one frontend framework — deliberately simple to build, run, and hand over.

@@ -11,11 +11,11 @@ flowchart TD
     FE --> BE[FastAPI Backend]
     BE --> DB[(Firestore<br/>records)]
     BE --> GCS[(Cloud Storage<br/>files)]
-    BE --> CF[Cloud Functions<br/>automation]
+    BE --> SG[SendGrid<br/>email notifications]
     AUTH[Google OAuth + RBAC] -.guards.-> BE
 ```
 
-The path is linear and easy to reason about: a request enters at the domain, the Next.js app renders the right role specific view, FastAPI applies business rules and permissions, and data lands in Firestore for records and Cloud Storage for files. Cloud Functions run the scheduled and event driven jobs off to the side.
+The path is linear and easy to reason about: a request enters at the domain, the Next.js app renders the right role specific view, FastAPI applies business rules and permissions, and data lands in Firestore for records and Cloud Storage for files. When a key event occurs — a document is rejected, a worker is activated, a contract is expiring — FastAPI calls SendGrid directly to fire the relevant email.
 
 ---
 
@@ -27,7 +27,7 @@ The path is linear and easy to reason about: a request enters at the domain, the
 | Backend | Business logic, workflow, verification, notifications, access, the permission gate | FastAPI (Python) |
 | Database | All structured records: workers, documents metadata, contracts, reviews, audit | Google Firestore |
 | Storage | The actual files: PAN, passport, contracts, degrees, NDAs | Google Cloud Storage |
-| Automation | Reminders, expiry alerts, scheduled jobs | Google Cloud Functions |
+| Email notifications | Triggered emails on key events (rejection, activation, contract expiry, review due) | SendGrid, called directly from FastAPI |
 | Auth | Identity and permissions | Google OAuth, role based access control |
 
 ---
@@ -40,7 +40,7 @@ The path is linear and easy to reason about: a request enters at the domain, the
 | FastAPI | Fast to develop, async ready, automatic API docs, a strong fit for workflow and integration logic |
 | Firestore | Serverless, scales automatically, low cost at small scale, flexible schema suits evolving worker data |
 | Cloud Storage | Encryption at rest, signed URLs for controlled document access, cheap and durable |
-| Cloud Functions | Event and schedule driven, pay per use, ideal for reminders and alerts |
+| SendGrid | Email delivery triggered directly from FastAPI — no separate scheduler needed for the notification events WOP handles |
 | Google OAuth + RBAC | Staff already live in Google Workspace, so sign in is frictionless; RBAC decides who sees what |
 
 One cloud, one backend language, one frontend framework. Deliberately simple to staff, run and reason about.
@@ -55,7 +55,7 @@ A worker uploads a PAN card:
 2. The upload calls a FastAPI endpoint. OAuth confirms identity, RBAC confirms this worker may upload to their own record only.
 3. The file streams to Cloud Storage. A signed URL reference, not the file, is what gets stored.
 4. A document record is written to Firestore: type, status Pending, expiry if any, and the storage reference.
-5. A Cloud Function notes the new item for the verification queue and, later, fires reminders if it stalls.
+5. A document record is written to Firestore: type, status Pending, expiry if any, and the storage reference. If a document is later rejected, FastAPI triggers a SendGrid email to the worker automatically.
 
 ---
 

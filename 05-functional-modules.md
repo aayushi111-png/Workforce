@@ -30,8 +30,8 @@ Module 11 (Notifications) and Module 12 (Reporting) are cross cutting: they sit 
 ## Module 1 · Worker Creation
 
 - **Purpose:** create the workforce record once an offer is accepted
-- **Input:** name, contact, worker type, department, manager, joining date
-- **Output:** Worker ID, profile, workspace, checklists, tasks
+- **Input:** name, contact, worker type, department, team lead, joining date
+- **Output:** Worker ID, profile, type-specific checklist of tasks and documents to complete
 - **Roles:** Senior HR
 
 ## Module 2 · Document Management
@@ -43,10 +43,11 @@ Module 11 (Notifications) and Module 12 (Reporting) are cross cutting: they sit 
 
 ## Module 3 · Verification Engine
 
-- **Purpose:** track the verification status of each item
-- **Mode:** manual review only at launch (automation optional later)
-- **Status:** Pending, Verified, Rejected
-- **Roles:** Senior HR verifies, HR Executive reviews
+- **Purpose:** track the verification status of each document
+- **Mode:** manual review — Senior HR checks each document visually and marks it
+- **Status per document:** Pending, Verified, Rejected
+- **On rejection:** an email is sent automatically to the worker with the reason
+- **Roles:** Senior HR verifies, HR Executive reviews and flags
 
 ## Module 4 · Compliance Engine
 
@@ -57,10 +58,12 @@ Module 11 (Notifications) and Module 12 (Reporting) are cross cutting: they sit 
 
 ## Module 5 · Access Management
 
-- **Purpose:** track company accounts and permissions
-- **Tracks:** Google, GitHub, SAP, Slack
-- **Status:** Requested, Provisioned, Active, Revoked
-- **Roles:** HR tracks, IT provisions in the target system
+- **Purpose:** track which systems a worker has been given access to, as a checklist HR ticks off manually
+- **How it works:** when a worker is activated, a checklist appears in their record — one checkbox per system (Google Workspace, GitHub, Slack, and any others relevant to their role). Senior HR or IT marks each one as done in WOP after provisioning it manually in the actual system. WOP does not create accounts in any external system.
+- **Checklist items (configurable per worker type):** Google Workspace account, GitHub team, Slack workspace, any internal tools
+- **Status per item:** Pending, Done
+- **At offboarding:** the same checklist reappears as a revocation checklist — every item must be marked revoked before the offboarding can be closed
+- **Roles:** Senior HR ticks the checklist
 
 ## Module 6 · Workforce Directory
 
@@ -100,10 +103,20 @@ Module 11 (Notifications) and Module 12 (Reporting) are cross cutting: they sit 
 
 ## Module 11 · Notification Engine
 
-- **Purpose:** send the right automated message at the right moment
-- **Triggers:** missing document, contract expiry, review due, offboarding started
-- **Tech:** Cloud Functions for scheduling, SendGrid or Gmail for delivery
-- **Roles:** system
+- **Purpose:** send automated emails at key moments in the workflow — nothing more
+- **What triggers an email:**
+
+| Trigger | Recipient | Email says |
+|---|---|---|
+| Document rejected in verification | Worker | Which document was rejected and why, with a re-upload link |
+| Onboarding complete and worker activated | Worker + Senior HR | Welcome confirmation, access checklist opened for HR |
+| Document not uploaded after 3 days | Worker | Reminder to complete their checklist |
+| Contract expiring in 30 days | Senior HR | Contractor name, contract end date, renewal action needed |
+| Review due | Team Lead | Which worker's review is due and by when |
+
+- **What it does not do:** no Slack bots, no calendar invites, no automated provisioning triggers, no SMS. Email only.
+- **Tech:** SendGrid for delivery, triggered directly from the FastAPI backend on the relevant event — no separate Cloud Functions scheduler needed for these
+- **Roles:** system fires emails automatically; no manual action required
 
 ## Module 12 · Reporting and Analytics
 

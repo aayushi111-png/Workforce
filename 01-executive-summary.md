@@ -69,7 +69,7 @@ The marginal cost of onboarding worker 500 should be close to onboarding worker 
 | Backend | FastAPI (Python) |
 | Records | Google Firestore |
 | Files | Google Cloud Storage |
-| Automation | Google Cloud Functions |
+| Email notifications | SendGrid (triggered from FastAPI) |
 | Auth | Google OAuth plus role based access control |
 | Scale target | 100 today, designed for 5,000 plus without redesign |
 

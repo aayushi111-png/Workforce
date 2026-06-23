@@ -4,15 +4,17 @@
 
 Phased deliberately. WOP delivers value with zero integrations at launch. Integrations come later to remove manual steps, never as a prerequisite for going live.
 
-| System | Now | Later |
-|--------|-----|-------|
-| Zoho Recruit | Manual trigger, HR creates the worker after offer acceptance | Zoho Recruit API: offer accepted auto creates the worker |
-| Google Workspace | Account creation tracked manually | Automated provisioning through Admin APIs |
-| GitHub | Repository and team access tracked | Auto team assignment and removal |
-| SAP | *(include only if KATBOTZ uses SAP — confirm before launch)* | Provisioning where APIs allow |
-| Gusto | Reference only | Reference only, by design, never replaced |
+WOP does not automate account creation or provisioning in any external system. That is intentional — the access checklist in M5 gives HR full visibility and control without WOP needing API access to Google, GitHub, or Slack. The integrations below describe how WOP relates to each system today and always.
 
-> **Design principle:** the platform is fully usable before any integration exists. Integrations remove typing and reduce error; they are never the thing that blocks launch.
+| System | How WOP relates to it |
+|---|---|
+| Zoho Recruit | HR manually creates the worker in WOP after an offer is accepted in Zoho. No API connection. |
+| Google Workspace | Google OAuth is used for sign-in only. Account creation in Google Workspace is done manually by IT and ticked off in WOP's access checklist. |
+| GitHub | GitHub team access is tracked as a checklist item. Assignment is done manually by IT and marked done in WOP. |
+| Slack | Slack access is tracked as a checklist item. Done manually, marked in WOP. |
+| Gusto | Reference only. WOP records that a US worker exists; Gusto handles their payroll independently. |
+
+> **The principle:** WOP tracks what happened. Humans do the provisioning. The checklist is the record.
 
 ---
 
