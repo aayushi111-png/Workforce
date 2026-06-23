@@ -54,10 +54,11 @@ HR verifies documents and checks ✓ Done. That's it.
 - ☐ 10th/12th marksheets
 - ☐ Bank proof
 - ☐ Agreements
+- **Status:** Verified ✓ / Rejected ✗ / Clarification Needed 🤔
 
 ### Projects & Goals (Team Lead assigns, Worker updates)
 - Project name + description
-- Goals (with deadlines)
+- Goals (with deadlines, editable by team lead + worker)
 - Track goals achieved
 - Weekly summary (what happened)
 
@@ -71,7 +72,20 @@ HR verifies documents and checks ✓ Done. That's it.
 - Performance tracker (rating + feedback)
 - Contract renewal dates (manual entry)
 - Personal to-do list (per worker)
-- Offboarding (3-year retention, then delete)
+- **Offboarding (auto-delete after 3 years, no manual deletion)**
+
+### Integrations
+- **Zoho Recruit:** Auto-pull "offer accepted" → auto-create worker
+- **Gusto:** Auto-sync worker data → payroll + benefits
+
+### Roles (7 Roles with Full RBAC)
+- Founder (read-only all data)
+- Senior HR (everything)
+- HR (verify docs, assign projects, see all workers)
+- Team Lead (see team, edit goals, fill reviews)
+- Employee (see own profile, upload docs)
+- Contractor (see own profile, upload docs)
+- Intern (see own profile, upload docs)
 
 ---
 
@@ -102,13 +116,30 @@ HR verifies documents and checks ✓ Done. That's it.
 
 ## Budget
 
+**Build Cost:**
 | Item | Cost |
 |---|---|
-| Claude subscription (3 weeks) | ₹1,200 |
-| Google Cloud | ₹300 |
-| **Build Total** | **₹1,500** |
+| Development (3 weeks) | ₹0 (done as intern project) |
+| Google Cloud setup | ₹0 (no setup cost) |
+| **Build Total** | **₹0** |
 
-**Monthly after launch:** ~₹3–5 (free)
+**Monthly Operating Cost:**
+| Item | Cost |
+|---|---|
+| Firestore (database) | ₹1–2 |
+| Cloud Storage (backups) | ₹0.50 |
+| Cloud Run (hosting) | ₹1–2 |
+| Google Drive (documents) | Free (already have) |
+| **Monthly Total** | **₹3–5** |
+| **Annual Total** | **₹36–60** |
+
+**Comparison:**
+- **Zoho People:** ₹15,000/month = **₹180,000/year**
+- **WOP:** ₹5/month = **₹60/year**
+- **Savings:** **₹179,940/year** (3,000x cheaper)
+- **5-year savings:** **₹899,700**
+
+See file 09-VS-ZOHO-PEOPLE.md for full comparison.
 
 ---
 

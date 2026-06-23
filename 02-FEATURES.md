@@ -32,6 +32,24 @@
 - ☐ Pending (not uploaded yet)
 - ⏳ Submitted (uploaded, waiting for verification)
 - ✓ Verified (HR approved)
+- ✗ Rejected (HR rejected, must re-upload)
+- 🤔 Clarification Needed (upload clearer version)
+
+**HR Options:**
+1. ✓ Mark Verified (document is good)
+2. ✗ Reject with reason (document is invalid, must re-upload)
+3. 🤔 Request Clarification (e.g., "passport blurry, send clearer scan")
+   - Worker gets email: "Please upload clearer version"
+   - Worker re-uploads same document
+   - HR reviews again
+
+**Example:**
+```
+Aadhaar submitted, but blurry
+
+HR option 1: ✗ Reject → Worker re-uploads completely
+HR option 2: 🤔 Clarify → Worker uploads clearer scan (same Aadhaar)
+```
 
 ---
 
@@ -235,6 +253,73 @@ June 22, 04:45 PM — Priya verified Degree (Rohan)
 
 ---
 
+## 13. ZOHO RECRUIT INTEGRATION
+
+**What it does:** Auto-pulls "offer accepted" from Zoho → auto-creates worker in WOP
+
+**Workflow:**
+1. Recruiter marks offer as "Accepted" in Zoho Recruit
+2. Zoho sends data to WOP automatically:
+   - Name, email, position, joining date
+   - Worker type (Employee, Contractor, Intern)
+3. WOP auto-creates worker profile
+4. System auto-generates document checklist
+5. Worker gets email: "Welcome! Log in to upload documents"
+
+**No manual data entry. Automatic.**
+
+**What's synced:**
+- Name
+- Email
+- Position/Department
+- Worker type
+- Joining date
+- Offer details
+
+---
+
+## 14. GUSTO INTEGRATION
+
+**What it does:** Auto-syncs worker data to Gusto for payroll + benefits
+
+**Workflow:**
+1. Worker activated in WOP
+2. WOP sends to Gusto:
+   - Name, email, department
+   - Joining date
+   - Salary (if entered in WOP)
+3. Gusto updates: payroll, tax forms, benefits enrollment
+4. HR never needs to re-enter data
+
+**Keeps in sync:**
+- Department changes
+- Salary updates
+- Job title changes
+- Termination date (when marked for exit)
+
+**One entry. Multiple systems. No duplication.**
+
+---
+
+## 15. AUTO-DELETE (After 3 Years)
+
+**What happens:**
+1. Worker exits on June 30, 2026
+2. System marks: "Delete all data on June 30, 2029"
+3. June 30, 2029 arrives
+4. System automatically deletes:
+   - Worker profile
+   - All documents
+   - All data
+   - From Firestore + Google Drive
+5. Logs: "Worker data deleted June 30, 2029"
+
+**No manual action needed. Automatic.**
+
+**Why?** Legal requirement (DPDP Act). After 3 years, data can be deleted. Audit trail kept forever.
+
+---
+
 ## That's It
 
-12 simple features. No complexity. Everything organized.
+15 features. No complexity. Zoho + Gusto connected. Auto-delete. Everything organized.

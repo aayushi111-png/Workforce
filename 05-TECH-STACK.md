@@ -58,6 +58,33 @@ WOP just stores links to Drive files.
 
 ---
 
+## Integrations
+
+### Zoho Recruit Integration
+**What it does:** Auto-pulls "offer accepted" → auto-creates worker in WOP
+
+Flow:
+1. Recruiter marks offer as "Accepted" in Zoho Recruit
+2. Zoho API sends: name, email, position, joining date, worker type
+3. WOP auto-creates worker profile
+4. System auto-generates document checklist
+5. Worker gets welcome email
+
+**No manual data entry. Automatic.**
+
+### Gusto Integration
+**What it does:** Auto-syncs worker data → payroll + benefits in Gusto
+
+Flow:
+1. Worker activated in WOP
+2. WOP sends: name, email, department, joining date, salary
+3. Gusto updates: payroll, tax forms, benefits enrollment
+4. Any updates (salary, department) auto-synced
+
+**One entry. Multiple systems. No duplication.**
+
+---
+
 ## Backup
 
 **Cloud Storage**  
@@ -70,6 +97,14 @@ Keep 30 days of backups
 
 **Cloud Logging**  
 Logs everything (for audit trail + debugging)
+
+---
+
+## Auto-Delete
+**Background job (no code complexity)**  
+Runs monthly: Delete worker data 3 years after exit  
+No manual action needed  
+Audit logs kept forever (legal proof)
 
 ---
 

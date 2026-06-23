@@ -91,22 +91,31 @@ One click. Everything visible.
 
 ---
 
-## Who Can Do What
+## Who Can Do What (7 Roles)
 
-| Action | Employee | Team Lead | HR |
-|--------|----------|-----------|-----|
-| See own profile | ✓ | ✓ | — |
-| See own docs | ✓ | — | — |
-| Upload docs | ✓ | — | — |
-| Edit own goals | ✓ | ✓ | — |
-| Write weekly summary | ✓ | — | — |
-| Fill performance form | ✓ | ✓ | — |
-| See all workers | — | — | ✓ |
-| Verify documents | — | — | ✓ |
-| Assign projects | — | — | ✓ |
-| Edit goals (team) | — | ✓ | — |
-| Fill reviews | — | ✓ | — |
-| Mark for exit | — | — | ✓ |
+| Action | Employee | Contractor | Intern | Team Lead | HR | Senior HR | Founder |
+|--------|----------|-----------|--------|-----------|-----|-----------|---------|
+| See own profile | ✓ | ✓ | ✓ | ✓ | — | — | — |
+| See own docs | ✓ | ✓ | ✓ | — | — | — | — |
+| Upload docs | ✓ | ✓ | ✓ | — | — | — | — |
+| Edit own goals | ✓ | ✓ | ✓ | ✓ | — | — | — |
+| Write weekly summary | ✓ | ✓ | ✓ | — | — | — | — |
+| Fill performance form | ✓ | ✓ | ✓ | ✓ | — | — | — |
+| **See all workers** | — | — | — | ✓ (team only) | ✓ | ✓ | ✓ |
+| **Verify documents** | — | — | — | — | ✓ | ✓ | — |
+| **Assign projects** | — | — | — | — | ✓ | ✓ | — |
+| **Edit goals (team)** | — | — | — | ✓ | — | — | — |
+| **Fill reviews** | — | — | — | ✓ | — | ✓ | — |
+| **Mark for exit** | — | — | — | — | — | ✓ | — |
+| **See all reports** | — | — | — | — | — | ✓ | ✓ |
+| **Delete/archive** | — | — | — | — | — | ✓ | ✓ |
+
+**Key:**
+- **Employee/Contractor/Intern:** See own profile only
+- **Team Lead:** See team members, edit their goals, fill reviews
+- **HR:** See all workers, verify documents, assign projects
+- **Senior HR:** Everything HR does + activation + data management
+- **Founder:** Read-only access to all data + reports
 
 ---
 
