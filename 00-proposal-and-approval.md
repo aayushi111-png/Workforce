@@ -184,4 +184,10 @@ Please tick or strike through what is being approved.
 3. katbotz.com is built on: ____  and WOP should live at: ____
 4. Aadhaar approach confirmed: ____
 
+**Two items still pending — needed before go-live:**
+
+- **Retention period:** I have assumed 3 years after a worker is archived before their personal data and documents are deleted. This needs to be confirmed with a legal advisor against KATBOTZ's DPDP obligations before the platform goes live. The number affects what gets built into the deletion logic.
+
+- **katbotz.com tech stack:** I need to know what katbotz.com is built on and who manages the domain DNS. This is required to point the `workforce.katbotz.com` subdomain at Cloud Run. It does not block the build — Week 7 handles the connection — but it needs to be confirmed before that week begins.
+
 > Once this page is signed, I start on July 1. Full detail for every section is in the linked documents in this repository.
