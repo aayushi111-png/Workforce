@@ -108,9 +108,11 @@ The week between handover and live use (Aug 22 – Sept 1) is the window for HR 
 
 No team cost — I am building it solo. All costs are cloud infrastructure and subscriptions.
 
+**Budget is locked** (unlike the timeline which is flexible). This is the actual cost, no surprises.
+
 ### Build phase (July 1 – August 22, 8 weeks)
 
-**Total build cost: ₹3,000–5,000**
+**Total build cost: ₹3,000–5,000 (fixed, cannot change)**
 
 | Item | Cost | Notes |
 |---|---|---|

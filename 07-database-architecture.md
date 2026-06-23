@@ -96,3 +96,107 @@ Tied to the lifecycle (see [Workforce Lifecycle](04-workforce-lifecycle.md), Sta
 - Anonymized analytics are kept, so headcount and trend history survive deletion.
 
 > **Pending legal confirmation:** retention period assumed at 3 years after archival. Confirm before go-live.
+
+---
+
+## Where everything is stored and how to access it
+
+### Worker Data
+- **Stored in:** Firestore (records database)
+- **What:** Name, email, worker type, department, team lead, joining date, status, lifecycle stage
+- **How to access:** WOP portal (login → view worker profile, or search in Workforce Directory)
+- **Who can access:** Senior HR (all), HR Executive (all), Team Lead (their team only), Founder (all, read-only), Worker (themselves only)
+
+### Documents (files)
+- **Stored in:** Google Cloud Storage (file storage)
+  - Regular documents (PAN, degree, passport): `documents-bucket/worker-id/document-name.pdf`
+  - Aadhaar image: `locked-aadhaar-bucket/worker-id/aadhaar.jpg` (locked, 30-sec signed URL only)
+- **What:** Uploaded files, stored exactly as-is (no processing)
+- **How to access:** WOP portal → open worker → Documents tab → click on document → view in browser
+- **Who can access:** Senior HR (views all), Worker (views own), HR Executive (views all, review-only)
+
+### Document Metadata & Status
+- **Stored in:** Firestore (records database)
+- **What:** Document type, upload date, verification status (Pending/Verified/Rejected), verified by, verified date, rejection reason
+- **How to access:** WOP portal → Verification queue or Worker profile
+- **Who can access:** Senior HR (all), HR Executive (all, read-only), Worker (their own)
+
+### Contracts & Invoices
+- **Stored in:** Firestore (records) + Cloud Storage (contract PDF files)
+- **Records:** Start date, end date, renewal date, payment terms, status (Active/Expiring/Expired)
+- **Files:** Contract SOW/NDA PDFs stored in Cloud Storage
+- **How to access:** WOP portal → Contracts tab or Worker profile
+- **Expiry alerts:** Automatic email at 90, 60, 30, 7 days before expiry
+
+### Reviews & Performance
+- **Stored in:** Firestore (records)
+- **What:** Review type (30-day, 60-day, 90-day, probation, annual, weekly), due date, completion date, reviewer, outcome
+- **How to access:** WOP portal → Performance tab or Worker profile
+- **Who can access:** Team Lead (submits), Senior HR (views all), Worker (views their own)
+
+### Assets (Laptops, Monitors, SIM, etc.)
+- **Stored in:** Firestore (records)
+- **What:** Item description, serial number, issued date, returned date, condition
+- **How to access:** WOP portal → Assets tab or Worker profile
+- **Who can access:** HR (tracks), Worker (views own)
+
+### Audit Log (Append-only)
+- **Stored in:** Firestore (top-level `auditLogs` collection)
+- **What:** User, action, timestamp, status (who changed what, when)
+  - Example: "Priya verified Rohan's PAN card on 2026-07-16 10:23 AM"
+  - Example: "Rohan uploaded Aadhaar image on 2026-07-15 2:45 PM"
+  - Example: "Rohan rejected for Aadhaar blurry on 2026-07-16 10:30 AM"
+- **How to access:** WOP portal → Audit Log view (HR only)
+- **Who can access:** Senior HR, Founder (read-only)
+- **Cannot be edited:** Append-only (new entries only, never deleted or modified)
+
+### Reports & Analytics
+- **Stored in:** Generated on-demand in WOP, exported by HR
+- **What:** Headcount, hiring trends, worker status breakdown, contract expiry calendar, overdue documents, review schedule
+- **How to access:** WOP portal → Reports tab → view charts, or [Export to CSV] or [Export to PDF]
+- **Export goes to:** User's computer (downloads as CSV or PDF file)
+- **Optional:** HR can save exported reports to Google Drive or Sheets manually if needed
+
+---
+
+## Optional: Sheets as a Quick Reference Index
+
+**Idea:** Keep Google Sheets as a quick-reference index with links to WOP, for the transition period (Sept 1 - Dec 1, for example).
+
+**How it would work:**
+
+Sheets has one row per worker:
+| Name | Email | Worker Type | Department | Team Lead | Status | View in WOP |
+|---|---|---|---|---|---|---|
+| Rohan Mehta | rohan@katbotz.com | Indian Employee | Engineering | Akshat | Active | [Link to WOP] |
+| Sara Lim | sara@katbotz.com | Global Intern | Product | Akshat | Active | [Link to WOP] |
+
+Each "View in WOP" link is a formula like:
+```
+=HYPERLINK("https://workforce.katbotz.com/workers/WOP-2026-0041", "View")
+```
+
+**Benefits:**
+- Quick visual reference (see all names, status at a glance)
+- No manual data entry (data stays in WOP, only the link lives in Sheets)
+- Bridges the gap while people are still familiar with Sheets
+- Can be deleted once everyone is trained on WOP
+
+**Phase-out plan:**
+- Sept 1 - Sept 30: Keep Sheets as convenience reference, HR uses WOP for all work
+- Oct 1 onwards: Sheets becomes optional, most people switch to WOP
+- Dec 1: Archive Sheets as read-only backup history
+
+**Will this be built?**
+Not in the initial platform (July 1 - Aug 22). This can be set up manually after go-live if you want it. One person can create the Sheets index + links in 1-2 hours once WOP is live.
+
+---
+
+## Summary: Three Storage Tiers
+
+| Tier | What | Where | Who can access | Backup? |
+|---|---|---|---|---|
+| **Tier 1: Critical Data** | Worker records, documents, contracts, audit log | Firestore | Auth-controlled per role | Daily exports to backup bucket |
+| **Tier 2: Files** | Uploaded documents (PAN, passport, etc) | Cloud Storage | Auth-controlled per role | Daily snapshots, 30-day versioning |
+| **Tier 3: Aadhaar** | Aadhaar image only (locked) | Locked Cloud Storage | Senior HR only, 30-sec links | Daily snapshots, 30-day versioning |
+| **Tier 4: Exports** | CSV/PDF reports (on-demand) | User's computer | HR downloads | Optional: HR saves to Drive |

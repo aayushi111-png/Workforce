@@ -36,37 +36,60 @@ KATBOTZ handles sensitive identity and financial data for Indian workers, so the
 
 WOP uses **pure manual verification** — no KYC API, no number extraction, no data processing.
 
+**What is a "locked bucket"?**
+
+A locked bucket is a Google Cloud Storage bucket with strict permissions:
+- Only Senior HR can access it (via WOP)
+- No public access (cannot share a link with anyone outside WOP)
+- Documents are viewed through temporary signed URLs (30 seconds) that cannot be copied, printed, or downloaded
+- If someone tries to access the bucket directly (outside WOP), they get "Access Denied"
+- No code in WOP can extract or read the Aadhaar number from the image
+
 **What happens:**
 
 1. Worker uploads Aadhaar image (JPG or PDF of front and back, or photo) to their portal
-2. Image is stored as-is in a **locked, private Cloud Storage bucket** (no one can read it except via WOP)
-3. Firestore record stores ONLY: { document_type: "Aadhaar", file_path: "gs://locked-bucket/...", status: "Pending", uploaded_date: "..." }
-4. Senior HR views the image through a short-lived signed URL (expires in 30 seconds) — cannot be copied, printed, or shared
-5. HR checks the image visually (is it real? is it clear? matching worker?) and marks:
-   - ☑ Verified → Firestore updates: { status: "Verified" }
-   - ✗ Rejected → Firestore updates: { status: "Rejected", reason: "blurry" }
-6. **The Aadhaar number is never typed, extracted, read by code, or stored anywhere.** Not in Firestore, not in any log, not in any export.
+2. Image file is stored in the locked bucket as-is (no processing)
+   - Example path: `gs://locked-aadhaar-bucket/worker-2026-0041/aadhaar.jpg`
+3. Firestore record stores ONLY the reference: 
+   ```
+   {
+     document_type: "Aadhaar",
+     file_path: "gs://locked-aadhaar-bucket/worker-2026-0041/aadhaar.jpg",
+     status: "Pending",
+     uploaded_date: "2026-07-15"
+   }
+   ```
+4. Senior HR opens WOP, clicks on worker's Aadhaar document
+5. WOP generates a temporary signed URL (valid for 30 seconds only)
+6. Image opens in a viewer inside WOP (cannot be copied, downloaded, or shared outside)
+7. HR looks at the image visually and decides:
+   - ☑ Verified → Firestore updates: `{ status: "Verified", verified_by: "Priya", verified_date: "2026-07-16" }`
+   - ✗ Rejected → Firestore updates: `{ status: "Rejected", rejected_reason: "blurry", rejected_by: "Priya" }`
+8. Worker gets email: "Your Aadhaar was rejected: blurry. Please re-upload."
 
-**What is NOT stored:**
-- ✗ Aadhaar number (12-digit)
+**What is NEVER stored:**
+- ✗ Aadhaar number (12-digit) — not in Firestore, not in memory, not in logs
 - ✗ Any extracted data from the image
 - ✗ Hash of the number
 - ✗ Verification API result
 - ✗ KYC status
+- ✗ Image download link (signed URL expires in 30 seconds)
 
 **What IS stored:**
-- ✓ Image file path
+- ✓ Image file path in locked bucket
 - ✓ Verification status (Pending / Verified / Rejected)
-- ✓ Who verified it
-- ✓ When it was verified
+- ✓ Who verified it (Priya)
+- ✓ When it was verified (date)
+- ✓ Rejection reason if rejected (e.g. "blurry")
 
-**Why:** Aadhaar is sensitive identity data. UIDAI (issuing authority) does not allow number storage without licensed KYC API. DPDP Act 2023 requires data minimisation — store only what you need. Visual verification is sufficient; the number is not needed.
+**Why:** Aadhaar is sensitive identity data under UIDAI and DPDP Act 2023. UIDAI does not allow number storage. DPDP requires data minimisation. Visual verification is sufficient; the number is not needed for anything.
 
 **Before go-live, confirm:**
-- Cloud Storage bucket is locked (not public)
-- Signed URL TTL is 30 seconds (cannot be shared or reused)
-- No code extracts or reads the Aadhaar number
+- Cloud Storage bucket is locked (only Senior HR via WOP can access)
+- Signed URL TTL is 30 seconds (cannot be reused or shared)
+- No code in WOP extracts or reads the Aadhaar number
 - Audit logs do not record the number
+- Image viewer in WOP disables download/print
 
 ---
 
