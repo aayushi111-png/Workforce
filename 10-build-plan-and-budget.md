@@ -50,6 +50,8 @@ Every module. Working, not polished to enterprise grade — but covering the rea
 
 ## 3. Week by week plan
 
+> **Timeline flexibility:** These dates are the planned pace — 4.5 hours a day, work flowing smoothly. If work requires deeper debugging (e.g., file uploads, SendGrid integration, data migration), the timeline extends by 3–5 days flexibly. The handover date moves accordingly. No crunch — the goal is solid work, not fast work. Track actual progress week-by-week and adjust the end date as reality becomes clear.
+
 | Week | Dates | Focus | Done means |
 |---|---|---|---|
 | 1 | July 1 – 5 | Foundations + Auth | Next.js and FastAPI talk to each other, Firestore and Storage connected, deployed to Cloud Run; Google sign-in works, roles exist, a page locks to a role |

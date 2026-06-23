@@ -78,12 +78,14 @@ Full experiences, per persona: [03 User Roles and Experiences](03-user-roles-and
 
 Solo vibe coding, 4 to 5 hours a day, 5 days a week, starting July 1. All 12 modules ship by handover. No phases.
 
+These are the target dates assuming work flows smoothly. **If debugging (file uploads, integrations, data migration) requires deeper work, the timeline flexes by 3–5 days**. The handover date adjusts accordingly, but the build stays solid — no crunch, no half-built features.
+
 | Milestone | Target date |
 |---|---|
-| Build complete — all 12 modules working | August 15, 2026 |
-| Test week — HR dry run, bug fixes | August 18 – 22, 2026 |
-| **Handover to KATBOTZ** | **August 22, 2026** |
-| **Live use begins — Sheets retired** | **September 1, 2026** |
+| Build complete — all 12 modules working | August 15, 2026 (±3–5 days) |
+| Test week — HR dry run, bug fixes | August 18 – 22, 2026 (±3–5 days) |
+| **Handover to KATBOTZ** | **August 22, 2026 (±3–5 days flexible)** |
+| **Live use begins — Sheets retired** | **September 1, 2026 (or Sept 4–8 if build extends)** |
 
 Week by week plan: [10 Build Plan and Budget](10-build-plan-and-budget.md).
 
