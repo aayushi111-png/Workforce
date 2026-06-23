@@ -51,8 +51,8 @@ Full detail: [05 Functional Modules](05-functional-modules.md). Worker types and
 ## 4. How will it be built?
 
 - **Frontend:** Next.js. <br>**Backend:** FastAPI (Python). <br>**Records:** Firestore. <br>**Files:** Cloud Storage. <br>**Email notifications:** SendGrid triggered from FastAPI. <br>**Auth:** Google OAuth plus role based access control. <br>**Hosting:** Cloud Run. One cloud, one backend language, one frontend framework.
-- <br>**Where data lives:** records in Firestore, files in Cloud Storage, and the record carries the pointer to the file. Nothing stays in Sheets or Drive. Detail: [07 Database Architecture](07-database-architecture.md).
-- <br>**Connected to katbotz.com:** WOP is the Workforce Portal, reached from the main site. Detail: [06 System Architecture](06-system-architecture.md).
+<br>**Where data lives:** records in Firestore, files in Cloud Storage, and the record carries the pointer to the file. Nothing stays in Sheets or Drive. Detail: [07 Database Architecture](07-database-architecture.md).
+<br>**Connected to katbotz.com:** WOP is the Workforce Portal, reached from the main site. Detail: [06 System Architecture](06-system-architecture.md).
 
 ---
 
