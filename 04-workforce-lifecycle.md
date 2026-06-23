@@ -103,6 +103,10 @@ Every worker moves through nine stages from creation to deletion. Each stage has
 ## Stage 7 · Offboarding
 
 - **Who acts:** Senior HR (or Team Lead can request exit, but HR executes)
+- **Two substages:**
+  - **Prepare (first 24 hours):** Checklist appears, notifications sent, but NO revocation yet. Can cancel with [Cancel offboarding] button.
+    - If disputed/wrongful termination claim: click [Cancel offboarding] → WOP sends "ignore prior emails" to worker, offboarding marked "Cancelled" (audited, not deleted)
+  - **Execute (after 24 hours):** Start revoking access. Once revocation begins, harder to undo (each system must be manually restored by IT)
 - **What happens:**
   - HR marks the worker for exit, last day is set (e.g. "August 31")
   - Exit checklist appears:

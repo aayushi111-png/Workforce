@@ -3,7 +3,13 @@
 ## Authentication
 
 - **Google OAuth.** Staff already live in Google Workspace, so sign in is one click and there are no passwords to manage in WOP.
-- Everyone signs in via Google OAuth, restricted to the KATBOTZ Workspace domain. A Google Workspace account is provisioned as part of the M5 access checklist before a worker can log in.
+- **For Employees and Interns:** Sign in via KATBOTZ Workspace (standard full account)
+- **For Contractors and Global Interns (external workers):** 
+  - Option 1 (Recommended): Create lightweight Workspace accounts (SSO-only tier, ~$6–8/month per user). No Drive access, just authentication. Email format: `contractor-name@katbotz.com` or `intern-name@katbotz.com`
+  - Option 2 (If no Workspace): Use external identity provider (Azure AD, Okta). WOP redirects to provider for login. Contractor never gets Google account.
+  - Chosen: **Option 1** (simpler for KATBOTZ, familiar interface)
+  
+All workers sign in via Google OAuth (Workspace or external ID provider). A valid account is provisioned as part of the M5 access checklist before worker can log in.
 
 ## Authorization
 
@@ -84,12 +90,56 @@ A locked bucket is a Google Cloud Storage bucket with strict permissions:
 
 **Why:** Aadhaar is sensitive identity data under UIDAI and DPDP Act 2023. UIDAI does not allow number storage. DPDP requires data minimisation. Visual verification is sufficient; the number is not needed for anything.
 
+**Cloud Storage Bucket Configuration (Complete Technical Setup):**
+
+```
+Bucket: locked-aadhaar-katbotz (us-central1)
+  Encryption: Google-managed (default), upgradeable to CMEK if stricter compliance needed
+  Versioning: Enabled (30-day retention of old versions)
+  Access logging: Cloud Audit Logs capture all access
+```
+
+**GCP IAM Policy (Strict Access Control):**
+- `roles/storage.objectViewer` → Group: senior-hr@katbotz.com (can view via WOP only)
+- `roles/storage.objectAdmin` → Service account: WOP Cloud Run (generates signed URLs, no humans)
+- **No developer access** (no direct bucket downloads, no keys shared)
+- **No public access** (bucket is private, requests require authentication)
+
+**Signed URL Generation (from WOP backend):**
+- Duration: 30 seconds (hard-coded, cannot be changed via UI)
+- Method: GET only (no PUT, DELETE, no modifications)
+- IP restriction: (optional) restrict to KATBOTZ office IP
+- URL never stored in logs (not logged, not cached, not shared)
+
+**Image Viewer Security (Browser protection):**
+```
+- Right-click disabled (onContextMenu preventDefault)
+- Drag-save disabled (onDragStart preventDefault)
+- Print disabled (@media print { display: none })
+- Download button hidden (no button in viewer)
+- Pointer events disabled (cannot interact)
+```
+
+**Key Management:**
+- Only WOP Cloud Run service account holds credentials (not human-managed)
+- Keys rotated every 90 days (automatic, no human action)
+- Key download forbidden by IAM policy
+- Access audit logged in Cloud Audit Logs (who requested, when, IP)
+
+**Backups (Separate Encryption):**
+- Daily Firestore exports → `gs://backup-bucket-katbotz/` (CMEK encrypted, separate key)
+- Aadhaar files → separate from documents bucket (locked bucket never exported, only metadata)
+- Recovery: Only GCP admin can restore, requires approval from Senior HR + Founder
+
 **Before go-live, confirm:**
-- Cloud Storage bucket is locked (only Senior HR via WOP can access)
-- Signed URL TTL is 30 seconds (cannot be reused or shared)
-- No code in WOP extracts or reads the Aadhaar number
-- Audit logs do not record the number
-- Image viewer in WOP disables download/print
+- ✓ Cloud Storage bucket is locked (IAM policy specifies)
+- ✓ Signed URL TTL is 30 seconds (hard-coded)
+- ✓ No code in WOP extracts or reads the Aadhaar number
+- ✓ Audit logs do not record the number
+- ✓ Image viewer in WOP disables download/print
+- ✓ GCP IAM policy enforced (senior-hr@katbotz.com only, service account only)
+- ✓ Backup bucket encrypted with separate CMEK
+- ✓ Tested restore from backup to staging environment
 
 ---
 
@@ -99,9 +149,43 @@ A locked bucket is a Google Cloud Storage bucket with strict permissions:
 |-------|--------|
 | Worker archived | Retention clock starts |
 | Retention period passes | Delete documents, personal data, banking data |
+| Legal hold requested | Pause deletion until hold released |
 | Always | Keep anonymized analytics only |
 
-> **Pending legal confirmation:** 3 years after archival. Confirm with a DPDP-aware legal advisor before go-live.
+**3-year retention period assumed. Confirm with DPDP-aware legal advisor before go-live.**
+
+### Deletion Mechanism (Automated)
+
+**Monthly batch job (runs on the 1st of each month):**
+
+1. Query Firestore: `workers where (status = 'Archive' AND archived_at < 3 years ago AND legal_hold_until = null)`
+2. For each worker:
+   - Export to audit-log-archive bucket (full history, for legal evidence)
+   - Delete from Firestore: worker record, documents, verifications, reviews, contracts, assets, access logs
+   - Delete from Cloud Storage: personal documents bucket, locked Aadhaar bucket
+   - Keep: audit log (DPDP requirement), encrypted backups, anonymized analytics
+3. Audit log entry: "Worker data deleted [worker_id] on [date]"
+
+**Verification of deletion:**
+- Firestore document count decreases
+- Cloud Storage files gone (confirmed via audit logs)
+- Audit trail shows deletion timestamp + who triggered it
+
+### Legal Hold Process
+
+**When legal requests data retention:**
+
+1. Legal sends: "Hold data for Rohan Mehta (worker ID: WOP-2026-0041) until [date]"
+2. You update Firestore: `workers/{workerId}.legal_hold_until = date("2027-09-01")`
+3. Monthly deletion job checks: `if (legal_hold_until > today) { SKIP deletion }`
+4. Audit log: "Legal hold applied by [you]" and later "Legal hold released by [legal]"
+5. After hold period: deletion proceeds normally
+
+**Chain of custody for audit:**
+- Worker data was NOT deleted (legal hold applied)
+- Full audit trail of who held it and when
+- Backups are encrypted and controlled
+- Proves DPDP compliance
 
 ---
 

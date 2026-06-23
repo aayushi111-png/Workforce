@@ -48,9 +48,46 @@ Every module. Working, not polished to enterprise grade — but covering the rea
 
 ---
 
-## 3. Week by week plan
+## 3. Realistic timeline and module hour estimates
+
+**Available:** 22.5 hours/week (4.5 hours/day × 5 days) × 7 weeks = 157.5 hours
+
+**Per-module estimates:**
+| Module | Hours | Week | Notes |
+|--------|-------|------|-------|
+| **M1** Worker Creation | 20 | 2 | Form + API + auto-checklist generation |
+| **M2** Document Management | 26 | 3 | Signed URL upload + worker portal skeleton |
+| **M3** Verification Engine | 23 | 3 | Queue + viewer + rejection/clarification workflow |
+| **M4** Compliance Engine | 12 | 3 | Auto-gate checking all docs verified |
+| **M5** Access Management | 26 | 4 | Checklist + request broadcast + escalation logic |
+| **M6** Workforce Directory | 24 | 4 | Search + filters + full history |
+| **M7** Contract Lifecycle | 26 | 4–5 | Start/end/renewal + 90/60/30/7 day alerts |
+| **M8** Performance Reviews | 24 | 5 | Schedule logic per type + Team Lead form |
+| **M9** Asset Management | 20 | 5 | Track + return at offboarding |
+| **M10** Offboarding | 28 | 6 | Revocation checklist + undo workflow |
+| **M11** Notifications | 30 | 6 | SendGrid + 5 triggers + retry logic |
+| **M12** Reporting | 32 | 6 | CSV export + audit log + dashboards |
+| **Foundations** (auth, deploy) | 20 | 1 | Next.js + FastAPI + Cloud Run |
+| **RBAC hardening** | 12 | 7 | Every endpoint role-checked |
+| **Data migration** | 12 | 7 | Sheets import script + validation |
+| **Testing + buffer** | 22.5 | 8 | Full HR dry run + bug fixes |
+| **Total** | ~335 | 8w | Total hours needed |
+
+**Verdict:** Tight timeline. 335 hours needed, 157.5 hours available. To make it fit:
+- Weeks 1–6: Focus on core features (M1–M8 complete), reduce polish
+- Week 6: M10 basic, M11 basic SendGrid (skip error handling), M12 CSV export only
+- Week 7: RBAC checks, migration, error handling for M11, PDF export deferred
+- Week 8: Testing, bug fixes, final polish
+
+**The 3–5 day buffer is essential** — will almost certainly be used for:
+- File upload debugging (week 2–3)
+- SendGrid integration (week 6)
+- Data migration consistency issues (week 7)
+- Test discoveries (week 8)
 
 > **Timeline flexibility:** These dates are the planned pace — 4.5 hours a day, work flowing smoothly. If work requires deeper debugging (e.g., file uploads, SendGrid integration, data migration), the timeline extends by 3–5 days flexibly. The handover date moves accordingly. No crunch — the goal is solid work, not fast work. Track actual progress week-by-week and adjust the end date as reality becomes clear.
+
+## 4. Week by week plan
 
 | Week | Dates | Focus | Done means |
 |---|---|---|---|
@@ -75,6 +112,49 @@ Every module. Working, not polished to enterprise grade — but covering the rea
 | **Live use begins — Sheets retired** | **September 1, 2026** |
 
 The week between handover and live use (Aug 22 – Sept 1) is the window for HR to do a final walkthrough, confirm the migrated data looks right, and run the first real onboarding end to end before Sheets is switched off.
+
+---
+
+## 4b. Test Plan (Week 8)
+
+**Test users (real KATBOTZ staff):**
+
+| Role | Tester | Tests | Time |
+|------|--------|-------|------|
+| Senior HR | Priya | M1–M5 (worker creation → activation), M10 (offboarding), audit log | 2h |
+| HR Executive | Rohini | M3 (verification queue), M12 (reports, exports) | 1.5h |
+| Team Lead | Akshat | M6 (directory), M8 (review submission) | 1.5h |
+| Employee | Test account | M2 (upload docs), M6 (directory view), worker portal | 1h |
+| Contractor | Test account | M2 (upload docs), M7 (invoice submit) | 1h |
+| **Total test time** | | | **~7 hours** |
+
+**Critical path test cases (blockers if failed):**
+
+| Module | Test case | Blocker? |
+|--------|-----------|----------|
+| M1 | Create Indian Employee → auto-checklist generated | YES |
+| M2 | Upload document → file stored + metadata in Firestore | YES |
+| M3 | Mark doc ☑ Verified → worker sees status update | YES |
+| M4 | All docs verified → "Ready for activation" appears | YES |
+| M5 | Activate → access checklist opens, IT can tick ☑ Done | YES |
+| M5 | Worker can log in after access complete | YES |
+| M6 | Search works + filters by dept/status | YES |
+| M10 | Offboarding revocation blocks closure until all ☑ | YES |
+| M11 | SendGrid email sent for document rejection | YES |
+| M12 | CSV export works (PDF optional) | YES |
+
+**Blocking bug SLA (week 8):**
+- **Critical:** User blocked (can't log in, can't activate) → fix same day, retest
+- **High:** Feature broken but has workaround (report doesn't export but CSV works) → fix within 12h
+- **Medium:** Non-critical issue (styling, late email) → fix if time permits
+- **Low:** Polish (button color, copy) → defer to post-launch
+
+**Ready-to-handover criteria:**
+- ✓ Zero critical blockers
+- ✓ Zero high blockers
+- ✓ All 12 modules pass happy-path test
+- ✓ At least one person from HR did a real scenario end-to-end
+- ✓ All 5 email triggers sent successfully
 
 ---
 
@@ -119,9 +199,34 @@ The week between handover and live use (Aug 22 – Sept 1) is the window for HR 
 - A custom codebase on GCP. No vendor manages it — patches, monitoring responses, and DPDP breach notification duties need a named owner at KATBOTZ.
 - Aadhaar document custody for the 3-year retention period.
 
-**Confirm before go-live:** whether KATBOTZ wants a retainer arrangement with me for ongoing patches and support, or handover to an internal technical lead.
+### Post-Launch Operations (Retainer Model)
 
-**Rough post-handover estimate (retainer model):** 4 to 8 hours per month for routine patches, dependency bumps, and minor fixes.
+**SLA targets:**
+- **Availability:** 99% uptime (allowed downtime: ~7 hours/month)
+- **Page load:** <2 seconds, database <100ms
+- **Critical bugs:** 1-hour response, 4-hour fix
+- **High bugs:** 4-hour response, 24-hour fix
+
+**On-call rotation:**
+- **Sept 1 – Sept 30 (launch month):** Aayushi on-call full-time (launch week, highest risk)
+- **Oct 1 onwards:** Rotate every 1 week/month (Aayushi + backup)
+- **Outside hours:** Slack notification for critical (page if system down)
+
+**Monitoring & alerts:**
+- Cloud Run CPU/memory (scale if >60%)
+- Firestore quota exceeded (spike = bug or attack)
+- SendGrid bounce rate >2%
+- >10 failed operations in audit log within 1h
+
+**Runbook examples:**
+- If Cloud Run down: revert recent push or restart service
+- If SendGrid down: check status page, queue pending emails for retry
+- If worker can't log in: verify Google account created, check OAuth config
+- If Firestore quota exceeded: check for runaway queries, possibly scale reads
+
+**Rough estimate:** 4–8 hours/month for routine patches, dependency updates, minor bug fixes, monitoring checks
+
+**Confirm before go-live:** Retainer model (4-8h/month) or handover to internal technical lead (KATBOTZ trains on codebase, takes all support)
 
 ---
 

@@ -75,6 +75,133 @@ auditLogs/{logId}        (top level, append only, references workerId)
 
 > **Confirmed:** sub collections under each worker for worker-scoped data, plus a few top-level collections for cross-cutting queries (audit log, all contracts for expiry scanning).
 
+### Firestore Field Definitions
+
+**Worker Document (workers/{workerId}):**
+```
+name: string (required, e.g. "Rohan Mehta")
+email: string (required, unique index, e.g. "rohan@katbotz.com")
+phone: string (optional)
+dob: date (optional)
+type: enum ["Indian Employee", "Indian Contractor", "Global Contractor", "Global Intern"]
+status: enum ["Created", "Onboarding", "Verification", "Compliance", "Activation", "Active", "Offboarding", "Archive", "Deletion"]
+joining_date: date
+last_day: date (null unless offboarding)
+department: string (indexed for searches, e.g. "Engineering")
+team_lead: string (reference to workerId, indexed)
+location: string (indexed, e.g. "Bangalore")
+gusto_id: string (reference to Gusto, for payroll verification)
+zoho_recruit_id: string (reference to Zoho hiring)
+created_at: timestamp
+updated_at: timestamp
+verified_at: timestamp (null if not verified)
+activated_at: timestamp (null if not activated)
+archived_at: timestamp (null if not archived)
+legal_hold_until: date (null unless under legal hold)
+migration_source: string (null or "sheets" if migrated from Sheets)
+notes: string (internal HR notes)
+
+Indexes (composite):
+  - (type, status) — for filtering by worker type and status
+  - (department, status) — for department views
+  - (team_lead, status) — for Team Lead to see their team
+  - (email) — unique constraint
+```
+
+**Document Record (workers/{workerId}/documents/{documentId}):**
+```
+type: enum ["PAN", "Aadhaar", "Passport", "Degree", "Relieving Letter", "Employment Agreement", "NDA", "Bank Proof", ...]
+file_path: string (gs://bucket/worker-id/document-id.pdf)
+file_name: string (original filename uploaded)
+file_size_bytes: number
+mime_type: string (application/pdf, image/jpeg, etc.)
+uploaded_by: string (workerId)
+uploaded_at: timestamp
+uploaded_version: number (1, 2, 3 if re-uploaded)
+status: enum ["Pending", "Verified", "Rejected", "Clarification Requested"]
+verified_by: string (Senior HR user ID, null if not verified)
+verified_at: timestamp (null if not verified)
+rejected_reason: string (max 500 chars, null if not rejected)
+clarification_requested_reason: string (null unless status = "Clarification Requested")
+expiry_date: date (null if non-expiring document)
+renewal_notice_sent: boolean
+compliance_required: boolean (true if required for activation gate)
+
+Indexes (composite):
+  - (status) — for verification queue
+  - (type, status) — for compliance check queries
+```
+
+**Access Checklist (workers/{workerId}/access/{systemId}):**
+```
+system_name: string ("Google Workspace", "GitHub", "Slack", "Notion")
+created_id: string (rohan@katbotz.com, rohan-github, etc.)
+status: enum ["Pending", "Done"]
+created_by: string (HR or IT user ID)
+created_at: timestamp
+revocation_status: enum [null, "Pending", "Revoked"]
+revoked_at: timestamp (null if not revoked)
+revoked_by: string (user ID)
+
+Index:
+  - (status) — for showing pending access during activation
+```
+
+**Audit Log (auditLogs/{logId}, top-level, append-only):**
+```
+worker_id: string (references workers/{workerId})
+action: enum [
+  "worker_created", "document_uploaded", "document_verified", "document_rejected",
+  "clarification_requested", "compliance_checked", "access_created", "access_revoked",
+  "worker_activated", "offboarding_started", "offboarding_cancelled", "worker_archived",
+  "worker_deleted", "review_scheduled", "review_completed", "legal_hold_applied",
+  "legal_hold_released"
+]
+performed_by: string (user ID)
+performed_at: timestamp
+details: object {
+  document_id: string (if relevant),
+  status_before: string (if status changed),
+  status_after: string (if status changed),
+  reason: string (if action was rejected/cancelled),
+  system_name: string (if access action)
+}
+ip_address: string (for security audit trail)
+
+Index:
+  - (worker_id, performed_at DESC) — full history for one worker
+  - (action, performed_at DESC) — all actions of one type
+  - (performed_at DESC) — append-only journal
+```
+
+### Query Patterns & Cost Estimates
+
+```
+Q1: Verification queue for Senior HR
+  db.collection('workers').where('status', '==', 'Verification')
+    .orderBy('updated_at', 'desc').limit(20)
+  Cost: 1 read + 20 sub-collection reads (documents) = ~21 reads
+
+Q2: Compliance check (all docs verified + agreements signed)
+  db.collection('workers').doc(workerId).collection('documents')
+    .where('compliance_required', '==', true).get()
+  Cost: 1 read per document type (e.g., 6 reads for 6 required docs)
+
+Q3: Directory search (employees by department)
+  db.collection('workers').where('department', '==', 'Engineering')
+    .where('status', '==', 'Active').orderBy('name').limit(50)
+  Cost: 1 read (composite index exists)
+
+Q4: Audit trail for one worker
+  db.collection('auditLogs').where('worker_id', '==', workerId)
+    .orderBy('performed_at', 'desc').get()
+  Cost: 1 read per log entry (~100 entries per worker lifetime)
+
+Per-worker storage estimate: ~70 KB (profile + documents + audit)
+At 500 workers: 35 MB total, ~500 queries/day, ~$5–10/month cost
+At 5,000 workers: 350 MB total, ~2,000 queries/day, ~$15–30/month cost
+```
+
 ---
 
 ## Search and indexing

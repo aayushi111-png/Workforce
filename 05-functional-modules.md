@@ -56,9 +56,18 @@ Module 11 (Notifications) and Module 12 (Reporting) are cross cutting: they sit 
   - Senior HR opens each document (image viewer for Aadhaar, PDF viewer for others), checks it visually, and marks one of: ☑ Verified, ☐ Rejected
   - If rejected, HR provides reason (e.g. "blurry", "missing signature") — reason is emailed to worker automatically
   - If approved, document status moves to Verified; worker sees green checkmark in their portal
-- **Status per document:** ○ Pending (uploaded, not reviewed yet), ☑ Verified (HR approved), ✗ Rejected (HR rejected, worker must re-upload)
+- **Status per document:** ○ Pending (uploaded, not reviewed yet), ☑ Verified (HR approved), ✗ Rejected (HR rejected, worker must re-upload), 🤔 Request Clarification (HR needs more info without rejecting)
+- **Document Dispute / Clarification Workflow:**
+  - If document is ambiguous (e.g., passport expired but photo clear, signature smudged but readable):
+    - HR marks: 🤔 **Request Clarification**
+    - HR adds note: "Passport expires in 2 months. Confirm renewal planned by [date]."
+    - Worker gets email: "Please provide: clarification on your passport expiry"
+    - Worker uploads clarification doc (e.g., renewal appointment letter)
+    - Same document ID, status resets to ○ Pending clarification
+    - HR re-reviews and marks ☑ Verified or ✗ Rejected
+  - **Multi-reviewer:** HR Executive can add comments before Senior HR decides (both can see annotations)
 - **What does NOT happen:** No automated KYC, no API calls to verify documents, no extraction of Aadhaar number, no processing. Just storage + manual review + status tracking.
-- **Roles:** Senior HR does all verification; HR Executive can view but does not verify
+- **Roles:** Senior HR does all verification; HR Executive can view and comment but does not verify
 
 ## Module 4 · Compliance Engine
 
@@ -92,6 +101,13 @@ Module 11 (Notifications) and Module 12 (Reporting) are cross cutting: they sit 
   3. Records the revocation date
 - **Cannot close offboarding** until all revocation boxes are ☑ Revoked
 - **Manual creation rule:** WOP records what was done. It does NOT provision accounts, send invites, or create users in any external system. That is always manual IT work.
+- **Request-Assignment-Escalation Workflow:**
+  1. **Request:** When Senior HR activates worker → WOP auto-sends Slack message to IT: "New worker: Rohan, type: Indian Employee, needs: Google, GitHub, Slack"
+  2. **Assignment:** IT person receives notification + sees access checklist in WOP (or linked Jira ticket)
+  3. **Creation:** IT creates account in each system (Google admin, GitHub org, Slack workspace) manually
+  4. **Callback:** IT returns to WOP, enters created email (rohan@katbotz.com), clicks ☑ Done
+  5. **Escalation:** If IT doesn't respond in 24h → WOP reminder. 48h → notify Senior HR + Manager. 72h → mark "DELAYED" in red
+  6. **SLA:** Google account within 24h, all systems within 48h
 - **Roles:** Senior HR manages the checklist; IT person who creates accounts ticks it off
 
 ## Module 6 · Workforce Directory
@@ -147,13 +163,26 @@ Module 11 (Notifications) and Module 12 (Reporting) are cross cutting: they sit 
 - **What does NOT happen:** No Slack messages, no SMS, no calendar invites. WOP never creates accounts in external systems (those emails don't trigger provisioning). Email only.
 - **Tech:** SendGrid integration in the FastAPI backend. When an event occurs (document rejected, worker activated, etc.), the backend calls SendGrid directly and sends the email. No Cloud Functions, no schedulers, no queues.
 - **Roles:** System only. No one manually sends these — they fire automatically when the event happens.
-- **If SendGrid fails or is down:**
-  - FastAPI will log the error to the audit log
-  - HR can see in the audit log that the email was attempted but failed
-  - HR can manually send the email from their email client if urgent (e.g. for rejection reasons)
-  - No automatic retry is configured (to avoid duplicate emails)
-  - This is acceptable because these are reminder emails, not critical business functions
-  - **Note:** Document rejection reason email is the most critical; if SendGrid is down for >1 hour, HR should manually email the worker
+- **If SendGrid fails or is down — Retry Logic:**
+  1. FastAPI tries SendGrid, logs error to audit log + Cloud Logging
+  2. Email queued to `pending_emails` collection in Firestore:
+     ```
+     {
+       worker_id, email_type, recipient, reason,
+       created_at, retry_count: 0, next_retry: now + 1h, status: "pending"
+     }
+     ```
+  3. Automatic retry job (runs every hour):
+     - Query pending emails where (next_retry < now AND retry_count < 3)
+     - Try SendGrid again
+     - If success: delete from pending, log as "sent (retry #X)"
+     - If failure: increment retry_count, set next_retry = now + (retry_count * 1h)
+     - After 3 failures: move status to "failed", alert Senior HR
+  4. **HR fallback:**
+     - HR sees "Pending Notifications" dashboard widget (shows X pending, Y pending 1h+, Z failed 3x)
+     - For critical emails (rejection reason): HR can [Resend manually] or [Mark sent]
+  5. **Monitoring:** Weekly report on send/fail rates, error breakdown
+  6. **SLA:** Rejection email critical; if >1 hour down, HR manually sends from Gmail
 
 ## Module 12 · Reporting and Analytics
 

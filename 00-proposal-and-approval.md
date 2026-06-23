@@ -46,6 +46,24 @@ Twelve modules, grouped by job:
 
 Full detail: [05 Functional Modules](05-functional-modules.md). Worker types and scope: [02 Product Blueprint](02-product-blueprint.md).
 
+### What WOP owns vs. what stays in other systems
+
+| System | Responsibility | WOP's role |
+|---|---|---|
+| **WOP** | Worker lifecycle, documents, verification, access, contracts, reviews, assets, offboarding, reports | Source of truth for operations |
+| **Zoho Recruit** | Hiring, offers, negotiations, candidate pipeline | WOP receives "offer accepted" → creates worker |
+| **Gusto** | Payroll, tax, benefits, direct deposit | WOP stores Gusto ID for reference, links to Gusto for details |
+| **Google Workspace** | Email, calendar, groups, account management | WOP tracks: "which accounts created?" Links to Workspace admin |
+| **GitHub, Slack, etc.** | Team collaboration, code, chat | WOP tracks: "which teams assigned?" IT manages manually |
+
+**Explicitly out of scope (not in WOP):**
+- Payroll calculation → Gusto owns this
+- Attendance/timesheets → Google Workspace APIs or external system
+- Benefits enrollment → Gusto owns this
+- Time tracking for contractors → Contractor manual entry in invoice form (M7)
+
+This keeps WOP focused: worker lifecycle, documents, access, compliance. Not payroll, not HR analytics.
+
 ---
 
 ## 4. How will it be built?
