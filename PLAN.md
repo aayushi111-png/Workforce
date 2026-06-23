@@ -23,33 +23,36 @@
 
 ## Week 2 (July 7–11) — Core Features
 
-**Goal:** Checklist works. Documents uploadable.
+**Goal:** Checklist works. Documents uploadable. Projects + Goals added.
 
 | Day | Task | Hours |
 |-----|------|-------|
-| 1 | Worker dashboard: my to-do list + document upload | 5h |
+| 1 | Worker dashboard: my to-do list + document upload | 4h |
 | 2 | Document upload form (links to Drive, records in Firestore) | 4h |
 | 3 | HR checklist view: ☑ Done for each document | 4h |
-| 4 | Performance tracker form (simple: rating + feedback) | 5h |
-| 5 | Test: upload doc, HR checks off, worker sees ✓ done | 3h |
-| **Total** | | **21h** |
+| 4 | Project assignment (HR assigns project lead to worker) | 3h |
+| 5 | Goals form (Team Lead sets goals, worker can edit) | 4h |
+| 6 | Performance tracker form (simple: rating + feedback) | 3h |
+| **Total** | | **22h** |
 
-**Done:** Workers can upload docs. HR can verify + check off. Performance form works.
+**Done:** Workers can upload docs. HR can verify + check off. Project assignment works. Goals can be set and edited. Performance form works.
 
 ---
 
 ## Week 3 (July 14–20) — Finishing
 
-**Goal:** Contract tracking, offboarding, notifications, polish.
+**Goal:** Contract tracking, reviews, weekly summary, offboarding, notifications, polish.
 
 | Day | Task | Hours |
 |-----|------|-------|
-| 1 | Contract tracking: renewal date alerts (simple table) | 4h |
-| 2 | Offboarding: mark for exit, set delete date (3 years) | 4h |
-| 3 | Notifications: simple alerts in portal (no email) | 3h |
-| 4 | Personal to-do list (customizable per worker) | 4h |
-| 5 | Testing + bug fixes + handover docs | 4h |
-| **Total** | | **19h** |
+| 1 | Weekly summary form (workers write what happened each week) | 3h |
+| 2 | Reviews system (30/60/90-day, annual reviews) | 4h |
+| 3 | Contract tracking: renewal date alerts (simple table) | 3h |
+| 4 | Offboarding: mark for exit, set delete date (3 years) | 4h |
+| 5 | Notifications: simple alerts in portal (no email) | 2h |
+| 6 | Personal to-do list (customizable per worker) | 2h |
+| 7 | Testing + bug fixes + handover docs | 3h |
+| **Total** | | **21h** |
 
 **Done:** All features built. Testing complete. Ready for handover.
 
@@ -75,18 +78,23 @@
 ✓ Auto-generate checklist per type
 ```
 
-### Week 2: Documents + Performance
+### Week 2: Documents + Projects + Goals + Performance
 ```
 ✓ Worker dashboard (my checklist)
 ✓ Upload document link (to Drive)
 ✓ HR dashboard (all workers)
 ✓ HR checks ☑ when verified
+✓ Project assignment (HR assigns project lead)
+✓ Goals form (set goals, deadlines, editable by team lead + worker)
+✓ Goals tracking (mark as achieved)
 ✓ Performance form (rating + feedback)
 ✓ Contract renewal dates (simple table)
 ```
 
-### Week 3: Offboarding + Polish
+### Week 3: Weekly Summary + Reviews + Offboarding + Polish
 ```
+✓ Weekly summary form (workers write each week)
+✓ Reviews system (30/60/90-day, annual reviews)
 ✓ Mark worker for exit
 ✓ Set "delete after 3 years" date
 ✓ Auto-delete after 3 years (background job)
@@ -116,10 +124,16 @@ By Aug 20:
 - ✓ Workers can upload documents (to Drive)
 - ✓ HR can see all workers + their documents
 - ✓ HR can check off completion (☑)
+- ✓ HR can assign project to worker
+- ✓ Goals can be set and tracked (Team Lead edits, worker edits)
+- ✓ Goals achieved can be marked
+- ✓ Weekly summary form works (worker writes, HR reads)
 - ✓ Performance tracker works
+- ✓ Reviews system works (30/60/90-day, annual)
 - ✓ Contract renewal dates visible
 - ✓ Offboarding process works (documents saved 3y)
 - ✓ Personal to-do lists work
+- ✓ Notifications show in portal
 - ✓ Priya has tested it end-to-end
 - ✓ Handover docs written
 

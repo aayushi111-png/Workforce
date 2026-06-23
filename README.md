@@ -5,13 +5,18 @@ A portal where KATBOTZ workers log in with their katbotz.com email, upload docum
 
 **What it does:**
 1. Workers log in with KATBOTZ email (Google OAuth)
-2. Workers see their to-do list (documents to upload, forms to fill)
-3. Workers upload documents (links go to Google Drive)
-4. HR sees all workers in a list
-5. HR checks off completed items
-6. Performance tracker (simple form)
-7. Contract renewal tracking (with dates)
-8. Offboarding (documents saved 3 years, then deleted)
+2. HR assigns projects + project leads to workers
+3. Teams set goals (with deadlines, editable by team lead + worker)
+4. Workers track goals achieved (check off as complete)
+5. Workers upload documents (links go to Google Drive)
+6. Workers write weekly summary (what happened this week)
+7. HR sees all workers in a list
+8. HR checks off completed documents
+9. Performance tracker (simple form)
+10. Reviews system (30/60/90-day, annual reviews)
+11. Contract renewal tracking (with dates)
+12. Personal to-do list (per worker)
+13. Offboarding (documents saved 3 years, then deleted)
 
 **That's it.** No automations. No emails. No complexity.
 
@@ -34,15 +39,28 @@ A portal where KATBOTZ workers log in with their katbotz.com email, upload docum
 
 **Worker sees:**
 - Login with katbotz email
+- My Project (project name, project lead, description)
+- My Goals (what to achieve, with deadlines) — can edit
+- My Goals Achieved (what's completed so far) — can mark as done
+- My Weekly Summary (write what happened this week)
 - My Documents (PAN, Aadhaar, etc.) — upload to Drive
 - My Performance (fill form, HR sees it)
+- My Reviews (30/60/90-day, annual — see HR feedback)
 - My To-Do (checklist of what to do today)
 - Notifications (just alerts, nothing fancy)
 
 **HR sees:**
-- All Workers (list, searchable)
-- Click worker → see docs + checklist + performance + contract renewal date
-- Checkbox for each document (☑ Done when verified in Drive)
+- All Workers (list, searchable, with project + goals + docs status)
+- Click worker → see ALL details:
+  - Project assignment
+  - Goals (can edit)
+  - Goals achieved
+  - Weekly summaries (read what they wrote)
+  - Documents + checklist (☑ Done when verified in Drive)
+  - Performance rating
+  - Review history (30/60/90-day, annual)
+  - Contract renewal date
+  - Offboarding status
 - That's it.
 
 ---

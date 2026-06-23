@@ -70,7 +70,51 @@ Feedback: [text]
 [Submit button]
 ```
 
-**Section 3: My To-Do List (Customizable)**
+**Section 3: My Current Project**
+```
+My Project Assignment
+
+Project Name: Mobile App Redesign
+Project Lead: Akshat (assigned by HR)
+Start Date: June 1, 2026
+Status: In Progress
+
+Description: Redesign mobile app UI/UX
+```
+
+**Section 4: My Goals**
+```
+Goals for This Project
+
+☐ Complete wireframes (by June 30)
+  Status: In Progress
+  
+☐ Get approval from stakeholders (by July 5)
+  Status: Not Started
+  
+☐ Implement 80% of designs (by July 20)
+  Status: On Track
+
+[Edit Goals] ← Worker or Team Lead can edit
+
+Goals Achieved:
+  ✓ Research existing UI issues
+  ✓ Create initial mockups
+```
+
+**Section 5: Weekly Summary**
+```
+Weekly Updates
+
+Week of June 17–23:
+"Completed initial wireframes, had team review meeting, 
+collected feedback from Akshat. Next week: iterate on designs 
+based on feedback."
+
+[Edit] [Save]
+```
+
+**Section 6: My To-Do List (Customizable)**
 ```
 Checklist (worker can add):
   ☐ Finish project report
@@ -79,11 +123,34 @@ Checklist (worker can add):
   [+ Add item]
 ```
 
-**Section 4: Notifications**
+**Section 7: Reviews**
+```
+My Performance Reviews
+
+30-Day Review (Due: July 1)
+  Status: Completed
+  Rating: 4/5
+  Feedback: "Great progress on designs"
+  Completed by: Akshat
+
+60-Day Review (Due: Aug 1)
+  Status: Pending
+  
+90-Day Review (Due: Sept 1)
+  Status: Scheduled
+
+Annual Review (Due: June 2027)
+  Status: Not Yet Due
+  
+[View Full History]
+```
+
+**Section 8: Notifications**
 ```
 Jun 23 — Your PAN was verified ✓
-Jun 22 — Your Aadhaar is still pending
-Jun 20 — Contract renewal coming: Aug 1
+Jun 22 — Akshat updated your goals
+Jun 20 — 30-day review due in 1 week
+Jun 19 — Contract renewal coming: Aug 1
 ```
 
 ---
@@ -92,11 +159,11 @@ Jun 20 — Contract renewal coming: Aug 1
 
 **View 1: All Workers List**
 ```
-Name | Type | PAN | Aadhaar | Degree | 10th | 12th | Bank | Performance | Contract Renews
+Name | Type | Project | Project Lead | Goals | Docs | Reviews | Status
 ---
-Rohan | Employee | ☑ | ☑ | ☐ | ☑ | ☑ | ☑ | 4.5/5 | Aug 15
-Sara | Intern | ☑ | ☑ | ☑ | ☑ | ☑ | — | — | —
-Amit | Contractor | ☑ | — | — | — | — | ☑ | — | Sept 1
+Rohan | Employee | Mobile App | Akshat | 2/3 Done | 5/6 ✓ | 30d ✓ | Active
+Sara | Intern | API Design | Rohini | 1/2 Done | 4/5 ✓ | Pending | Active
+Amit | Contractor | Bug Fixes | Akshat | 5/5 ✓ | 2/3 ✓ | N/A | Active
 ```
 
 Columns are clickable. Click "Rohan" → see his full profile.
@@ -105,30 +172,62 @@ Columns are clickable. Click "Rohan" → see his full profile.
 ```
 Rohan Mehta | Indian Employee | Team Lead: Akshat
 
-Documents:
-  PAN: ☑ Verified by Priya, June 23 [View in Drive]
-  Aadhaar: ☐ Pending [View in Drive]
-  Degree: ☑ Verified, June 22
-  [etc.]
+═══ PROJECT ASSIGNMENT ═══
+Project: Mobile App Redesign
+Project Lead: Akshat [Change]
+Start Date: June 1, 2026
+Status: In Progress
 
-Performance:
-  Last updated: June 23
-  Rating: 4.5/5
-  Feedback: "Good performance"
+═══ GOALS ═══
+☐ Complete wireframes (by June 30) — In Progress
+☐ Get approval (by July 5) — Not Started
+☐ Implement designs (by July 20) — On Track
 
-Contract:
-  Type: Permanent
-  Start: Jan 2026
-  Renewal: None
+[Edit Goals] (Akshat or Rohan can edit)
 
-Offboarding:
-  Status: Active
-  [Mark for Exit] button
+Goals Achieved:
+  ✓ Research UI issues
+  ✓ Create mockups
 
-Audit Trail:
-  June 23 — PAN verified by Priya
-  June 22 — Degree verified by Priya
-  June 20 — Created by Priya
+═══ WEEKLY SUMMARY ═══
+Week of June 17–23:
+"Completed initial wireframes, had team review meeting..."
+
+[Edit] [Submit]
+
+═══ DOCUMENTS ═══
+PAN: ☑ Verified by Priya, June 23 [View in Drive]
+Aadhaar: ☐ Pending [View in Drive]
+Degree: ☑ Verified, June 22
+[etc.]
+
+═══ PERFORMANCE ═══
+Current Rating: 4.5/5
+Feedback: "Good performance"
+Last updated: June 23
+
+═══ REVIEWS ═══
+30-Day Review: ✓ Completed (June 23) — Rating: 4/5
+60-Day Review: ⏳ Pending (Due Aug 1)
+90-Day Review: Scheduled (Due Sept 1)
+Annual Review: Not Yet Due
+
+[View Full Review History]
+
+═══ CONTRACT ═══
+Type: Permanent
+Start: Jan 2026
+Renewal: None
+
+═══ OFFBOARDING ═══
+Status: Active
+[Mark for Exit] button
+
+═══ AUDIT TRAIL ═══
+June 23 — PAN verified by Priya
+June 22 — Degree verified by Priya
+June 20 — Created by Priya
+June 15 — Assigned to Project: Mobile App
 ```
 
 **View 3: Offboarding Workers (HR only)**
@@ -151,6 +250,7 @@ workers/{worker_id}
   team_lead: "Akshat"
   created_at: 2026-06-01
   
+  ═══ DOCUMENTS ═══
   checklist:
     pan: { status: "verified", verified_by: "Priya", verified_date: 2026-06-23 }
     aadhaar: { status: "pending", verified_by: null, verified_date: null }
@@ -159,11 +259,94 @@ workers/{worker_id}
     12th_marksheet: { status: "verified" ... }
     bank_proof: { status: "verified" ... }
   
+  ═══ PROJECT ═══
+  project:
+    name: "Mobile App Redesign"
+    project_lead: "Akshat"
+    start_date: 2026-06-01
+    status: "In Progress"  // or "Completed", "On Hold"
+    description: "Redesign mobile app UI/UX"
+  
+  ═══ GOALS ═══
+  goals:
+    [
+      {
+        id: 1,
+        goal: "Complete wireframes",
+        deadline: "2026-06-30",
+        status: "In Progress",  // or "Not Started", "Completed"
+        editable_by: ["team_lead", "employee"]  // Who can edit this goal
+      },
+      {
+        id: 2,
+        goal: "Get stakeholder approval",
+        deadline: "2026-07-05",
+        status: "Not Started"
+      },
+      {
+        id: 3,
+        goal: "Implement 80% of designs",
+        deadline: "2026-07-20",
+        status: "On Track"
+      }
+    ]
+  
+  goals_achieved:
+    [
+      { achieved: "Research existing UI issues", date: 2026-06-15 },
+      { achieved: "Create initial mockups", date: 2026-06-20 }
+    ]
+  
+  ═══ WEEKLY SUMMARY ═══
+  weekly_summary:
+    [
+      {
+        week_of: "2026-06-17",
+        summary: "Completed initial wireframes, had team review meeting, collected feedback from Akshat. Next week: iterate on designs based on feedback.",
+        submitted_date: "2026-06-23"
+      },
+      {
+        week_of: "2026-06-10",
+        summary: "Researched existing UI issues, benchmarked competitors, created mood board."
+      }
+    ]
+  
+  ═══ PERFORMANCE ═══
   performance:
     rating: 4.5
     feedback: "Good work"
     updated_date: 2026-06-23
   
+  ═══ REVIEWS ═══
+  reviews:
+    [
+      {
+        type: "30-day",
+        due_date: "2026-07-01",
+        status: "completed",
+        rating: 4,
+        feedback: "Great progress on designs",
+        reviewed_by: "Akshat",
+        completed_date: "2026-06-23"
+      },
+      {
+        type: "60-day",
+        due_date: "2026-08-01",
+        status: "pending"
+      },
+      {
+        type: "90-day",
+        due_date: "2026-09-01",
+        status: "scheduled"
+      },
+      {
+        type: "annual",
+        due_date: "2027-06-01",
+        status: "not_yet_due"
+      }
+    ]
+  
+  ═══ OTHER ═══
   contract:
     renewal_date: "2029-06-01"  // or null if no renewal
     
@@ -310,6 +493,10 @@ Worker sees when they log in. That's it. No email.
 | Worker name, email, type, status | Firestore | System of record |
 | Document checklist status | Firestore | "verified" or "pending" |
 | Performance data | Firestore | Rating + feedback |
+| Project assignment | Firestore | Project name, project lead, dates |
+| Goals | Firestore | What to achieve, deadline, status |
+| Weekly summary | Firestore | Worker's written update each week |
+| Reviews | Firestore | 30/60/90-day, annual reviews with ratings |
 | Actual document files | Google Drive | PDF, image, etc. |
 | To-do list | Firestore | Per worker |
 | Audit trail | Firestore | Who did what, when |
