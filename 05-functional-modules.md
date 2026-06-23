@@ -68,7 +68,7 @@ Module 11 (Notifications) and Module 12 (Reporting) are cross cutting: they sit 
 ## Module 6 · Workforce Directory
 
 - **Purpose:** the searchable single source of truth for active workers
-- **Holds:** current details, department, manager, location, status, projects
+- **Holds:** current details, department, team lead, location, status, projects
 - **Output:** find any worker, see current state and full history
 - **Roles:** HR full, Team Lead scoped to team
 

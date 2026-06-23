@@ -3,7 +3,7 @@
 ## Authentication
 
 - **Google OAuth.** Staff already live in Google Workspace, so sign in is one click and there are no passwords to manage in WOP.
-- Workers, contractors and interns reach their own portal by secure link or Google sign in, scoped to their own record.
+- External workers (contractors, interns, non-KATBOTZ employees) sign in with their own Google account — personal Gmail works, as Google OAuth is not limited to Workspace accounts. They see only their own record.
 
 ## Authorization
 

@@ -85,7 +85,7 @@ WOP is the **Workforce Portal** for KATBOTZ, reached from the main site. The cle
 
 - **Subdomain.** Host WOP at something like `workforce.katbotz.com`, pointed at Cloud Run with a DNS record at the domain registrar. This keeps WOP independent of whatever the main marketing site runs on, while staying on brand.
 - **Entry point.** A simple "Team Login" link in the main site header or footer sends staff and workers to the portal.
-- **Sign in.** Staff sign in with Google, restricted to the KATBOTZ Workspace domain. Workers, contractors and interns reach their own portal by secure link or Google sign in, scoped to their own record.
+- **Sign in.** KATBOTZ staff (Founder, HR, Team Leads) sign in with Google OAuth, restricted to the KATBOTZ Workspace domain. External workers — contractors, interns, and non-KATBOTZ employees — sign in with their own Google account (personal Gmail is fine; Google OAuth is not limited to Workspace accounts). On first entry they are shown only their own record, nothing else.
 - **One identity.** Because sign in is Google OAuth, there is no separate password to manage and the main site and WOP share the same Google identity.
 
 ```mermaid
