@@ -1,12 +1,12 @@
 # KATBOTZ Workforce Operations Platform (WOP)
 
 > Architecture and product repository.
-> Prepared for the Technical Head, KATBOTZ.
-> Source: discovery session, 16 June 2026 (Akshat Mishra, Aayushi Pandey).
+> Prepared for KATBOTZ.
+> Source: Aayushi Pandey
 
 ---
 
-## What is WOP
+## What is WOP?
 
 KATBOTZ currently runs its non-US workforce on Google Sheets, Drive, and email. That works until it doesn't — missing documents, no audit trail, missed contract renewals, inconsistent offboarding.
 
@@ -23,7 +23,7 @@ Zoho Recruit  →  WOP  →  Gusto
 
 ---
 
-## The four worker types
+## The four worker types:
 
 Every feature is shaped around four types, because each has a different document checklist and legal situation.
 
@@ -36,7 +36,7 @@ Every feature is shaped around four types, because each has a different document
 
 ---
 
-## The nine stages every worker goes through
+## The nine stages every worker goes through:
 
 A worker always has a status. The system enforces what can happen at each stage.
 
@@ -54,7 +54,7 @@ A worker always has a status. The system enforces what can happen at each stage.
 
 ---
 
-## Who logs in and what they see
+## Who logs in and what they see:
 
 Same app — totally different experience depending on your role.
 
@@ -100,7 +100,9 @@ Worker
  └── Audit log      (every action ever taken, append-only, never editable)
 ```
 
-Files live in Cloud Storage. The database stores a pointer to the file, not the file itself. The Aadhaar number is never typed or stored anywhere — only the document image goes into a locked bucket, and Senior HR checks it visually.
+Files live in Cloud Storage. 
+The database stores a pointer to the file, not the file itself. 
+The Aadhaar number is never typed or stored anywhere — only the document image goes into a locked bucket, and Senior HR checks it visually.
 
 ---
 
@@ -115,7 +117,7 @@ Files live in Cloud Storage. The database stores a pointer to the file, not the 
 
 ---
 
-## How it gets built
+## How it gets built?
 
 Solo build at roughly 4 hours a day.
 
@@ -125,7 +127,8 @@ Solo build at roughly 4 hours a day.
 | Full platform | Contracts, invoices, reviews, offboarding, notifications, reporting, connect to katbotz.com | ~23 to 27 weeks total |
 | Integrations (optional) | Zoho webhook, Google Workspace, GitHub | ~28 to 31 weeks total |
 
-**Cost:** near zero during the build (free tiers). Once live, roughly ₹0–3,000/month at 100–500 workers — because WOP is a low-traffic internal tool, not a consumer app. Cloud Run switches off when nobody is using it, so idle time costs nothing.
+**Cost:** near zero during the build (free tiers). 
+<br>Once live, roughly ₹0–3,000/month at 100–500 workers — because WOP is a low-traffic internal tool, not a consumer app. Cloud Run switches off when nobody is using it, so idle time costs nothing.
 
 ---
 
@@ -145,16 +148,6 @@ Solo build at roughly 4 hours a day.
 | 09 | [Integrations, Scalability, Roadmap](09-integrations-scalability-roadmap.md) | What connects, how it grows, and by when |
 | 10 | [Build Plan and Budget](10-build-plan-and-budget.md) | Week-by-week plan, honest effort estimate, corrected cost figures |
 
-### How to edit
-
-- Edit any `.md` file directly. Tables, headings, and bullet lists are standard Markdown.
-- Diagrams are written in **Mermaid** inside code blocks — GitHub renders them automatically.
-- Anything needing a real decision or a real number is marked:
-
-> **DECISION NEEDED:** the call you need to make.
-
-> **EDIT ME:** a placeholder to replace with the real value.
-
 ---
 
 ## Status
@@ -162,6 +155,6 @@ Solo build at roughly 4 hours a day.
 | Field | Value |
 |---|---|
 | Version | v1 (architecture draft) |
-| Owner | Technical Head, KATBOTZ |
+| Owner | KATBOTZ |
 | Prepared by | Aayushi Pandey |
 | Last updated | June 2026 |
