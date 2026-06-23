@@ -106,22 +106,34 @@ The week between handover and live use (Aug 22 – Sept 1) is the window for HR 
 
 ## 7. Budget: what it actually costs in cash
 
-No team cost — I am building it. Cash is cloud plus subscriptions, near zero while building.
+No team cost — I am building it solo. All costs are cloud infrastructure and subscriptions.
 
-**Cloud cost scales with active HR/team lead sessions, not worker headcount.** A worker logs in twice during onboarding and then rarely again. 500 stored workers with their documents is roughly 5 GB — about ₹10/mo in storage. Cloud Run is scaled to zero and bills only per request.
+### Build phase (July 1 – August 22, 8 weeks)
 
-| Item | Build phase | Live, 100–500 workers | Scale, 1,000–5,000+ |
-|---|---|---|---|
-| Firestore | 0, free tier | 0–500 / mo | 500–3,000 / mo |
-| Cloud Storage (~10 GB at Live) | 0–200 / mo | 200–800 / mo | 800–4,000 / mo |
-| Cloud Run (scale-to-zero) | 0, free tier | 0–1,000 / mo | 1,000–6,000 / mo |
-| SendGrid (email notifications) | 0, free tier | 0–500 / mo | 500–2,000 / mo |
-| Monitoring (Cloud Ops) | 0 | 0–500 / mo | 500–2,000 / mo |
-| Domain / subdomain | 0 (katbotz.com owned) | 0 | 0 |
-| **Cloud subtotal** | **~0–500 / mo** | **~0–3,000 / mo** | **~3,000–15,000 / mo** |
-| AI coding subscription (Claude) | ~₹1,500–2,000 / mo | same | same |
+**Total build cost: ₹3,000–5,000**
 
-All figures in INR, planning estimates pending a live cloud bill.
+| Item | Cost | Notes |
+|---|---|---|
+| Cloud services (Firestore, Cloud Run, Storage, Monitoring) | ₹0–1,000 | Mostly free tier. ~₹125–250/month × 2 months. |
+| Claude AI subscription | ₹3,000–4,000 | ~₹1,500–2,000/month × 2 months. Only cost during build. |
+| **Total 8-week build** | **₹3,000–5,000** | One-time. |
+
+### After handover (live operations)
+
+**Cloud cost scales with active HR/team lead sessions, not worker headcount.** A worker logs in twice during onboarding and then rarely again. 500 stored workers with their documents is roughly 5 GB — about ₹10/mo in storage. Cloud Run is scaled to zero and bills only per request. No Claude subscription needed post-launch.
+
+| Item | Live, 100–500 workers | Scale, 1,000–5,000+ |
+|---|---|---|
+| Firestore | 0–500 / mo | 500–3,000 / mo |
+| Cloud Storage (~10 GB at Live) | 200–800 / mo | 800–4,000 / mo |
+| Cloud Run (scale-to-zero) | 0–1,000 / mo | 1,000–6,000 / mo |
+| SendGrid (email notifications) | 0–500 / mo | 500–2,000 / mo |
+| Monitoring (Cloud Ops) | 0–500 / mo | 500–2,000 / mo |
+| Domain / subdomain | 0 (katbotz.com owned) | 0 |
+| **Monthly cloud cost** | **₹0–3,000 / mo** | **₹3,000–15,000 / mo** |
+| **Post-launch maintenance** (optional retainer) | ~₹6,000–16,000 / mo | 4–8 hours/month patches + support |
+
+All figures in INR, planning estimates pending a live cloud bill. Retainer model is optional — handover to internal technical lead is also an option.
 
 ---
 

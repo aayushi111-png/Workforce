@@ -130,8 +130,8 @@ All 12 modules ship in one build. No phases.
 | **Handover** | **Full platform handed to KATBOTZ** | **August 22, 2026** |
 | **Live use** | **Sheets retired. Real onboardings on WOP.** | **September 1, 2026** |
 
-**Cost:** near zero during the build (free tiers). 
-<br>Once live, roughly ₹0–3,000/month at 100–500 workers — because WOP is a low-traffic internal tool, not a consumer app. Cloud Run switches off when nobody is using it, so idle time costs nothing.
+**Cost to build:** ₹3,000–5,000 (Claude subscription ₹3,000–4,000, cloud services ₹0–1,000).
+<br>**Cost to run live:** roughly ₹0–3,000/month at 100–500 workers — because WOP is a low-traffic internal tool, not a consumer app. Cloud Run switches off when nobody is using it, so idle time costs nothing.
 
 ---
 

@@ -93,15 +93,15 @@ Week by week plan: [10 Build Plan and Budget](10-build-plan-and-budget.md).
 
 ## 7. What it costs (cash)
 
-Near zero while building (free tiers), rising with active HR/team lead sessions — not with worker headcount. Stored workers are cheap; workers who log in twice and vanish cost almost nothing in compute.
+**To build (8 weeks): ₹3,000–5,000**
+- Cloud services: ₹0–1,000 (free tiers cover most of it)
+- Claude AI subscription: ₹3,000–4,000 (only during build)
 
-| Phase | Monthly cloud cash (INR) |
-|-------|--------------------------|
-| Build phase | ~0 to 500 |
-| Live, 100 to 500 workers | ~0 to 3,000 |
-| Scale, 1,000 to 5,000 plus | ~3,000 to 15,000 |
+**To run live (ongoing):**
+- 100–500 workers: ₹0–3,000/month (scales with active sessions, not headcount)
+- 1,000–5,000+ workers: ₹3,000–15,000/month
 
-The one real monthly cost during the build is my AI coding subscription. No team cost, because I build it. Post-launch maintenance (patches, monitoring response) is a separate arrangement to confirm before go-live. Detail and line items: [10 Build Plan and Budget](10-build-plan-and-budget.md).
+No team cost — I build it solo. Post-launch maintenance (patches, monitoring response) is a separate optional retainer to confirm before go-live. Detail and line items: [10 Build Plan and Budget](10-build-plan-and-budget.md).
 
 ---
 
