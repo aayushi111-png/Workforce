@@ -1,4 +1,4 @@
-# 02 · Product Blueprint
+# 02 · PRODUCT BLUEPRINT
 
 ## Vision
 
