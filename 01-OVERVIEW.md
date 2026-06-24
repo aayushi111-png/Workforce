@@ -6,6 +6,27 @@ Workforce Operations Platform (WOP) is a web-based application that provides a s
 
 ---
 
+## Worker Types (5 Types)
+
+WOP supports 5 distinct worker types with different document requirements, features, and integrations:
+
+| Type | Docs Required | Gusto | Invoices | Student ID | Contracts | Payroll |
+|------|-----------|-------|----------|-----------|-----------|---------|
+| **Indian Employee** | PAN, Aadhaar, Degree, 10/12 marks, Bank | NO | NO | NO | NO | ₹ External |
+| **Indian Contractor** | PAN, Agreement, Bank | NO | YES | NO | YES | ₹ External |
+| **Indian Intern** | PAN, Aadhaar, Degree, 10/12 marks, Student ID | NO | NO | YES | NO | ₹ External |
+| **Global Contractor** | Tax ID, Agreement, Bank | US Only | YES | NO | YES | $ External |
+| **Global Intern** | Tax ID, Passport, Degree, 10/12, Student ID | US Only | NO | YES | NO | $/₹ External |
+
+**Key Distinctions:**
+- **Gusto Sync:** Only US employees sync real-time. All Indian workers and non-US contractors handled separately.
+- **Student ID:** Required for both types of interns (Indian + Global) for academic tracking.
+- **Invoices:** Contractors (Indian + Global) can submit invoices. Employees and interns cannot.
+- **Contracts:** Only contractors have contract management (renewal alerts 90/60/30/7 days, amendments, invoice workflow).
+- **Payroll:** All payroll external to WOP except Gusto sync for US employees.
+
+---
+
 ## User Interface Architecture
 
 ### Worker Portal
