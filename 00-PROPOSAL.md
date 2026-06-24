@@ -6,8 +6,9 @@
 | **Submitted by** | Aayushi Pandey (Intern) |
 | **Submitted to** | KATBOTZ |
 | **Date** | June 24, 2026 |
-| **Timeline** | 3 weeks (July 1 – August 20, 2026) |
-| **Go-Live Date** | September 1, 2026 |
+| **Timeline** | 6 weeks (July 1 – August 13, 2026) + 2 weeks testing |
+| **Handover Date** | August 28 – September 3, 2026 |
+| **Go-Live Date** | September 4, 2026 |
 | **Build Budget** | Zero (developed as intern project) |
 | **Operating Cost** | ₹3–5/month (50 workers) or ₹9–15/month (500 workers) |
 | **Deployment** | Connected to KATBOTZ main page (no Vercel/external deployment) |
@@ -328,69 +329,91 @@ One web application where:
 
 | Phase | Duration | Dates | Deliverable |
 |-------|----------|-------|------------|
-| Development Week 1 | 5 days | July 1-5 | Login system, worker list, database |
-| Development Week 2 | 5 days | July 7-11 | Documents, projects, goals |
-| Development Week 3 | 5 days | July 14-20 | Reviews, weekly summary, offboarding |
-| Testing & Fixes | 2 weeks | July 21-Aug 1 | Bug fixes, HR testing |
-| Final Polish | 2 weeks | Aug 4-15 | Performance optimization, training |
-| Handover | 1 week | Aug 18-22 | Transfer to KATBOTZ tech person |
-| Go-Live | 1 day | Sept 1 | Launch to all users |
+| Development Week 1 | 5 days | July 1-5 | Foundations (login, database, worker list) |
+| Development Week 2 | 5 days | July 7-11 | Core features part 1 (documents, projects, goals) |
+| Development Week 3 | 5 days | July 14-18 | Core features part 2 (performance, reviews, to-do, summaries) |
+| Development Week 4 | 5 days | July 21-25 | Contractor features (contracts, amendments, invoices, alerts) |
+| Development Week 5 | 5 days | July 28-Aug 1 | Integrations (Zoho, Gusto, offboarding, notifications) |
+| Development Week 6 | 5 days | Aug 4-8 | Polish & Optimization (performance, security, error handling) |
+| Testing & QA | 2 weeks | Aug 11-27 | Full system testing, bug fixes, HR validation |
+| Handover | 1 week | Aug 28-Sept 3 | GitHub/GCP transfer, final verification, sign-off |
+| Go-Live | 1 day | Sept 4 | Launch to all users |
 
-### Detailed Weekly Breakdown
+### Detailed Weekly Breakdown (6-Week Development)
 
 **Week 1: Foundations (July 1-5)**
-- Day 1: Next.js frontend + FastAPI backend setup, initial deployment to Cloud Run
-- Day 2: Google OAuth implementation (katbotz.com domain restriction)
-- Day 3: Firestore database schema design, worker creation endpoints
+- Day 1: Next.js frontend + FastAPI backend setup, deploy to Cloud Run
+- Day 2: Google OAuth implementation (katbotz.com domain only)
+- Day 3: Firestore database schema, worker creation endpoints
 - Day 4: HR dashboard skeleton, worker list display
 - Day 5: Integration testing, login flow validation
-- Status: System is live at workforce.katbotz.com, basic operations working
+- Status: System live at workforce.katbotz.com
 
-**Week 2: Core Features (July 7-11)**
-- Day 1: Worker self-service portal, document upload form (to Drive)
-- Day 2: Document storage implementation, status tracking in Firestore
-- Day 3: HR document verification UI, mark Verified or Rejected
-- Day 4: Project assignment form, goals management interface
+**Week 2: Core Features Part 1 (July 7-11)**
+- Day 1: Worker portal dashboard, document upload form
+- Day 2: Document storage to Drive, status tracking (Pending/Under Review/Verified/Rejected)
+- Day 3: HR verification UI with 4-state workflow
+- Day 4: Project assignment, goals management
 - Day 5: Performance form, testing end-to-end
-- Status: Workers can upload, HR can verify, projects can be assigned
+- Status: Documents, projects, goals functional
 
-**Week 3: Complete Features (July 14-20)**
-- Day 1: Weekly summary form, history tracking
-- Day 2: Review scheduling logic, 30/60/90-day/annual reviews
-- Day 3: Contract renewal tracking, date management
-- Day 4: Offboarding workflow, auto-delete job configuration
-- Day 5: Notifications, personal to-do lists, final testing
-- Status: All features implemented, ready for testing phase
+**Week 3: Core Features Part 2 (July 14-18)**
+- Day 1: Performance form (rating + feedback)
+- Day 2: Review scheduling (30/60/90-day, annual)
+- Day 3: Personal to-do lists, create/check/delete
+- Day 4: Weekly summary form
+- Day 5: End-to-end testing of all core features
+- Status: All 15 core features working
 
-**Week 4-5: Testing (July 21-Aug 1)**
-- Priya (Senior HR) performs full system test with real data
-- Document uploads and verifications tested
-- Project assignments and goals tested
-- Weekly summaries and reviews tested
-- Offboarding tested (with test worker, not deleted)
-- Bug identification and fixes
-- Status: Critical bugs fixed, system stable
+**Week 4: Contractor & Contract Management (July 21-25)**
+- Day 1: Contractor type distinction (Global vs Indian, Intern vs Contractor), Student ID field
+- Day 2: Contract storage schema (scope, rate, duration, SOW, amendments)
+- Day 3: Renewal alert system (90, 60, 30, 7 days before expiry)
+- Day 4: Contract amendment workflow (track all scope/rate/duration changes)
+- Day 5: Invoice workflow (Submitted → Approved → Finance Review → Paid)
+- Status: Full contractor + contract management system
 
-**Week 6-7: Polish & Optimization (Aug 4-15)**
-- Performance optimization (query speed, page load time)
-- UI refinement and polish
-- Zoho Recruit integration testing
-- Gusto integration testing
-- HR training and documentation
-- Status: Ready for handover
+**Week 5: Integrations & Advanced (July 28-Aug 1)**
+- Day 1: Zoho Recruit integration (auto-create workers from offers)
+- Day 2: Gusto integration (US employees only, auto-sync payroll)
+- Day 3: Offboarding workflow (mark exit, 3-year retention, auto-delete)
+- Day 4: Notifications system (in-portal alerts)
+- Day 5: Audit trail + logging (all actions recorded)
+- Status: All integrations and advanced features live
 
-**Week 8: Handover (Aug 18-22)**
-- Final end-to-end testing with Priya
-- 15-minute training with KATBOTZ tech person
-- Transfer of GitHub access, GCP credentials
-- Transfer of runbook and documentation
-- System running smoothly, no blockers
-- Status: KATBOTZ tech person is ready to take over
+**Week 6: Polish & Optimization (Aug 4-8)**
+- Day 1: Performance optimization (query indexing, caching)
+- Day 2: Security hardening (encryption, session management, legal hold)
+- Day 3: Error handling (Zoho/Gusto sync failures, retries)
+- Day 4: UI/UX polish (visual refinement, accessibility)
+- Day 5: Code review and cleanup
+- Status: Production-ready codebase
 
-**Go-Live (Sept 1)**
+**Week 7-8: Testing & Handover (Aug 11-27)**
+- Week 7 (Aug 11-15): Full system testing with Priya
+  - End-to-end workflows with real data
+  - All integrations tested (Zoho, Gusto)
+  - Backup/restore procedures tested
+  - Bug identification and documentation
+  
+- Week 8 (Aug 18-27): Bug fixes and handover prep
+  - Fix all critical and high-priority bugs
+  - Operational documentation created
+  - GitHub access prepared for transfer
+  - GCP credentials prepared for transfer
+  - HR training with Priya (1 hour)
+  - Status: All systems green, ready for handover
+
+**Handover Period (Aug 28-Sept 3)**
+- Aug 28-29: GitHub access transfer
+- Aug 30-31: GCP credentials + infrastructure transfer
+- Sept 1-2: Final verification by KATBOTZ tech person
+- Sept 3: Sign-off and approval
+
+**Go-Live (Sept 4, 2026)**
 - All users switch to WOP
-- Google Sheets retired
-- System in production use
+- Google Sheets/Docs retired
+- System in full production use
 
 ---
 
