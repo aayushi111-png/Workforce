@@ -590,6 +590,218 @@ async def handle_zoho_webhook(request: Request):
 - WOP tracks salary info for reference only
 - HR manages Indian payroll externally
 
+### Contract Management & Renewal Alerts (Contractors Only)
+
+**Purpose:** Track contractor contracts and automatically alert HR before expiry
+
+**Contract Data Stored in Firestore:**
+```json
+workers/contractor-001
+{
+  "name": "Rohan Contractor",
+  "type": "Contractor",
+  "contract": {
+    "start_date": "2026-07-01",
+    "renewal_date": "2026-12-31",      ← Key: Contract expiry date
+    "duration_months": 6,
+    "scope": "Build API endpoints",
+    "rate": 500,                        ← ₹ or $ per hour/month
+    "rate_type": "per_hour",
+    "additional_sow": "Authentication module",
+    "status": "active"
+  },
+  "renewal_alerts": {                  ← Tracks which alerts sent
+    "alert_90-day": {
+      "days_until_expiry": 90,
+      "alerted_on": "2026-10-02T01:00:00Z",
+      "alert_type": "90-day"
+    },
+    "alert_60-day": {...},
+    "alert_30-day": {...},
+    "alert_7-day": {...}
+  }
+}
+```
+
+**Renewal Alert System (Automated Daily Job):**
+
+```python
+@scheduler
+def check_contract_renewals():
+    """
+    Runs EVERY DAY at 1:00 AM
+    Checks all active contracts
+    Sends alerts at 90, 60, 30, 7 days before expiry
+    """
+    
+    today = datetime.now().date()
+    
+    # Get all contractors with active contracts
+    contractors = db.collection("workers").where(
+        "contract.status", "==", "active"
+    ).get()
+    
+    for contractor_doc in contractors:
+        contract = contractor_doc.get("contract")
+        renewal_date = contract["renewal_date"]
+        days_until_expiry = (renewal_date - today).days
+        
+        # Send alert at exact thresholds
+        if days_until_expiry == 90:
+            send_renewal_alert(contractor_doc, 90, "90-day")
+        elif days_until_expiry == 60:
+            send_renewal_alert(contractor_doc, 60, "60-day")
+        elif days_until_expiry == 30:
+            send_renewal_alert(contractor_doc, 30, "30-day")
+        elif days_until_expiry == 7:
+            send_renewal_alert(contractor_doc, 7, "7-day")
+```
+
+**What Gets Sent in Each Alert:**
+
+```
+90-DAY ALERT:
+├─ In-portal notification: "Your contract expires in 90 days"
+├─ Email to HR: Subject "Contract renewal: Rohan - 90 days"
+├─ Shows: Contract scope, rate, current status
+├─ Priority: Medium (planning stage)
+└─ Data: Stored in renewal_alerts.alert_90-day
+
+60-DAY ALERT:
+├─ In-portal notification: "Your contract expires in 60 days"
+├─ Email to HR: Subject "Contract renewal: Rohan - 60 days"
+├─ Shows: Contract details + renewal discussion needed
+├─ Priority: Medium (decision stage)
+└─ Data: Stored in renewal_alerts.alert_60-day
+
+30-DAY ALERT:
+├─ In-portal notification: "Your contract expires in 30 days"
+├─ Email to HR: Subject "Contract renewal: Rohan - 30 days"
+├─ Shows: Full contract details + urgency
+├─ Priority: Medium-High (final decision needed)
+└─ Data: Stored in renewal_alerts.alert_30-day
+
+7-DAY ALERT:
+├─ In-portal notification: "⚠️ CONTRACT EXPIRES IN 7 DAYS"
+├─ Email to HR: Subject "🔴 URGENT: Contract renewal - Rohan - 7 days"
+├─ Shows: Contract details + final action deadline
+├─ Priority: HIGH (last chance to act)
+├─ Badge: Red "Expiring Soon" badge on contract
+└─ Data: Stored in renewal_alerts.alert_7-day
+```
+
+**Alert Delivery:**
+
+```python
+def send_renewal_alert(contractor_doc, days_left, alert_type):
+    # 1. Store alert record
+    db.collection("workers").document(contractor_doc.id).update({
+        f"renewal_alerts.alert_{alert_type}": {
+            "days_until_expiry": days_left,
+            "alerted_on": datetime.now(),
+            "alert_type": alert_type
+        }
+    })
+    
+    # 2. Create in-portal notification
+    db.collection("notifications").add({
+        "worker_id": contractor_doc.id,
+        "type": "contract_renewal_alert",
+        "message": f"Contract expires in {days_left} days",
+        "priority": "high" if days_left <= 7 else "medium",
+        "created_at": datetime.now()
+    })
+    
+    # 3. Send email to HR
+    send_email(
+        to="priya@katbotz.com",
+        subject=f"Contract renewal: {contractor['name']} - {days_left} days",
+        body=generate_alert_email(contractor, days_left)
+    )
+    
+    # 4. Log in audit trail
+    db.collection("audit_logs").add({
+        "action": "contract_renewal_alert_sent",
+        "worker_id": contractor_doc.id,
+        "days_until_expiry": days_left,
+        "alert_type": alert_type,
+        "timestamp": datetime.now()
+    })
+```
+
+**After Alert is Received - HR Options:**
+
+```
+HR clicks on contract and selects:
+
+Option 1: RENEW
+├─ Updates renewal_date: "2026-12-31" → "2027-12-31"
+├─ Clears renewal_alerts (resets for new cycle)
+├─ Status: "active" (continues)
+├─ Logs: "Contract renewed by HR"
+└─ Contractor notified: "Contract renewed"
+
+Option 2: AMEND (Change terms)
+├─ Select what changes:
+│  ├─ Scope: "Build API" → "Build API + Auth"
+│  ├─ Rate: 500 → 550
+│  └─ Duration: 6 months → 12 months
+├─ Records amendment with:
+│  ├─ Old values
+│  ├─ New values
+│  ├─ Changed by: "Priya"
+│  └─ Changed date: timestamp
+├─ renewal_date updates based on new duration
+├─ Clears renewal_alerts (resets for new cycle)
+└─ Contractor notified: "Contract amended"
+
+Option 3: EXPIRE (Don't renew)
+├─ Status: "active" → "expired"
+├─ contract_end_date: "2026-12-31"
+├─ Data locked for 3 years
+├─ Logs: "Contract expired naturally"
+└─ Contractor notified: "Contract ended"
+```
+
+**Example Timeline:**
+
+```
+Contract Details:
+- Expires: December 31, 2026
+- Scope: Build API endpoints
+- Rate: ₹500/hour
+
+October 2, 2026 (90 days before)
+└─ Scheduled Job Runs at 1 AM
+   └─ Calculates: (Dec 31 - Oct 2) = 90 days
+   └─ Sends: 90-day alert to HR
+   └─ HR sees: "Plan for renewal"
+
+November 1, 2026 (60 days before)
+└─ Scheduled Job Runs at 1 AM
+   └─ Calculates: (Dec 31 - Nov 1) = 60 days
+   └─ Sends: 60-day alert to HR
+   └─ HR sees: "Start renewal discussions"
+
+December 1, 2026 (30 days before)
+└─ Scheduled Job Runs at 1 AM
+   └─ Calculates: (Dec 31 - Dec 1) = 30 days
+   └─ Sends: 30-day alert to HR
+   └─ HR sees: "Make renewal decision"
+
+December 24, 2026 (7 days before)
+└─ Scheduled Job Runs at 1 AM
+   └─ Calculates: (Dec 31 - Dec 24) = 7 days
+   └─ Sends: 7-DAY ALERT (HIGH PRIORITY) to HR
+   └─ HR sees: "⚠️ URGENT - Contract expires in 7 days"
+   └─ HR takes action: Renew / Amend / Expire
+
+December 31, 2026 (Expiry Date)
+└─ Contract expires
+   └─ If renewed: new renewal_date set
+   └─ If not renewed: status = "expired"
+```
+
 ### How Sync IDs Are Created & Managed
 
 **Sync ID Creation Process:**

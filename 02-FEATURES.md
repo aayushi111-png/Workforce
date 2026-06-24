@@ -382,11 +382,80 @@ Worker ready to log in (seconds later)
 - Additional SOW (additional statements of work)
 - Amendment history (all changes tracked)
 
-**Renewal Alerts (Automated):**
+**Renewal Alerts (Automated - Daily Check):**
+
+How it works:
+```
+Every day at 1 AM, system checks all active contracts
+                ↓
+For each contractor, calculates: Days until expiry
+                ↓
+If days = 90, 60, 30, or 7 → Send alert
+                ↓
+HR sees in-portal notification
+Contractor sees in-portal notification
+```
+
+**4 Alerts Sent (Automatically):**
+
 - **90 days before expiry:** Alert to HR
+  - Message: "Contract expires in 90 days"
+  - Priority: Medium
+  - Action: "Think about renewal"
+
 - **60 days before expiry:** Second alert to HR
+  - Message: "Contract expires in 60 days"
+  - Priority: Medium
+  - Action: "Start renewal discussions"
+
 - **30 days before expiry:** Escalation to Senior HR
-- **7 days before expiry:** Final alert + "Contract expiring soon" badge
+  - Message: "Contract expires in 30 days"
+  - Priority: Medium-High
+  - Action: "Make renewal decision"
+
+- **7 days before expiry:** Final alert + Badge
+  - Message: "⚠️ CONTRACT EXPIRES IN 7 DAYS"
+  - Priority: HIGH
+  - Action: "URGENT - Final action needed"
+
+**Alert System Details:**
+
+1. **Daily Automated Check:**
+   - Runs at 1:00 AM every day
+   - Checks all contractors with active contracts
+   - Calculates days until each contract expires
+   - Sends alerts at exact thresholds (90, 60, 30, 7 days)
+
+2. **Alert Delivery:**
+   - In-portal notification (appears in dashboard)
+   - Email to HR team
+   - Logged in audit trail
+   - Shows contract details (scope, rate, expiry date)
+
+3. **Alert Tracking:**
+   - System records which alerts were sent
+   - Prevents duplicate alerts (only sends once per threshold)
+   - Stores: Date sent, Days remaining, Alert type
+
+4. **Example Timeline:**
+   ```
+   Contract expires: December 31, 2026
+   
+   October 2, 2026 (90 days before)
+   └─ Alert sent: "Contract expires in 90 days"
+   
+   November 1, 2026 (60 days before)
+   └─ Alert sent: "Contract expires in 60 days"
+   
+   December 1, 2026 (30 days before)
+   └─ Alert sent: "Contract expires in 30 days"
+   
+   December 24, 2026 (7 days before)
+   └─ Alert sent: "⚠️ CONTRACT EXPIRES IN 7 DAYS"
+   
+   December 31, 2026 (Expiry)
+   └─ Contract expires (no auto-renewal)
+   ```
 
 **Contract Amendments Tracking:**
 1. HR clicks "Amend Contract"
