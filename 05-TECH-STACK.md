@@ -708,50 +708,54 @@ Worker Profile → Actions → "Sync to Gusto Now"
 
 ## 8. WORKER TYPES WITH DISTINCTION
 
-### Types & Requirements
+### Types & Requirements (5 Worker Types)
 
 **1. Indian Employee**
 - Required docs: PAN, Aadhaar, Degree, 10th/12th marksheets, Bank proof
 - Salary: ₹ (Indian Rupees)
-- Gusto: NO (payroll handled separately)
+- Gusto: NO (separate payroll system)
 - Invoices: NO
-- Review schedule: 30/60/90-day + annual
-
-**2. Global Contractor (US or International)**
-- Required docs: PAN/Tax ID, Signed agreement, Bank proof
-- Salary: $ or equivalent
-- Gusto: YES (US only) / NO (International - external payroll)
-- Invoices: YES (full approval workflow)
-- Review schedule: Contract-based (renewal-focused)
 - Student ID: NO
-- Contract tracking: YES (scope, rate, duration, amendments)
+- Review schedule: 30/60/90-day + annual
+- Contracts: NO
 
-**3. Global Intern**
-- Required docs: PAN/Tax ID, Aadhaar/Passport, Degree, 10th/12th marksheets
-- Salary: ₹/$/equivalent
-- Gusto: NO (unless US-based employee, then YES)
-- Invoices: NO
-- Review schedule: Weekly check-ins + monthly summaries
-- Student ID: YES (required)
-- Completion: PPO recommendation or exit
-
-**4. Indian Contractor**
+**2. Indian Contractor**
 - Required docs: PAN, Signed agreement, Bank proof
 - Salary: ₹ (Indian Rupees)
-- Gusto: NO (payroll handled separately)
-- Invoices: YES (full approval workflow)
-- Review schedule: Contract-based (renewal-focused)
+- Gusto: NO (separate payroll)
+- Invoices: YES (full approval workflow: Submitted → Approved → Finance Review → Paid)
 - Student ID: NO
-- Contract tracking: YES (scope, rate, duration, amendments)
+- Review schedule: Contract-based (renewal-focused)
+- Contracts: YES (scope, rate, duration, amendments, renewal alerts 90/60/30/7 days)
 
-**5. Indian Intern**
-- Required docs: PAN, Aadhaar, Degree, 10th/12th marksheets
+**3. Indian Intern**
+- Required docs: PAN, Aadhaar, Degree, 10th/12th marksheets, Student ID (required)
 - Salary: ₹ (Indian Rupees) or stipend
-- Gusto: NO
+- Gusto: NO (separate system)
 - Invoices: NO
-- Review schedule: Weekly check-ins
-- Student ID: YES (required)
-- Completion: PPO recommendation or exit
+- Student ID: YES (required field for tracking)
+- Review schedule: Weekly check-ins + monthly summaries
+- Completion: PPO recommendation or exit (data retained 3 years after exit)
+- Contracts: NO
+
+**4. Global Contractor (US or International)**
+- Required docs: Tax ID or equivalent, Signed agreement, Bank proof
+- Salary: $ or equivalent
+- Gusto: YES (US-based only) / NO (International - external payroll)
+- Invoices: YES (full approval workflow: Submitted → Approved → Finance Review → Paid)
+- Student ID: NO
+- Review schedule: Contract-based (delivery-focused)
+- Contracts: YES (scope, rate, duration, amendments, renewal alerts 90/60/30/7 days)
+
+**5. Global Intern**
+- Required docs: Tax ID or equivalent, Passport/ID, Degree, 10th/12th marksheets, Student ID (required)
+- Salary: $ or ₹ equivalent
+- Gusto: YES (if US-based) / NO (if international)
+- Invoices: NO
+- Student ID: YES (required field for tracking)
+- Review schedule: Weekly check-ins + monthly summaries
+- Completion: PPO recommendation or exit (data retained 3 years after exit)
+- Contracts: NO
 
 ---
 
