@@ -129,18 +129,34 @@ One web application where:
 - Employment: Contract-based
 - Invoicing: Submits invoices in WOP
 - Reviews: Contract-specific (renewal-focused)
+- Salary: Tracked in WOP (₹), does NOT sync to Gusto
+- Contract management: Renewal alerts (90/60/30/7 days), amendments tracking
+
+**Indian Intern**
+- Required: PAN, Aadhaar image, Degree, 10th/12th marksheet, Student ID
+- Employment: Temporary, duration-based
+- Student ID: Required field (for tracking academic progress)
+- Salary: Stipend in WOP (₹), does NOT sync to Gusto
+- Reviews: Weekly check-ins, monthly summaries
+- Completion: PPO recommendation or exit (3-year data retention after exit)
 
 **Global Contractor**
-- Required: PAN or equivalent, Signed agreement, Bank proof
+- Required: Tax ID or equivalent, Signed agreement, Bank proof
 - Employment: International contract
-- Currency: Handled in Gusto
+- Currency: $ or equivalent
+- Gusto: NO (unless US-based, then SYNC only)
+- Invoicing: Submits invoices in WOP (full approval workflow)
+- Contract management: Renewal alerts, amendments tracking, invoice workflow
 - Reviews: Delivery-focused
 
 **Global Intern**
-- Required: PAN or equivalent, Aadhaar/Passport, Degree, 10th/12th marksheet
-- Employment: Temporary
+- Required: Tax ID or equivalent, Passport/ID, Degree, 10th/12th marksheet, Student ID
+- Employment: Temporary, duration-based
+- Student ID: Required field (for tracking academic progress)
+- Currency: $ or ₹ equivalent
+- Gusto: YES if US-based, NO otherwise
 - Reviews: Weekly check-ins, monthly summaries
-- Completion: PPO recommendation or exit
+- Completion: PPO recommendation or exit (3-year data retention after exit)
 
 ### Document Verification Workflow (4 States)
 
