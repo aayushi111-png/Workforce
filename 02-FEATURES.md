@@ -12,21 +12,144 @@
 
 ---
 
-## 2. DOCUMENTS
+## 2. DOCUMENTS (Upload Formats & Storage)
 
-**Worker uploads:**
-- PAN card (image/PDF)
-- Aadhaar image (JPG/PNG)
-- Degree certificate (PDF)
-- 10th/12th marksheets (PDF)
-- Bank proof (image/PDF)
-- Signed agreements
+**Supported Document Formats & Limits:**
 
-**HR verifies:**
-1. Click [View in Drive]
-2. Look at document
-3. Click ☑ Mark Verified
-4. Worker sees ✓ Done
+| Document | Formats | Max Size | Notes |
+|----------|---------|----------|-------|
+| PAN Card | PDF, JPG, PNG | 5 MB | Clear image, readable |
+| Aadhaar | PDF, JPG, PNG | 5 MB | Clear image both sides |
+| Degree | PDF | 10 MB | Scanned certificate |
+| 10th Marksheet | PDF, JPG, PNG | 5 MB | Official document |
+| 12th Marksheet | PDF, JPG, PNG | 5 MB | Official document |
+| Bank Proof | PDF, JPG, PNG | 5 MB | Bank statement/cheque |
+| Contracts | PDF | 10 MB | Signed document |
+| Invoices | PDF | 5 MB | Invoice document |
+
+**NOT Accepted:** Word docs, Excel, ZIP, Video, RAW, files >limit
+
+**How Upload Works:**
+
+1. **Worker Uploads:**
+   - Clicks [Upload] next to PAN
+   - Browser opens file picker (filters to: PDF, JPG, PNG)
+   - Selects file (e.g., "pan_rohan.jpg" - 2.3 MB)
+   - Clicks [Upload]
+
+2. **Backend Validation:**
+   - Checks: File format (PDF/JPG/PNG only)
+   - Checks: File size (≤5 MB for images, ≤10 MB for PDFs)
+   - Checks: File not corrupted
+   - If INVALID → Shows error, doesn't upload
+   - If VALID → Proceeds to storage
+
+3. **Stored in Cloud Storage (Primary):**
+   ```
+   gs://katbotz-workforce-docs/2026/worker-001/
+   ├── pan.jpg (2.3 MB)
+   ├── aadhaar.jpg (2.1 MB)
+   ├── degree.pdf (3.5 MB)
+   ├── marksheet_10th.pdf (2.8 MB)
+   ├── marksheet_12th.pdf (3.1 MB)
+   ├── bank_proof.jpg (1.9 MB)
+   └── contract.pdf (4.2 MB)
+   ```
+   
+   Features:
+   - ✓ Encrypted with CMEK (customer-managed keys)
+   - ✓ Versioning enabled (keeps old versions)
+   - ✓ Private bucket (no public access)
+   - ✓ Auto-replicated (redundancy)
+   - ✓ 99.99% availability SLA
+
+4. **Metadata Stored in Firestore:**
+   ```
+   workers/worker-001/documents/pan:
+   ├── status: "Pending" (waiting for HR)
+   ├── file_path: "gs://katbotz-workforce-docs/2026/worker-001/pan.jpg"
+   ├── file_size: "2.3 MB"
+   ├── uploaded_at: "2026-10-20T14:30:00Z"
+   ├── uploaded_by: "worker-001"
+   ├── versions: [v1, v2, v3...]  (old versions)
+   └── verification:
+       ├── status: "Pending"
+       ├── verified_by: null
+       ├── verified_date: null
+       └── rejection_reason: null
+   ```
+
+5. **Daily Backup to Google Drive:**
+   - Runs: 2 AM every night
+   - Copies all documents to: `KATBOTZ Workforce (Backup)/2026/`
+   - Retention: 30-day rolling (old backups auto-deleted)
+   - Purpose: Recovery if Cloud Storage fails
+
+**HR Verifies Document:**
+1. Clicks [View Document] in WOP
+2. System generates Signed URL (secure, temp, 1 hour)
+3. Browser opens Google Cloud Viewer
+4. HR sees: PDF/image (can zoom, rotate, pan)
+5. HR reviews document
+6. HR returns to WOP and clicks:
+   - ☑ [Verify] → Status: Verified
+   - ✗ [Reject + Reason] → Status: Rejected
+
+**Worker Re-uploading (After Rejection):**
+1. Sees: "Rejected: Blurry/Unclear - Please re-upload new document"
+2. Uploads new file (e.g., "pan_clear.jpg")
+3. Old file kept in version history
+4. New file becomes current version
+5. Status resets to: Pending
+6. HR reviews again
+
+**Storage Lifecycle:**
+
+```
+Uploaded (Day 0)
+  ├─ Cloud Storage: Primary copy (encrypted, versioned)
+  ├─ Firestore: Metadata (status, path, size)
+  └─ Backup: None yet
+
+Night 1-2 (2 AM)
+  ├─ Daily backup job runs
+  ├─ Copies to Google Drive: 30-day rolling backup
+  └─ Old backups (>30 days) auto-deleted
+
+HR Reviews (Days 1-3)
+  ├─ Signed URL generated (temporary, secure)
+  ├─ HR views in browser (no download)
+  └─ Status updated: Verified or Rejected
+
+Employee Tenure (Years 1-3)
+  ├─ Cloud Storage: Primary (always available)
+  ├─ Drive backup: Rolling 30-day
+  ├─ Encryption: CMEK (secure)
+  ├─ Versioning: All versions kept
+  └─ Accessible: Anytime by HR
+
+After Exit (Year 3+)
+  ├─ System marks: "Delete on [3-year date]"
+  ├─ Data locked: Can't modify/delete manually
+  ├─ Scheduled job: Auto-deletes on date
+  ├─ Deletion: Firestore + Cloud Storage + Drive
+  └─ Audit log: "Document deleted [date]" (kept forever)
+
+**Storage Cost for 50 Workers:**
+- Cloud Storage: ~5 GB = ₹1.50/month
+- Drive backup: Included in Workspace
+- Total: ~₹2/month
+
+**Version History Example:**
+```
+pan document:
+├── v1: pan.jpg (Oct 20, 2026) - REJECTED: Blurry
+├── v2: pan_clear.jpg (Oct 25, 2026) - REJECTED: Wrong side
+└── v3: pan_final.jpg (Nov 1, 2026) - VERIFIED ✓
+
+Current: v3 (pan_final.jpg)
+All versions kept until worker exits (3-year retention)
+```
 
 **Status (4 States):**
 - **Pending** — Not uploaded yet
@@ -457,29 +580,108 @@ Contractor sees in-portal notification
    └─ Contract expires (no auto-renewal)
    ```
 
-**Contract Amendments Tracking:**
-1. HR clicks "Amend Contract"
-2. Selects what changed:
-   - Scope (new SOW)
-   - Rate (new rate)
-   - Duration (extended or shortened)
-3. System records amendment with:
-   - Old value
-   - New value
-   - Changed by (HR person)
-   - Changed date
-   - Amendment reason
+**Contract Amendments Tracking (Full History):**
+
+**How to Create Amendment:**
+1. HR clicks on contractor's contract
+2. Clicks [Amend Contract]
+3. Selects what changed:
+   - ☐ Scope (new scope of work)
+   - ☐ Rate (change hourly/monthly rate)
+   - ☐ Duration (extend or shorten contract)
+4. For each selected:
+   - Shows current value (read-only)
+   - Enter new value
+   - Reason for change (optional text)
+5. Clicks [Save Amendment]
+
+**What Gets Recorded:**
+- Amendment ID (auto-numbered: Amendment #1, #2, #3...)
+- Change type (scope / rate / duration)
+- Old value (what it was before)
+- New value (what it is now)
+- Reason (why it changed)
+- Changed by (HR person's name)
+- Changed date (timestamp)
+- Approval status (auto-approved by HR)
+
+**Firestore Storage:**
+```
+contract_amendments: [
+  {
+    amendment_id: 1,
+    date: "2026-10-15",
+    type: "scope",
+    old_value: "Build API endpoints",
+    new_value: "Build API + Authentication",
+    reason: "Scope expansion",
+    changed_by: "Priya (HR)"
+  },
+  {
+    amendment_id: 2,
+    date: "2026-11-01",
+    type: "rate",
+    old_value: 500,
+    new_value: 550,
+    reason: "Performance bonus",
+    changed_by: "Priya (HR)"
+  },
+  {
+    amendment_id: 3,
+    date: "2026-12-01",
+    type: "duration",
+    old_value: "6 months",
+    new_value: "12 months",
+    reason: "Contract extension",
+    changed_by: "Priya (HR)"
+  }
+]
+```
+
+**What Updates:**
+- Current contract fields updated (scope, rate, duration)
+- Amendment appended to history (not deleted)
+- If duration changed: renewal_date recalculates
+- If rate changed: next invoice uses new rate
+- Full history preserved (immutable, can't edit)
 
 **Example:**
 ```
-Original: 3-month contract at ₹500/hour
-Amendment 1: Extended to 6 months (same rate)
-Amendment 2: Rate increased to ₹550/hour
-Amendment 3: Additional SOW added (new project)
-→ Full history visible to HR and contractor
+Original Contract (July 1, 2026):
+├─ Scope: "Build API endpoints"
+├─ Rate: ₹500/hour
+└─ Duration: 6 months
+
+Amendment 1 (Oct 15):
+├─ Scope: "Build API endpoints" → "Build API + Authentication"
+
+Amendment 2 (Nov 1):
+├─ Rate: ₹500/hour → ₹550/hour (2nd invoice onwards)
+
+Amendment 3 (Dec 1):
+├─ Duration: 6 months → 12 months
+└─ New renewal date: July 1, 2027 (instead of Dec 31)
+
+Current Status:
+├─ Scope: "Build API + Authentication" ✓
+├─ Rate: ₹550/hour ✓
+├─ Duration: 12 months ✓
+└─ History: 3 amendments recorded ✓
 ```
 
-**Who can see:** HR, Senior HR, contractor (their own contract only)
+**Who can see:**
+- HR: Full amendment history + can create new amendments
+- Senior HR: Full amendment history + can create
+- Contractor: Can see all amendments affecting their contract
+- Everyone else: No access
+
+**Why Amendments Matter:**
+✓ Compliance: Full audit trail for audits/disputes
+✓ Transparency: Contractor sees all changes
+✓ Negotiation history: Shows improvements (rate increases)
+✓ Invoicing accuracy: Uses correct current rate
+✓ Renewal tracking: Handles duration changes automatically
+✓ No deletions: Immutable history prevents "I never agreed to that"
 
 ---
 
