@@ -293,7 +293,64 @@ One web application where:
 - Workers must be marked as "US Employee" in WOP
 - Gusto only syncs for employees in US (not contractors, not international)
 - Indian employees/contractors NOT synced to Gusto (they have separate payroll)
-3. No automatic sync back to WOP (one-way for compliance)
+
+### How Sync IDs Are Created & Managed
+
+**Sync ID Creation (Step-by-Step):**
+
+1. **Worker Created in WOP**
+   - HR manually creates worker, OR
+   - Zoho auto-creates worker from offer
+   - WOP generates: wop_worker_id = "worker-001"
+
+2. **Worker Marked as "Active"**
+   - HR clicks: Activate Worker
+   - System checks: Is location = "US"? Is type = "Employee"?
+   - If YES → Trigger Gusto sync
+
+3. **WOP Sends to Gusto API**
+   - WOP calls: POST /api/gusto/employees
+   - Sends: name, email, department, salary, start_date
+   - Gusto creates employee and returns: gusto_id = "emp-789456"
+
+4. **WOP Stores the Mapping**
+   - Links WOP worker ID to Gusto ID
+   - Stores in database: gusto_mapping.gusto_id = "emp-789456"
+   - Sets: sync_status = "synced"
+
+5. **Future Updates Use This ID**
+   - HR changes salary
+   - WOP detects change
+   - WOP looks up Gusto ID ("emp-789456")
+   - WOP calls: PUT /api/gusto/employees/emp-789456
+   - Sends updated salary
+   - Gusto confirms update
+   - WOP sets: last_sync = "2026-06-20T14:00:00Z"
+
+**Storage Structure:**
+```
+WOP Database:
+workers/worker-001:
+  name: "John Smith"
+  email: "john@katbotz.com"
+  location: "US"
+  
+  gusto_mapping:
+    gusto_id: "emp-789456"      ← The sync ID
+    sync_status: "synced"        ← Is it synced?
+    last_sync: "2026-06-20T14:00:00Z"
+    sync_error: null             ← Any errors?
+```
+
+**Error Handling:**
+
+If sync fails:
+1. WOP logs the error
+2. Sets sync_status = "failed"
+3. Auto-retries every 5 minutes (for 1 hour)
+4. If still failing after 24h, alerts Senior HR
+5. HR can manually click: "Retry Gusto Sync"
+6. System immediately retries
 
 **Data Mapping:**
 

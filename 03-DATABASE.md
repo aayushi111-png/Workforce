@@ -17,6 +17,18 @@ workers/{worker_id}
   student_id: "STU-2026-001" (interns only)
   location: "India" // or "US", "Other"
   
+  ═══ GUSTO SYNC (US Employees Only) ═══
+  gusto_mapping:
+    gusto_id: "emp-789456" (Gusto's unique employee ID)
+    gusto_sync_enabled: true
+    sync_status: "synced" // or "pending", "syncing", "failed", "paused"
+    first_synced_at: "2026-06-15T10:30:00Z"
+    last_sync: "2026-06-20T14:00:00Z"
+    last_sync_fields: ["salary", "department"]
+    sync_error: null (error message if failed)
+    retry_count: 0
+    next_retry_at: null
+  
   ═══ PROJECT ═══
   project:
     name: "Mobile App Redesign"
