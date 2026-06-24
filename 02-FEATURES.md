@@ -40,13 +40,24 @@
 3. HR reviews file in Drive
 4. HR returns to WOP:
    - **Option A:** Click ☑ Mark Verified → Status: Verified
-   - **Option B:** Click ✗ Reject + reason → Status: Rejected
+   - **Option B:** Click ✗ Reject + select reason from dropdown
+
+**Rejection Reason Dropdown Options:**
+- Unclear/Blurry (can't read)
+- Expired (document is no longer valid)
+- Invalid (not the right document type)
+- Incomplete (missing information)
+- Damage/Torn (document is damaged)
+- Wrong Document (submitted wrong document)
+- Illegible Signature (signature unreadable)
+- Other (specify in text)
 
 **Worker View:**
 - Pending → "Waiting for upload"
 - Under Review → "HR is checking"
 - Verified → "✓ Approved"
-- Rejected → "Rejected: [reason] - Please re-upload new document"
+- Rejected → "Rejected: Unclear/Blurry - Please re-upload new document"
+  (Shows the specific reason so worker knows what to fix)
 
 ---
 

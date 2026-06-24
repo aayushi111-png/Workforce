@@ -120,8 +120,9 @@ One web application where:
 **Indian Employee**
 - Required: PAN, Aadhaar image, Degree, 10th marksheet, 12th marksheet, Bank proof
 - Employment: Full-time, permanent
-- Salary: Enters into WOP, syncs to Gusto
+- Salary: Enters into WOP (₹), does NOT sync to Gusto (separate payroll)
 - Reviews: 30-day, 60-day, 90-day, annual
+- Payroll: Managed externally (not in scope)
 
 **Indian Contractor**
 - Required: PAN, Signed agreement, Bank proof
@@ -141,21 +142,39 @@ One web application where:
 - Reviews: Weekly check-ins, monthly summaries
 - Completion: PPO recommendation or exit
 
-### Document Verification Workflow
+### Document Verification Workflow (4 States)
 
-**Status Options:**
+**State 1: Pending**
+- Worker hasn't uploaded document yet
+- HR sees: "Waiting for upload"
 
-1. Verified
-   - HR has reviewed document and confirmed it is acceptable
-   - Worker sees status as "Verified by [HR name] on [date]"
-   - Compliance gate counts as satisfied
+**State 2: Under Review**
+- Worker uploaded document
+- HR clicks "View Document"
+- Status auto-changes to "Under Review"
+- HR has 24-48 hours to review
 
-2. Rejected
-   - HR has determined document does not meet requirements
-   - Reason provided (e.g., "Passport expired, must be valid")
-   - Worker receives notification with rejection reason
-   - Worker must upload complete new document
-   - Document returns to "Pending" status for re-review
+**State 3: Verified**
+- HR has reviewed document and confirmed it is acceptable
+- HR clicks: [☑ Mark Verified]
+- Worker sees: "✓ Verified by [HR name] on [date]"
+- Document gate satisfied for onboarding
+
+**State 4: Rejected**
+- HR has determined document does not meet requirements
+- HR clicks: [✗ Reject]
+- HR selects rejection reason from dropdown:
+  * Unclear/Blurry (can't read text)
+  * Expired (document no longer valid)
+  * Invalid (wrong document type)
+  * Incomplete (missing information)
+  * Damaged/Torn (document is damaged)
+  * Wrong Document (uploaded wrong document)
+  * Illegible Signature (signature unreadable)
+  * Other (specify in text)
+- Worker sees: "Rejected: Unclear/Blurry - Please re-upload new document"
+- Worker uploads NEW document (not modification of old)
+- Cycle repeats from Pending state
 
 ---
 

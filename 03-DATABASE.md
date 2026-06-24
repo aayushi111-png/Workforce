@@ -88,12 +88,42 @@ workers/{worker_id}
   
   ═══ DOCUMENTS ═══
   documents:
-    pan: { status: "verified", verified_by: "Priya", verified_date: "2026-06-23" }
-    aadhaar: { status: "pending" }
-    degree: { status: "verified" }
-    10th_marksheet: { status: "verified" }
-    12th_marksheet: { status: "verified" }
-    bank_proof: { status: "verified" }
+    pan: {
+      status: "verified",  // States: pending, under_review, verified, rejected
+      verified_by: "Priya (HR)",
+      verified_date: "2026-06-23",
+      rejection_reason: null
+    }
+    aadhaar: {
+      status: "under_review",
+      verified_by: null,
+      verified_date: null,
+      rejection_reason: null
+    }
+    degree: {
+      status: "rejected",
+      verified_by: "Priya (HR)",
+      verified_date: "2026-06-20",
+      rejection_reason: "Blurry/Unclear" // Dropdown options: Unclear, Expired, Invalid, Incomplete, Damaged, WrongDocument, IllegalibleSignature, Other
+    }
+    10th_marksheet: {
+      status: "verified",
+      verified_by: "Priya (HR)",
+      verified_date: "2026-06-22",
+      rejection_reason: null
+    }
+    12th_marksheet: {
+      status: "verified",
+      verified_by: "Priya (HR)",
+      verified_date: "2026-06-23",
+      rejection_reason: null
+    }
+    bank_proof: {
+      status: "pending",
+      verified_by: null,
+      verified_date: null,
+      rejection_reason: null
+    }
   
   ═══ CONTRACT (For Contractors Only) ═══
   contract:
