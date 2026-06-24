@@ -8,10 +8,14 @@
 workers/{worker_id}
   name: "Rohan Mehta"
   email: "rohan@katbotz.com"
-  type: "Employee"  // or "Contractor", "Intern"
+  type: "Employee"  // or "Contractor", "Global Contractor", "Intern", "Global Intern"
   department: "Engineering"
   team_lead: "Akshat"
   created_at: "2026-06-01"
+  
+  // Additional fields for contractors and interns
+  student_id: "STU-2026-001" (interns only)
+  location: "India" // or "US", "Other"
   
   ═══ PROJECT ═══
   project:
@@ -79,13 +83,77 @@ workers/{worker_id}
     12th_marksheet: { status: "verified" }
     bank_proof: { status: "verified" }
   
-  ═══ OTHER ═══
+  ═══ CONTRACT (For Contractors Only) ═══
   contract:
-    renewal_date: "2029-06-01"
+    start_date: "2026-06-01"
+    renewal_date: "2026-09-01"
+    duration_months: 3
+    scope: "Build API endpoints"
+    rate: 500 (₹ or $)
+    rate_type: "per_hour" // or "per_month", "fixed"
+    additional_sow: "Authentication module"
+    status: "active"
+    
+  contract_amendments: [
+    {
+      amendment_id: 1,
+      date: "2026-06-15",
+      changed_by: "Priya (HR)",
+      changes: {
+        scope: { old: "Build API endpoints", new: "Build API + Authentication" },
+        additional_sow: "Authentication module"
+      }
+    },
+    {
+      amendment_id: 2,
+      date: "2026-07-01",
+      changed_by: "Priya (HR)",
+      changes: {
+        rate: { old: 500, new: 550 }
+      }
+    }
+  ]
+  
+  renewal_alerts: [
+    { days_until_expiry: 90, alerted_on: "2026-06-02" },
+    { days_until_expiry: 60, alerted_on: "2026-07-02" },
+    { days_until_expiry: 30, alerted_on: "2026-08-02" },
+    { days_until_expiry: 7, alerted_on: "2026-08-25" }
+  ]
+  
+  ═══ INVOICES (For Contractors Only) ═══
+  invoices: [
+    {
+      invoice_id: "INV-2026-001",
+      date_submitted: "2026-06-30",
+      invoice_period: "2026-06-01 to 2026-06-30",
+      amount: 12000,
+      status: "Submitted", // or "Approved", "Finance Review", "Paid"
+      file_link: "https://drive.google.com/.../invoice.pdf",
+      approved_by: null,
+      approved_date: null,
+      finance_reviewed_by: null,
+      finance_reviewed_date: null,
+      paid_date: null
+    },
+    {
+      invoice_id: "INV-2026-002",
+      date_submitted: "2026-07-30",
+      invoice_period: "2026-07-01 to 2026-07-31",
+      amount: 13200, // 550 rate × higher hours
+      status: "Approved",
+      file_link: "https://drive.google.com/.../invoice2.pdf",
+      approved_by: "Priya (HR)",
+      approved_date: "2026-07-31",
+      finance_reviewed_by: null,
+      finance_reviewed_date: null,
+      paid_date: null
+    }
+  ]
   
   todo: [
     { id: 1, task: "Finish report", done: false },
-    { id: 2, task: "Send invoice", done: true }
+    { id: 2, task: "Submit invoice", done: true }
   ]
   
   offboarding:

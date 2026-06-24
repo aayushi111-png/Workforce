@@ -28,15 +28,25 @@
 3. Click ☑ Mark Verified
 4. Worker sees ✓ Done
 
-**Status:**
-- Pending (not uploaded yet)
-- Submitted (uploaded, waiting for verification)
-- Verified (HR approved)
-- Rejected (HR rejected, must re-upload)
+**Status (4 States):**
+- **Pending** — Not uploaded yet
+- **Under Review** — Uploaded, HR is reviewing
+- **Verified** — HR approved, acceptable
+- **Rejected** — HR rejected, worker must re-upload new document
 
-**HR Options:**
-1. Mark Verified (document is acceptable)
-2. Reject with reason (document is invalid, worker must re-upload new document)
+**HR Workflow:**
+1. Document uploaded → Status: Pending
+2. HR clicks "View in Drive" → Status: Under Review (auto-marked when HR opens)
+3. HR reviews file in Drive
+4. HR returns to WOP:
+   - **Option A:** Click ☑ Mark Verified → Status: Verified
+   - **Option B:** Click ✗ Reject + reason → Status: Rejected
+
+**Worker View:**
+- Pending → "Waiting for upload"
+- Under Review → "HR is checking"
+- Verified → "✓ Approved"
+- Rejected → "Rejected: [reason] - Please re-upload new document"
 
 ---
 
@@ -288,7 +298,117 @@ June 22, 04:45 PM — Priya verified Degree (Rohan)
 
 ---
 
-## 15. AUTO-DELETE (After 3 Years)
+## 15. CONTRACT MANAGEMENT (Contractors Only)
+
+**What's Tracked:**
+- Contract start date
+- Contract end date (renewal date)
+- Scope (scope of work)
+- Rate (per hour or per month)
+- Duration (contract length)
+- Additional SOW (additional statements of work)
+- Amendment history (all changes tracked)
+
+**Renewal Alerts (Automated):**
+- **90 days before expiry:** Alert to HR
+- **60 days before expiry:** Second alert to HR
+- **30 days before expiry:** Escalation to Senior HR
+- **7 days before expiry:** Final alert + "Contract expiring soon" badge
+
+**Contract Amendments Tracking:**
+1. HR clicks "Amend Contract"
+2. Selects what changed:
+   - Scope (new SOW)
+   - Rate (new rate)
+   - Duration (extended or shortened)
+3. System records amendment with:
+   - Old value
+   - New value
+   - Changed by (HR person)
+   - Changed date
+   - Amendment reason
+
+**Example:**
+```
+Original: 3-month contract at ₹500/hour
+Amendment 1: Extended to 6 months (same rate)
+Amendment 2: Rate increased to ₹550/hour
+Amendment 3: Additional SOW added (new project)
+→ Full history visible to HR and contractor
+```
+
+**Who can see:** HR, Senior HR, contractor (their own contract only)
+
+---
+
+## 16. INVOICE WORKFLOW (Contractors Only)
+
+**Invoice States:**
+1. **Submitted** — Contractor submits invoice
+2. **Approved** — HR approves (amount verified)
+3. **Finance Review** — Finance team reviews (payment details checked)
+4. **Paid** — Payment processed (marked complete)
+
+**Contractor Submits Invoice:**
+1. Click "Submit Invoice"
+2. Enter invoice details:
+   - Invoice number (e.g., INV-2026-001)
+   - Amount (₹)
+   - Period (June 1–30, 2026)
+   - Description of work
+   - Invoice date
+3. Upload invoice file (PDF/image)
+4. Click [Submit]
+5. Status: Submitted
+
+**HR Approves:**
+1. Sees notification: "New invoice from [Contractor]"
+2. Reviews invoice
+3. Verifies:
+   - Amount matches contract rate
+   - Work period is correct
+   - Invoice format is acceptable
+4. Clicks ☑ [Approve] or ✗ [Reject with reason]
+5. If approved → Status: Approved
+
+**Finance Review:**
+1. Sees notification: "Invoice approved by HR, ready for payment"
+2. Reviews:
+   - Payment details (bank account)
+   - Amount verification
+   - Tax implications (1099 if US contractor)
+3. Clicks ☑ [Ready for Payment] or ✗ [Reject]
+4. If approved → Status: Finance Review
+
+**Payment Processing:**
+1. Finance processes payment through Gusto (US) or bank transfer (others)
+2. Payment sent to contractor bank account
+3. Invoice marked: ☑ [Paid]
+4. Contractor notified: "Your invoice was paid on [date]"
+
+**Example Timeline:**
+```
+June 30: Contractor submits invoice
+July 1 09:00 AM: HR approves
+July 1 10:30 AM: Finance reviews
+July 2: Payment processed
+July 3: Status: Paid
+```
+
+**Contractor View:**
+- List of all invoices (with status)
+- "Pending payment" count (Submitted + Approved + Finance Review)
+- "Paid" section (completed invoices)
+
+**HR View:**
+- All contractor invoices (across all contractors)
+- Filter by status
+- Total outstanding (not yet paid)
+- Total paid (this month, this year)
+
+---
+
+## 17. AUTO-DELETE (After 3 Years)
 
 **What happens:**
 1. Worker exits on June 30, 2026
@@ -309,19 +429,21 @@ June 22, 04:45 PM — Priya verified Degree (Rohan)
 
 ## Feature Summary
 
-15 features implemented:
-1. Worker profiles and types
-2. Document management and verification
+17 features implemented:
+1. Worker profiles and types (Employee, Contractor, Intern, Global Intern, Global Contractor + Student ID)
+2. Document management with 4-state verification (Pending, Under Review, Verified, Rejected)
 3. Project assignment and tracking
-4. Goals management
+4. Goals management (set, track, achieve)
 5. Weekly progress summaries
-6. Performance reviews
-7. Contract tracking
-8. Personal to-do lists
-9. Automatic data deletion after 3 years
-10. Zoho Recruit integration
-11. Gusto integration
-12. 7-role access control
-13. Audit trail and logging
-14. In-portal notifications
-15. Offboarding workflows
+6. Performance reviews (30/60/90-day, annual)
+7. Contract management with renewal alerts (90, 60, 30, 7 days)
+8. Contract amendments tracking (scope, rate, duration, SOW)
+9. Invoice workflow (Submitted → Approved → Finance Review → Paid)
+10. Personal to-do lists
+11. Automatic data deletion after 3 years
+12. Zoho Recruit integration (auto-create workers)
+13. Gusto integration (US employees only)
+14. 7-role access control
+15. Audit trail and logging
+16. In-portal notifications
+17. Offboarding workflows

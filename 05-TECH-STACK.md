@@ -231,9 +231,25 @@ audit_logs/{log_id}
 
 ---
 
-## 3. DOCUMENT STORAGE (GOOGLE DRIVE)
+## 3. DOCUMENT STORAGE: GOOGLE DRIVE vs GOOGLE CLOUD STORAGE
 
-### Folder Structure
+### Choice: Google Drive (Not Cloud Storage Buckets)
+
+**Why Drive instead of Cloud Storage?**
+
+| Aspect | Google Drive | Cloud Storage |
+|--------|-------------|-----------------|
+| **User-friendly** | Yes (like Dropbox) | No (technical buckets) |
+| **Version history** | Built-in (30 days) | Must manage manually |
+| **Sharing** | Easy (click share) | Complex (IAM roles) |
+| **Mobile access** | Native app + web | Web only |
+| **HR can preview** | Yes (built-in viewer) | Requires download |
+| **Cost** | Included Workspace | Billed separately |
+| **Compliance** | CMEK support | CMEK support |
+
+**Decision:** Drive is simpler, HR-friendly, and already included in Workspace.
+
+### Folder Structure (Google Drive)
 ```
 KATBOTZ Workforce/
 └── 2026/
@@ -243,22 +259,24 @@ KATBOTZ Workforce/
     │   ├── Degree.pdf
     │   ├── Marksheet_10th.pdf
     │   ├── Marksheet_12th.pdf
-    │   └── Bank_Proof.pdf
+    │   ├── Bank_Proof.pdf
+    │   └── Contract.pdf (for contractors)
     ├── Sara Lim/
     │   └── [documents...]
     └── [other workers]/
 └── Archive/
     ├── 2025/
-    │   └── [exited workers]
+    │   └── [exited workers folders]
     └── [historical years]
 ```
 
 ### How Documents Flow
 1. **Upload:** Worker uploads file → Cloud Run receives → Stores in Drive
 2. **Verification:** HR clicks file in WOP → Opens Drive link → Reviews file → Marks status
-3. **Status:** WOP tracks Pending/Verified/Rejected
+3. **Status:** WOP tracks Pending/Under Review/Verified/Rejected
 4. **Link Storage:** WOP stores Google Drive link, not the file itself
 5. **Access:** HR shares folder with worker (upload permission), HR has full access
+6. **Version History:** Drive keeps 30-day version history (auto-managed)
 
 ---
 
@@ -444,7 +462,56 @@ KATBOTZ Workforce/
 
 ---
 
-## 8. SYSTEM SPECIFICATIONS BY USER TYPE
+## 8. WORKER TYPES WITH DISTINCTION
+
+### Types & Requirements
+
+**1. Indian Employee**
+- Required docs: PAN, Aadhaar, Degree, 10th/12th marksheets, Bank proof
+- Salary: ₹ (Indian Rupees)
+- Gusto: NO (payroll handled separately)
+- Invoices: NO
+- Review schedule: 30/60/90-day + annual
+
+**2. Global Contractor (US or International)**
+- Required docs: PAN/Tax ID, Signed agreement, Bank proof
+- Salary: $ or equivalent
+- Gusto: YES (US only) / NO (International - external payroll)
+- Invoices: YES (full approval workflow)
+- Review schedule: Contract-based (renewal-focused)
+- Student ID: NO
+- Contract tracking: YES (scope, rate, duration, amendments)
+
+**3. Global Intern**
+- Required docs: PAN/Tax ID, Aadhaar/Passport, Degree, 10th/12th marksheets
+- Salary: ₹/$/equivalent
+- Gusto: NO (unless US-based employee, then YES)
+- Invoices: NO
+- Review schedule: Weekly check-ins + monthly summaries
+- Student ID: YES (required)
+- Completion: PPO recommendation or exit
+
+**4. Indian Contractor**
+- Required docs: PAN, Signed agreement, Bank proof
+- Salary: ₹ (Indian Rupees)
+- Gusto: NO (payroll handled separately)
+- Invoices: YES (full approval workflow)
+- Review schedule: Contract-based (renewal-focused)
+- Student ID: NO
+- Contract tracking: YES (scope, rate, duration, amendments)
+
+**5. Indian Intern**
+- Required docs: PAN, Aadhaar, Degree, 10th/12th marksheets
+- Salary: ₹ (Indian Rupees) or stipend
+- Gusto: NO
+- Invoices: NO
+- Review schedule: Weekly check-ins
+- Student ID: YES (required)
+- Completion: PPO recommendation or exit
+
+---
+
+## 9. SYSTEM SPECIFICATIONS BY USER TYPE
 
 ### Worker (Employee/Contractor/Intern) View
 

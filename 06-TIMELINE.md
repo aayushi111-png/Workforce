@@ -1,4 +1,11 @@
-# BUILD TIMELINE — 3 Weeks
+# BUILD TIMELINE — 6 Weeks (1.5 Months)
+
+**Start:** July 1, 2026  
+**Development End:** August 13, 2026  
+**Duration:** 6 weeks  
+**Testing & Polish:** August 14–27  
+**Handover:** August 28 – September 3  
+**Go-Live:** September 4, 2026
 
 ---
 
@@ -13,116 +20,147 @@
 - **Day 4 (July 4):** HR dashboard: list all workers
 - **Day 5 (July 5):** Test: Can log in? Can create worker? Can see list?
 
-**Hours:** 19 hours  
-**Status:** ✓ System is live at workforce.katbotz.com. Workers can log in.
+**Status:** System is live at workforce.katbotz.com. Workers can log in.
 
 ---
 
-## WEEK 2 (July 7–11) — Core Features
+## WEEK 2 (July 7–11) — Core Features (Part 1)
 
 **Goal:** Documents, Projects, Goals working.
 
 **Daily breakdown:**
 - **Day 1 (July 7):** Worker dashboard skeleton + document upload form
-- **Day 2 (July 8):** Document upload to Drive, status tracking
-- **Day 3 (July 9):** HR checklist: ☑ Mark documents verified
+- **Day 2 (July 8):** Document upload to Drive, status tracking (Pending/Under Review/Verified/Rejected)
+- **Day 3 (July 9):** HR document verification UI with 4 states
 - **Day 4 (July 10):** Project assignment (HR assigns project + project lead)
-- **Day 5 (July 11):** Goals form (set goals, track progress), Performance form
+- **Day 5 (July 11):** Goals form (set goals, track progress)
 
-**Hours:** 22 hours  
-**Status:** ✓ Workers can upload docs. HR can verify. Projects + Goals work.
+**Status:** Documents, projects, goals functional.
 
 ---
 
-## WEEK 3 (July 14–20) — Complete Features
+## WEEK 3 (July 14–18) — Core Features (Part 2)
 
-**Goal:** Weekly summary, reviews, offboarding, notifications.
+**Goal:** Performance, reviews, to-do, weekly summaries.
 
 **Daily breakdown:**
-- **Day 1 (July 14):** Weekly summary form (worker writes what happened)
-- **Day 2 (July 15):** Reviews system (30/60/90-day, annual reviews)
-- **Day 3 (July 16):** Contract dates (manual entry), renewal alerts
-- **Day 4 (July 17):** Offboarding workflow (mark exit, auto-delete after 3y)
-- **Day 5 (July 20):** Notifications (in-portal alerts), personal to-do list
+- **Day 1 (July 14):** Performance form (rating + feedback)
+- **Day 2 (July 15):** Review scheduling (30/60/90-day, annual)
+- **Day 3 (July 16):** Personal to-do lists (create, check, delete)
+- **Day 4 (July 17):** Weekly summary form (per worker)
+- **Day 5 (July 18):** Test all features end-to-end
 
-**Hours:** 21 hours  
-**Status:** ✓ All 12 features done. Ready for testing.
-
----
-
-## WEEK 4 (July 21 – Aug 15) — Testing & Fixes
-
-**Goal:** Real HR tests with real workers. Find and fix bugs.
-
-**Phase 1 (July 21–25):** Priya's initial test
-- Create 5 fake workers
-- Upload documents
-- Verify documents
-- Check goals, reviews, everything
-
-**Phase 2 (July 28 – Aug 1):** Bug fixes
-- Fix any issues Priya found
-- Improve UI if needed
-- Optimize performance
-
-**Phase 3 (Aug 4–15):** Final polish
-- Training for Priya
-- Documentation
-- Runbook (how to restart if breaks)
-- Final handover prep
-
-**Status:** ✓ System is solid. Ready for KATBOTZ tech person.
+**Status:** All 15 core features implemented.
 
 ---
 
-## WEEK 5 (Aug 18–22) — Handover
+## WEEK 4 (July 21–25) — Contractor & Contract Management
 
-**Aug 18–20:** Priya does final testing (with you watching)
-**Aug 21:** Tech person training (15 min overview)
-**Aug 22:** Hand over all credentials, code, docs
+**Goal:** Contractor-specific features, contract tracking, renewal alerts, amendments, invoices.
 
-**Status:** ✓ KATBOTZ tech person now owns the system.
+**Daily breakdown:**
+- **Day 1 (July 21):** Contractor distinguishment (Intern vs Global Contractor) + Student ID field
+- **Day 2 (July 22):** Contract storage schema (scope, rate, duration, SOW, amendments)
+- **Day 3 (July 23):** Renewal alert system (90, 60, 30, 7 days before expiry)
+- **Day 4 (July 24):** Contract amendment workflow (tracking scope/rate/duration changes)
+- **Day 5 (July 25):** Invoice workflow (Submitted → Approved → Finance Review → Paid)
 
----
-
-## SEPT 1 — GO LIVE
-
-Workers start using WOP.  
-Google Sheets retired.  
-System is live.
+**Status:** Full contractor + contract management system.
 
 ---
 
-## Timeline Summary
+## WEEK 5 (July 28 – Aug 1) — Integrations & Advanced Features
 
-| Week | What | Hours | Status |
-|------|------|-------|--------|
-| 1 | Foundations | 19 | Login works |
-| 2 | Core | 22 | Docs + Projects work |
-| 3 | Complete | 21 | All features done |
-| 4 | Testing | 20 | Bug fixes |
-| 5 | Handover | 15 | Tech person takes over |
-| **Total** | | **97** | **Ready to launch** |
+**Goal:** Zoho Recruit, Gusto, offboarding, auto-delete, notifications.
 
----
+**Daily breakdown:**
+- **Day 1 (July 28):** Zoho Recruit integration (auto-create workers from offers)
+- **Day 2 (July 29):** Gusto integration (US employees only, auto-sync)
+- **Day 3 (July 30):** Offboarding workflow (mark for exit, 3-year retention, auto-delete)
+- **Day 4 (July 31):** Notifications system (in-portal alerts)
+- **Day 5 (Aug 1):** Audit trail + logging (all actions recorded)
 
-## Flexibility
-
-If something takes longer (debugging, data issues), you get 3–5 extra days within the buffer. Just adjust handover date:
-- Normal: Hand over Aug 22, live Sept 1
-- With buffer: Hand over Aug 25–30, live Sept 3–8
-
-Still before school starts.
+**Status:** All integrations and advanced features live.
 
 ---
 
-## No Crunch
+## WEEK 6 (Aug 4–8) — Polish & Optimization
 
-4.5 hours/day × 5 days/week = manageable.  
-Everything is planned.  
-Nothing is complex.  
-Should stay on track.
+**Goal:** Performance, security, error handling, code cleanup.
+
+**Daily breakdown:**
+- **Day 1 (Aug 4):** Performance optimization (query indexing, caching)
+- **Day 2 (Aug 5):** Security hardening (encryption, session management)
+- **Day 3 (Aug 6):** Error handling (Zoho, Gusto sync failures, retries)
+- **Day 4 (Aug 7):** UI/UX polish (visual refinement, accessibility)
+- **Day 5 (Aug 8):** Code review and cleanup
+
+**Status:** Production-ready codebase.
 
 ---
 
-## Ready to start July 1?
+## WEEK 7–8 (Aug 11–27) — Testing & Handover Prep
+
+**Week 7 (Aug 11–15) — Full System Testing**
+- Priya (Senior HR) performs complete end-to-end testing
+- Test all workflows with real data
+- Test all integrations (Zoho, Gusto)
+- Test backup and restore procedures
+- Document all bugs and issues
+- **Status:** Bug identification complete
+
+**Week 8 (Aug 18–27) — Bug Fixes & Handover Prep**
+- Fix all critical and high-priority bugs
+- Create operational documentation
+- Prepare GitHub access transfer
+- Prepare GCP credentials transfer
+- Final infrastructure checks
+- HR training session with Priya
+- **Status:** All systems green, ready for handover
+
+---
+
+## HANDOVER PERIOD (Aug 28 – Sept 3)
+
+**Aug 28–29:** Transfer GitHub access to KATBOTZ tech person  
+**Aug 30–31:** Transfer GCP credentials and infrastructure  
+**Sept 1–2:** Final verification by KATBOTZ tech person  
+**Sept 3:** Sign-off and approval  
+
+---
+
+## GO-LIVE (Sept 4, 2026)
+
+All users switch to WOP  
+Google Sheets/Docs retired  
+System in full production use
+
+---
+
+## TOTAL TIME BREAKDOWN
+
+| Phase | Duration | Dates |
+|-------|----------|-------|
+| Development | 6 weeks | July 1 – Aug 13 |
+| Testing | 2 weeks | Aug 14 – Aug 27 |
+| Handover | 1 week | Aug 28 – Sept 3 |
+| **Total** | **9 weeks** | **July 1 – Sept 3** |
+| **Go-Live** | — | **Sept 4, 2026** |
+
+---
+
+## DAILY COMMITMENT
+
+- **Duration:** July 1 – August 13 (6 weeks)
+- **Hours per day:** 4–5 hours
+- **Days per week:** 5 days (Mon–Fri)
+- **Total hours:** ~150 hours
+- **Developer:** Aayushi Pandey
+
+---
+
+## SUPPORT MODEL
+
+**Sept 4–30:** Aayushi on-call for critical issues (1-hour response)  
+**Oct 1+:** KATBOTZ tech person owns system
+
