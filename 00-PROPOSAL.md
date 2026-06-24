@@ -257,15 +257,81 @@ One web application where:
 
 ## 5. INTEGRATION SPECIFICATIONS
 
-### Zoho Recruit Integration
+### Zoho Recruit Integration (AUTO-CREATE Workers via Webhook)
 
 **Purpose:** Automatically create worker profiles in WOP when offer is accepted in Zoho Recruit.
 
+**How It Works: WEBHOOKS (Automatic Messenger)**
+
+A webhook is an automatic connection between Zoho and WOP:
+- Zoho is the restaurant (has job offers)
+- WOP is the delivery app (needs new worker orders)
+- Webhook is the automatic call when order (offer) is ready
+
+```
+Without Webhook (Wasteful):
+WOP asks Zoho every 5 min: "Any new offers?"
+Result: Lots of unnecessary questions
+
+With Webhook (Efficient):
+When offer accepted in Zoho → Zoho automatically calls WOP
+Result: WOP knows immediately, no wasted calls
+```
+
+**Setup Process: 2 Phases**
+
+**Phase 1: During WOP Development (Week 1-2)**
+1. WOP backend creates endpoint (like a doorbell):
+   ```
+   POST https://wop-backend.katbotz.com/api/zoho/worker-created
+   ```
+2. Endpoint logic:
+   - Receive data from Zoho
+   - Validate email (@katbotz.com)
+   - Create worker in Firestore
+   - Create Google Drive folder
+   - Send welcome email to worker
+   - Log action in audit trail
+3. Deploy to Cloud Run (server is now live)
+
+**Phase 2: After WOP is Live (Week 3)**
+1. Get WOP backend URL: https://wop-backend.katbotz.com/api/zoho/worker-created
+2. Go to Zoho Recruit → Settings → Webhooks
+3. Click [+ New Webhook]
+4. Fill in:
+   - Name: "WOP Worker Creation"
+   - Event: "Offer Status Changed to Accepted"
+   - URL: https://wop-backend.katbotz.com/api/zoho/worker-created
+   - Method: POST
+5. Click [Create]
+6. Test: Mark offer as accepted in Zoho
+7. Verify: Worker appears in WOP ✓
+
+**Webhook Flow (Automatic):**
+```
+Zoho Recruit                                    WOP Backend
+     │                                              │
+     │ HR marks offer: "ACCEPTED"                   │
+     │                                              │
+     ├─────── Webhook triggers (automatic) ───────→ │
+     │        (No manual work needed)               │
+     │                                              │
+     │                                    ✓ Receives data
+     │                                    ✓ Validates email
+     │                                    ✓ Creates worker
+     │                                    ✓ Creates Drive folder
+     │                                    ✓ Sends welcome email
+     │                                    ✓ Logs in audit trail
+     │                                              │
+     │                           SUCCESS: Worker Created!
+     │                                              │
+```
+
 **Data Flow:**
 1. Recruiter in Zoho Recruit marks offer status as "Accepted"
-2. Zoho Recruit system sends API call to WOP with:
+2. Zoho webhook automatically sends data to WOP:
    - Candidate name
-   - Email address
+   - Email address (@katbotz.com)
    - Position/Job title
    - Department
    - Joining date

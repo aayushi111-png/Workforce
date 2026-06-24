@@ -4,14 +4,59 @@
 
 ## WORKFLOW 1: Worker Onboarding
 
-**Step 1: HR Creates Worker**
-1. HR clicks [Create Worker]
+**Option A: Zoho Auto-Creates Worker (Preferred - No Manual Entry)**
+
+**How It Works (WEBHOOK):**
+```
+Zoho Recruit (HR accepts offer)
+         ↓
+    Webhook sends data
+         ↓
+WOP auto-creates worker
+         ↓
+Worker gets email
+```
+
+**Detailed Steps:**
+1. Recruiter in Zoho Recruit marks candidate offer: "Accepted"
+2. Zoho webhook automatically sends data to WOP
+3. WOP backend receives webhook:
+   - Validates email (@katbotz.com)
+   - Creates worker in Firestore (worker_id auto-generated)
+   - Creates Google Drive folder for documents
+   - Generates document checklist (based on worker type)
+   - Sends welcome email to worker
+   - Logs action in audit trail
+4. Worker receives email: "Your WOP account is ready"
+5. Worker can log in immediately
+6. **NO MANUAL HR ENTRY NEEDED** ✓
+
+**Webhook Setup (Once During Week 3):**
+- WOP backend has endpoint: https://wop-backend.katbotz.com/api/zoho/worker-created
+- Zoho Settings → Webhooks → Configure to send data to that URL
+- When offer marked "Accepted" in Zoho → Auto-sends to WOP
+- Worker created in seconds
+
+---
+
+**Option B: HR Manually Creates Worker (Backup - If Zoho Not Connected)**
+
+**When to use:** Zoho not available, or manual override needed
+
+**Step 1: HR Creates Worker Manually**
+1. HR goes to WOP → [+ Create Worker]
 2. Enters: Name, Email, Type (Employee/Contractor/Intern)
 3. Selects: Department, Team Lead
 4. Clicks [Create]
-5. System auto-generates document checklist + creates Google Drive folder
+5. System auto-generates:
+   - Document checklist
+   - Google Drive folder
+   - Welcome email to worker
+6. Worker gets email and can log in
 
-**Step 2: Worker Logs In**
+---
+
+**Step 2: Worker Logs In** (Same for Both Options)
 1. Goes to workforce.katbotz.com
 2. Clicks "Sign in with Google"
 3. Enters email + password

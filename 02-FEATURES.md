@@ -261,28 +261,69 @@ June 22, 04:45 PM — Priya verified Degree (Rohan)
 
 ---
 
-## 13. ZOHO RECRUIT INTEGRATION
+## 13. ZOHO RECRUIT INTEGRATION (AUTO-CREATE via Webhook)
 
 **What it does:** Auto-pulls "offer accepted" from Zoho → auto-creates worker in WOP
 
-**Workflow:**
-1. Recruiter marks offer as "Accepted" in Zoho Recruit
-2. Zoho sends data to WOP automatically:
-   - Name, email, position, joining date
+**How It Works (WEBHOOK - Automatic Messenger):**
+
+A webhook is an automatic connection:
+- When offer accepted in Zoho → Zoho automatically sends data to WOP
+- No manual work, no polling, no delays
+- Worker created in seconds
+
+```
+Zoho (HR marks: "ACCEPTED")
+         ↓
+Webhook triggers (automatic)
+         ↓
+WOP receives data
+         ↓
+Creates worker in Firestore
+Creates Drive folder
+Sends welcome email
+         ↓
+Worker ready to log in (seconds later)
+```
+
+**Detailed Workflow:**
+1. Recruiter in Zoho Recruit marks candidate offer: "Accepted"
+2. Zoho webhook automatically sends data to WOP:
+   - Candidate name
+   - Email address (@katbotz.com)
+   - Position/Job title
+   - Department
+   - Joining date
    - Worker type (Employee, Contractor, Intern)
-3. WOP auto-creates worker profile
-4. System auto-generates document checklist
-5. Worker gets email: "Welcome! Log in to upload documents"
+3. WOP backend receives webhook data and:
+   - Validates email is @katbotz.com
+   - Creates worker in Firestore (auto-generates worker_id)
+   - Creates Google Drive folder for documents
+   - Auto-generates document checklist (based on worker type)
+   - Sends welcome email to worker
+   - Logs action in audit trail
+4. Worker receives email: "Welcome! Your WOP account is ready"
+5. Worker can log in immediately and start uploading documents
 
-**No manual data entry. Automatic.**
+**Setup (Done Once - Week 3):**
+1. WOP backend deployed with webhook endpoint:
+   - URL: https://wop-backend.katbotz.com/api/zoho/worker-created
+2. Configure in Zoho Recruit → Settings → Webhooks:
+   - Event: "Offer Status Changed to Accepted"
+   - Send to: https://wop-backend.katbotz.com/api/zoho/worker-created
+3. Test: Mark offer as "Accepted" in Zoho
+4. Verify: Worker appears in WOP in seconds
+5. Done! Webhook runs automatically from then on
 
-**What's synced:**
+**Data Synced:**
 - Name
-- Email
+- Email (@katbotz.com)
 - Position/Department
 - Worker type
 - Joining date
 - Offer details
+
+**No manual data entry. No HR work. Completely automatic.** ✓
 
 ---
 

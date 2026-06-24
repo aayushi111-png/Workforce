@@ -384,22 +384,68 @@ HR clicks back to WOP to mark Verified/Rejected
 
 ## 6. INTEGRATION SPECIFICATIONS
 
-### Zoho Recruit Integration
+### Zoho Recruit Integration (AUTO-CREATE via Webhook)
 
-**Purpose:** Auto-create worker when offer is accepted
+**Purpose:** Auto-create worker when offer is accepted (no manual entry)
 
-**Data Flow:**
-1. Recruiter marks offer "Accepted" in Zoho
-2. Zoho sends webhook to WOP API
-3. WOP validates and creates worker profile
-4. Google Drive folder created for documents
-5. Worker gets welcome email
+**What is a Webhook?**
+A webhook is an automatic messenger between Zoho and WOP:
+- When offer accepted in Zoho → Zoho automatically sends data to WOP
+- WOP receives data and creates worker in seconds
+- No manual HR work needed after initial setup
 
-**Webhook Endpoint:** `POST /webhooks/zoho/offer-accepted`
+**Webhook Setup Process (2 Phases):**
 
-**Data Received:**
+**Phase 1: During WOP Development (Week 1-2)**
+1. Create FastAPI endpoint in WOP backend:
+   ```python
+   @app.post("/api/zoho/worker-created")
+   async def handle_zoho_webhook(request: Request):
+       data = await request.json()
+       # Validate, create worker, create Drive folder, send email
+       return {"status": "success", "worker_id": worker_id}
+   ```
+2. Deploy to Cloud Run
+3. URL becomes: `https://wop-backend.katbotz.com/api/zoho/worker-created`
+
+**Phase 2: After WOP is Live (Week 3)**
+1. Go to Zoho Recruit → Settings → Webhooks
+2. Click [+ New Webhook]
+3. Configure:
+   - Name: "WOP Worker Creation"
+   - Event: "Offer Status Changed to Accepted"
+   - URL: https://wop-backend.katbotz.com/api/zoho/worker-created
+   - Method: POST
+4. Save
+5. Test: Mark offer as "Accepted" in Zoho
+6. Verify: Worker appears in WOP ✓
+
+**Webhook Data Flow:**
+```
+Zoho Recruit System                    WOP Backend (FastAPI)
+         │                                      │
+         │ HR marks: "ACCEPTED"                 │
+         │                                      │
+         ├─ Webhook triggers ────────────────→ │
+         │ (Automatic, no manual work)          │
+         │                                      │
+         │                              ✓ Receives data
+         │                              ✓ Validates email
+         │                              ✓ Creates worker in Firestore
+         │                              ✓ Creates Drive folder
+         │                              ✓ Sends welcome email
+         │                              ✓ Logs in audit trail
+         │                                      │
+         │                              SUCCESS!
+         │                          Worker Created Instantly!
+```
+
+**Webhook Endpoint:** `POST /api/zoho/worker-created`
+
+**Data Received from Zoho:**
 ```json
 {
+  "zoho_candidate_id": "cand-12345",
   "candidate_name": "Rohan Mehta",
   "email": "rohan@katbotz.com",
   "position": "Software Engineer",
@@ -409,7 +455,64 @@ HR clicks back to WOP to mark Verified/Rejected
 }
 ```
 
-**Validation:**
+**Backend Processing Logic:**
+```python
+@app.post("/api/zoho/worker-created")
+async def handle_zoho_webhook(request: Request):
+    data = await request.json()
+    
+    # VALIDATION
+    if not data.get("email") or not data.get("candidate_name"):
+        return {"error": "Missing required fields"}
+    
+    if not data["email"].endswith("@katbotz.com"):
+        return {"error": "Email must be @katbotz.com domain"}
+    
+    if data.get("employment_type") not in ["Employee", "Contractor", "Intern"]:
+        return {"error": "Invalid employment type"}
+    
+    # CREATE WORKER
+    worker_id = f"worker-{generate_unique_id()}"
+    db.collection("workers").document(worker_id).set({
+        "name": data["candidate_name"],
+        "email": data["email"],
+        "type": data["employment_type"],
+        "position": data["position"],
+        "department": data["department"],
+        "joining_date": data["joining_date"],
+        "created_from": "zoho_recruit",
+        "zoho_id": data["zoho_candidate_id"],
+        "status": "pending_documents",
+        "created_at": datetime.now()
+    })
+    
+    # CREATE GOOGLE DRIVE FOLDER
+    folder_id = create_drive_folder(worker_id, data["candidate_name"])
+    
+    # SEND WELCOME EMAIL
+    send_welcome_email(
+        email=data["email"],
+        name=data["candidate_name"],
+        worker_id=worker_id
+    )
+    
+    # LOG ACTION
+    db.collection("audit_logs").add({
+        "timestamp": datetime.now(),
+        "action": "worker_created",
+        "source": "zoho_webhook",
+        "worker_id": worker_id,
+        "worker_name": data["candidate_name"]
+    })
+    
+    return {
+        "status": "success",
+        "message": f"Worker {data['candidate_name']} created",
+        "worker_id": worker_id
+    }
+```
+
+**Data Validation Rules:**
 - Email must be @katbotz.com domain
 - Name cannot be null/empty
 - Joining date must be today or future
@@ -419,6 +522,16 @@ HR clicks back to WOP to mark Verified/Rejected
 **Error Handling:**
 - Invalid data → Return 400 error, don't create worker
 - Valid data → Create worker, return 200 + worker_id
+- Webhook signature verification: Verify data really came from Zoho (security)
+- Retry logic: If WOP unavailable, Zoho retries webhook
+
+**Testing the Webhook:**
+1. Mark test candidate as "Accepted" in Zoho
+2. Check WOP database: Worker should appear in seconds
+3. Check Firestore: Worker document created
+4. Check audit logs: Action logged
+5. Check email: Welcome email should be sent
+6. Check Google Drive: Folder created
 
 ### Gusto Integration (US Employees Only - SYNC ONLY, No Auto-Create)
 
