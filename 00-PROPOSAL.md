@@ -69,8 +69,8 @@ One web application where:
 - Audit trail for all actions (legal proof)
 
 **Integrations**
-- Zoho Recruit: Auto-create workers when offer accepted (no manual entry)
-- Gusto: Auto-sync payroll for US employees only (real-time updates)
+- Zoho Recruit: AUTO-CREATE workers when offer accepted (one-way, no manual entry)
+- Gusto: SYNC payroll data for US employees only (two-way real-time, syncs existing workers)
 
 ---
 
@@ -95,8 +95,8 @@ One web application where:
 
 | System | Purpose | How It Works |
 |--------|---------|------------------|
-| Zoho Recruit | Hiring | Offer marked "Accepted" in Zoho → Auto-creates worker in WOP with all details → No manual entry needed |
-| Gusto | Payroll | Worker activated in WOP → Auto-syncs name/email/salary to Gusto → Gusto sets up payroll + taxes + benefits (US employees only) |
+| Zoho Recruit | Hiring (AUTO-CREATE) | Offer marked "Accepted" in Zoho → Auto-creates worker in WOP with all details → No manual entry needed |
+| Gusto | Payroll (SYNC ONLY) | Worker already in WOP → Real-time sync: name/email/salary/dept changes → Gusto always has latest data (US employees only) |
 | Google Cloud Storage | Document storage (primary) | Workers upload → Files stored in Cloud Storage → Auto-delete after 3 years via lifecycle policy → Audit logs all access |
 | Google Drive | Document backup | Daily automatic export of all documents → 30-day rolling backup → Recovery if needed (5-min restore) |
 | Google Workspace | Authentication | Worker clicks "Sign in with Google" → OAuth checks: is email @katbotz.com? → If yes, log in; if no, denied |
@@ -261,27 +261,38 @@ One web application where:
 
 ### Gusto Integration
 
-**Purpose:** Automatically sync worker data between WOP and Gusto for payroll and benefits.
+**Purpose:** Real-time sync of worker payroll data between WOP and Gusto (US employees only).
 
-**Data Flow (WOP to Gusto):**
-1. Worker activated in WOP (all documents verified, compliance passed)
-2. WOP sends to Gusto:
-   - Full name
-   - Email address
-   - Department
-   - Job title
-   - Joining date
-   - Salary (if entered in WOP)
-3. Gusto system receives data and:
-   - Creates payroll record
-   - Initiates tax form collection (W4, state tax forms, etc.)
-   - Sets up direct deposit
-   - Enables benefits enrollment
-   - Sets pay schedule
+**Important:** Gusto SYNCS existing workers (doesn't auto-create). Workers must already exist in WOP.
 
-**Data Flow (Gusto to WOP - On Demand):**
-1. HR views worker profile in WOP
-2. Link available: "View payroll in Gusto" (opens Gusto in new tab)
+**Data Flow (WOP ↔ Gusto - Real-Time Sync):**
+
+**From WOP to Gusto (one-way, real-time):**
+1. HR updates worker in WOP:
+   - Name change
+   - Salary/compensation change
+   - Department change
+   - Job title change
+   - Address change
+2. WOP automatically syncs to Gusto within 30 seconds
+3. Gusto payroll reflects latest data immediately
+4. Next paycheck calculated with new information
+
+**From Gusto to WOP (one-way, real-time):**
+1. Payroll processed in Gusto:
+   - Pay date
+   - Amount paid
+   - Deductions
+   - Taxes withheld
+   - YTD totals
+2. Gusto syncs back to WOP within 30 seconds
+3. HR can view payroll history in WOP worker profile
+4. Workers can see their pay stubs (read-only)
+
+**Scope (US Employees Only):**
+- Workers must be marked as "US Employee" in WOP
+- Gusto only syncs for employees in US (not contractors, not international)
+- Indian employees/contractors NOT synced to Gusto (they have separate payroll)
 3. No automatic sync back to WOP (one-way for compliance)
 
 **Data Mapping:**

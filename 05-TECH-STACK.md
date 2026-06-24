@@ -420,23 +420,32 @@ HR clicks back to WOP to mark Verified/Rejected
 - Invalid data → Return 400 error, don't create worker
 - Valid data → Create worker, return 200 + worker_id
 
-### Gusto Integration (US Employees Only)
+### Gusto Integration (US Employees Only - SYNC ONLY, No Auto-Create)
 
-**Purpose:** Auto-sync US employee data to Gusto payroll system
+**IMPORTANT:** Gusto SYNCS existing workers (doesn't auto-create). Workers must already exist in WOP.
+
+**Purpose:** Real-time sync of US employee payroll data between WOP and Gusto
 
 **Applies To:** US-based employees only  
 **Does NOT apply to:** Indian employees, contractors, interns
 
-**Data Flow (WOP → Gusto):**
-1. US employee activated in WOP
-2. WOP calls Gusto API: POST /employees
-3. Sends: name, email, department, joining date, salary
-4. Gusto creates payroll record
-5. Initiates tax form collection (W4, state taxes, etc.)
+**Data Flow (Real-Time Sync):**
+
+**WOP → Gusto (HR makes changes in WOP):**
+1. HR updates worker in WOP (name, salary, department, job title, etc.)
+2. WOP detects change and calls Gusto API within 30 seconds
+3. Gusto receives updated data and reflects in payroll system
+4. Next paycheck uses updated information
+
+**Gusto → WOP (Payroll processed):**
+1. Payroll run in Gusto (bi-weekly, monthly, etc.)
+2. Gusto sends back: pay date, amount, deductions, taxes, YTD
+3. WOP receives and stores for HR/worker to view
+4. Workers can see pay stubs in WOP (read-only)
 
 **Sync Endpoint:** `POST /api/integrations/gusto/sync`
 
-**Data Sent to Gusto (US Employees Only):**
+**Data Synced WOP → Gusto (US Employees):**
 ```json
 {
   "first_name": "John",
@@ -445,23 +454,37 @@ HR clicks back to WOP to mark Verified/Rejected
   "department": "Engineering",
   "start_date": "2026-06-15",
   "salary": 120000,
-  "location": "US"
+  "location": "US",
+  "job_title": "Senior Engineer"
+}
+```
+
+**Data Synced Gusto → WOP:**
+```json
+{
+  "pay_date": "2026-07-15",
+  "gross_pay": 4615.38,
+  "net_pay": 3400.00,
+  "deductions": 500.00,
+  "taxes_withheld": 715.38,
+  "ytd_gross": 9230.76,
+  "ytd_net": 6800.00
 }
 ```
 
 **Indian Employees & Contractors:**
-- NO automatic sync to Gusto
-- Payroll handled separately (not in scope)
+- NO sync to Gusto (they use separate payroll)
 - WOP tracks salary info for reference only
 - HR manages Indian payroll externally
 
 **Error Handling:**
-- Sync fails → Log error, alert Senior HR, retry hourly for 24h
-- Sync succeeds → Record gusto_id, mark synced
+- Sync fails → Log error, alert Senior HR, retry every 5 minutes for 24h
+- Sync succeeds → Record last_sync_time, update gusto_status
 
-**Updates Synced (US Employees Only):**
-- Salary change: Within 1 hour
-- Department change: Within 1 hour
+**Updates Synced (Real-Time - US Employees Only):**
+- Salary change: Within 30 seconds
+- Department change: Within 30 seconds
+- Job title change: Within 30 seconds
 - Marked for exit: Immediate (sets termination date in Gusto)
 
 ---

@@ -275,26 +275,47 @@ June 22, 04:45 PM — Priya verified Degree (Rohan)
 
 ---
 
-## 14. GUSTO INTEGRATION
+## 14. GUSTO INTEGRATION (SYNC ONLY - US EMPLOYEES)
 
-**What it does:** Auto-syncs worker data to Gusto for payroll + benefits
+**What it does:** Real-time sync of worker data between WOP and Gusto for US employees only
 
-**Workflow:**
-1. Worker activated in WOP
-2. WOP sends to Gusto:
-   - Name, email, department
-   - Joining date
-   - Salary (if entered in WOP)
-3. Gusto updates: payroll, tax forms, benefits enrollment
-4. HR never needs to re-enter data
+**IMPORTANT:** Gusto SYNCS (doesn't auto-create). Workers must already exist in WOP.
 
-**Keeps in sync:**
-- Department changes
-- Salary updates
-- Job title changes
-- Termination date (when marked for exit)
+**Scope:** US employees only  
+**Does NOT sync:** Indian employees, contractors, interns
 
-**One entry. Multiple systems. No duplication.**
+**Workflow (WOP → Gusto):**
+1. HR updates worker in WOP:
+   - Change salary
+   - Change department
+   - Change job title
+   - Change address
+2. WOP automatically syncs to Gusto (within 30 seconds)
+3. Gusto payroll updated with latest data
+4. Next paycheck reflects changes
+
+**Workflow (Gusto → WOP):**
+1. Payroll processed in Gusto (bi-weekly, monthly)
+2. Gusto sends back to WOP:
+   - Pay date and amount
+   - Taxes withheld
+   - Deductions
+   - YTD totals
+3. HR can view payroll history in worker profile
+4. Workers can see pay stubs (read-only)
+
+**Real-Time Sync:**
+- Salary changes: Within 30 seconds
+- Department changes: Within 30 seconds
+- Job title changes: Within 30 seconds
+- Marked for exit: Immediate (sets termination date in Gusto)
+
+**One entry. Always in sync. No duplication.**
+
+**Indian Employees & Contractors:**
+- NO sync to Gusto
+- Use separate payroll system (external)
+- WOP tracks salary for reference only
 
 ---
 
