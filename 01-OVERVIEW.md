@@ -186,7 +186,7 @@ When HR (HR or Senior HR role) logs in, they see administrative dashboard contai
 | Data Category | Primary Storage | Secondary Storage | Access Pattern |
 |--------------|-----------------|-------------------|-----------------|
 | Worker Profiles | Firestore (database) | Daily backup (Cloud Storage) | Query by ID, department, team lead |
-| Documents (Files) | Google Drive | Version history (30 days) | Accessed via signed links from WOP |
+| Documents (Files) | Cloud Storage (buckets) | Daily backup (Google Drive) | Accessed via signed URLs from WOP |
 | Document Metadata | Firestore (database) | Daily backup | Query by status, type, worker |
 | Goals and Progress | Firestore (database) | Daily backup | Query by worker, by project |
 | Weekly Summaries | Firestore (database) | Daily backup | Query by worker, by week |
@@ -195,33 +195,43 @@ When HR (HR or Senior HR role) logs in, they see administrative dashboard contai
 | Audit Trail | Firestore (database) | Daily backup | Query by worker, by action, by date |
 | System Backups | Cloud Storage | Encrypted with separate key | Monthly retention (30 days kept) |
 
-### Google Drive Folder Structure
+### Document Storage Structure
 
+**Primary: Cloud Storage Buckets**
 ```
-KATBOTZ Workforce/
+gs://katbotz-workforce-docs/
 ├── 2026/
+│   ├── worker-001/
+│   │   ├── pan.pdf (versioning enabled)
+│   │   ├── aadhaar.jpg
+│   │   ├── degree.pdf
+│   │   ├── marksheet_10th.pdf
+│   │   ├── marksheet_12th.pdf
+│   │   └── bank_proof.pdf
+│   ├── worker-002/
+│   │   └── [documents...]
+│   └── [other workers...]
+```
+
+**Backup: Google Drive**
+```
+KATBOTZ Workforce (Backup)/
+├── 2026/ (daily export)
 │   ├── Rohan Mehta/
-│   │   ├── PAN.pdf
-│   │   ├── Aadhaar.jpg
-│   │   ├── Degree.pdf
-│   │   ├── Marksheet_10th.pdf
-│   │   ├── Marksheet_12th.pdf
-│   │   └── Bank_Proof.pdf
-│   ├── Sara Lim/
-│   │   ├── [documents]
-│   ├── Amit Kumar/
-│   │   ├── [documents]
-│   └── [other workers]
+│   │   └── [document copies]
+│   └── [other workers...]
 └── Archive/
     ├── 2025/
     │   └── [exited workers]
     └── [historical years]
 ```
 
-**Folder Sharing:**
-- Each worker folder: Shared with worker (upload permission) + HR (view permission)
-- Archive folders: HR only (read-only)
-- Parent folder: HR and Senior HR only
+**Access Pattern:**
+- Workers: Upload-only to their folder (signed upload URLs)
+- HR: View via signed URLs (no download needed)
+- Backup: Daily automatic export to Drive (30-day rolling)
+- Auto-delete: Lifecycle policy deletes after 1095 days (3 years)
+- Audit: All access logged to Cloud Logging
 
 ---
 

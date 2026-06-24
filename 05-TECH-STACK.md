@@ -231,52 +231,95 @@ audit_logs/{log_id}
 
 ---
 
-## 3. DOCUMENT STORAGE: GOOGLE DRIVE vs GOOGLE CLOUD STORAGE
+## 3. DOCUMENT STORAGE: CLOUD STORAGE (Primary) + GOOGLE DRIVE (Backup)
 
-### Choice: Google Drive (Not Cloud Storage Buckets)
+### Architecture Decision
 
-**Why Drive instead of Cloud Storage?**
+**Primary Storage:** Google Cloud Storage (buckets)  
+**Backup Storage:** Google Drive (daily export)  
+**Why this approach:**
+- Auto-delete after 3 years (DPDP compliance) ✓
+- Audit trail & legal proof ✓
+- Legal hold capability (for litigation) ✓
+- Signed URLs for HR preview (no download) ✓
+- Scalable to 5000+ employees ✓
+- Cost: ₹2-3/month (minimal increase) ✓
 
-| Aspect | Google Drive | Cloud Storage |
-|--------|-------------|-----------------|
-| **User-friendly** | Yes (like Dropbox) | No (technical buckets) |
-| **Version history** | Built-in (30 days) | Must manage manually |
-| **Sharing** | Easy (click share) | Complex (IAM roles) |
-| **Mobile access** | Native app + web | Web only |
-| **HR can preview** | Yes (built-in viewer) | Requires download |
-| **Cost** | Included Workspace | Billed separately |
-| **Compliance** | CMEK support | CMEK support |
+### Document Storage Flow
 
-**Decision:** Drive is simpler, HR-friendly, and already included in Workspace.
-
-### Folder Structure (Google Drive)
+**Primary Storage (Cloud Storage Buckets):**
 ```
-KATBOTZ Workforce/
+gs://katbotz-workforce-docs/
 └── 2026/
-    ├── Rohan Mehta/
-    │   ├── PAN.pdf
-    │   ├── Aadhaar.jpg
-    │   ├── Degree.pdf
-    │   ├── Marksheet_10th.pdf
-    │   ├── Marksheet_12th.pdf
-    │   ├── Bank_Proof.pdf
-    │   └── Contract.pdf (for contractors)
-    ├── Sara Lim/
+    ├── worker-id-001/
+    │   ├── pan.pdf (v1, v2, v3 - versioning)
+    │   ├── aadhaar.jpg
+    │   ├── degree.pdf
+    │   ├── marksheet_10th.pdf
+    │   ├── marksheet_12th.pdf
+    │   ├── bank_proof.pdf
+    │   └── contract.pdf (for contractors)
+    ├── worker-id-002/
     │   └── [documents...]
     └── [other workers]/
-└── Archive/
-    ├── 2025/
-    │   └── [exited workers folders]
-    └── [historical years]
+```
+
+**Backup Storage (Google Drive):**
+```
+KATBOTZ Workforce (Backup)/
+└── 2026/ (daily export)
+    ├── Rohan Mehta/
+    │   └── [copies of all documents]
+    └── [other workers]/
 ```
 
 ### How Documents Flow
-1. **Upload:** Worker uploads file → Cloud Run receives → Stores in Drive
-2. **Verification:** HR clicks file in WOP → Opens Drive link → Reviews file → Marks status
-3. **Status:** WOP tracks Pending/Under Review/Verified/Rejected
-4. **Link Storage:** WOP stores Google Drive link, not the file itself
-5. **Access:** HR shares folder with worker (upload permission), HR has full access
-6. **Version History:** Drive keeps 30-day version history (auto-managed)
+
+1. **Upload:** Worker uploads file → Cloud Run receives → Stored in Cloud Storage
+2. **Access:** HR clicks document → WOP generates signed URL → Viewer opens in browser
+3. **Verification:** HR reviews file → Marks status (Pending/Under Review/Verified/Rejected)
+4. **Backup:** Nightly job exports to Google Drive (30-day rolling backup)
+5. **Retention:** Cloud Storage lifecycle policy: auto-delete after 1095 days (3 years)
+6. **Compliance:** Audit logs show who accessed what when, deletion proof
+
+### Security & Compliance
+
+**Cloud Storage Features:**
+- CMEK encryption (customer-managed encryption keys)
+- Signed URLs (secure, temporary access links for HR)
+- Audit logging (all access logged to Cloud Logging)
+- Legal hold API (block deletion if litigation)
+- Lifecycle policies (auto-delete after 3 years, logged)
+- Retention policies (DPDP compliance)
+- Versioning (keep all versions until deleted)
+
+**IAM Access Control:**
+- Workers: Upload-only to their folder (signed upload URLs)
+- HR/Senior HR: Full access to all documents
+- Auditors: Read-only access with logging
+- System: Automatic lifecycle job (no human access)
+
+### Signed URLs for HR Preview
+
+HR doesn't need to download - signed URLs allow browser preview:
+```
+HR clicks "View Document" in WOP
+↓
+WOP generates signed URL (valid 1 hour)
+↓
+URL opens in browser with Google Cloud Viewer
+↓
+HR sees PDF/image directly (no download)
+↓
+HR clicks back to WOP to mark Verified/Rejected
+```
+
+**Benefits:**
+- No file downloads (faster)
+- No files on local computers (security)
+- HR preview in browser (convenient)
+- All actions logged (audit trail)
+- Temporary access (URLs expire)
 
 ---
 
