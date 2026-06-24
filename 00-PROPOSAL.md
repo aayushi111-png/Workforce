@@ -40,17 +40,37 @@ Impact:
 ### Solution
 
 One web application where:
-- Workers log in with company email (Google OAuth)
-- Upload required documents (stored in Google Drive)
-- HR verifies documents with two options: Verified or Rejected
-- Project assignment and goal tracking (auto-synced with team lead)
-- Weekly progress summaries (written by worker, read by HR)
-- Automated performance reviews (scheduled at 30, 60, 90 days, and annually)
-- Contract renewal tracking
-- Personal to-do lists
-- Automatic data deletion after 3 years (compliance requirement)
-- Integration with Zoho Recruit (auto-create workers from offers)
-- Integration with Gusto (auto-sync payroll for US employees only)
+
+**Authentication & Access**
+- Workers log in with company email (Google OAuth, katbotz.com domain only)
+- 7 roles: Founder (read-only), Senior HR (everything), HR (verify/assign), Team Lead (team only), Employee (self), Contractor (self), Intern (self)
+
+**Document Management**
+- Workers upload required documents (stored in Cloud Storage with daily Drive backup)
+- 4-state verification: Pending → Under Review → Verified or Rejected
+- Auto-delete documents after 3 years (compliance requirement)
+- Legal hold capability (blocks deletion if litigation)
+
+**Project & Goals**
+- HR assigns projects to workers with designated team lead
+- Goals auto-sync: Team lead sets, worker edits own goals, progress tracked
+- Contract renewal alerts at 90, 60, 30, 7 days before expiry
+- Contract amendments tracked (scope, rate, duration changes logged)
+
+**Performance & Tracking**
+- Weekly progress summaries written by worker, read by HR
+- Automated performance reviews scheduled at 30, 60, 90 days, and annually
+- Team lead fills reviews, worker can see feedback
+- Personal to-do lists (per worker, visible to HR)
+
+**Operations**
+- Invoice workflow for contractors: Submitted → Approved → Finance Review → Paid
+- Automatic data deletion after 3 years (DPDP compliance)
+- Audit trail for all actions (legal proof)
+
+**Integrations**
+- Zoho Recruit: Auto-create workers when offer accepted (no manual entry)
+- Gusto: Auto-sync payroll for US employees only (real-time updates)
 
 ---
 
@@ -73,13 +93,14 @@ One web application where:
 
 ### What Integrates With WOP
 
-| System | Purpose | Integration Type |
+| System | Purpose | How It Works |
 |--------|---------|------------------|
-| Zoho Recruit | Hiring | One-way pull: offer accepted triggers worker creation |
-| Gusto | Payroll | Two-way sync: worker data syncs to Gusto, updates synced back |
-| Google Drive | File storage | One-way link: WOP stores link, files stored in Drive |
-| Google Workspace | Authentication | OAuth login for katbotz.com emails |
-| Google Cloud | Infrastructure | Firestore (database), Cloud Storage (backups), Cloud Run (hosting) |
+| Zoho Recruit | Hiring | Offer marked "Accepted" in Zoho → Auto-creates worker in WOP with all details → No manual entry needed |
+| Gusto | Payroll | Worker activated in WOP → Auto-syncs name/email/salary to Gusto → Gusto sets up payroll + taxes + benefits (US employees only) |
+| Google Cloud Storage | Document storage (primary) | Workers upload → Files stored in Cloud Storage → Auto-delete after 3 years via lifecycle policy → Audit logs all access |
+| Google Drive | Document backup | Daily automatic export of all documents → 30-day rolling backup → Recovery if needed (5-min restore) |
+| Google Workspace | Authentication | Worker clicks "Sign in with Google" → OAuth checks: is email @katbotz.com? → If yes, log in; if no, denied |
+| Google Cloud | Infrastructure | Firestore (database of everything), Cloud Run (API backend), Cloud Logging (audit trail) |
 
 ### What Stays in Other Systems
 
@@ -154,11 +175,25 @@ One web application where:
 
 ### Detailed Permission Matrix
 
-**Document Verification**
-- Senior HR: Can mark Verified or Rejected
-- HR: Can mark Verified or Rejected
+**Document Verification (4 States)**
+- Senior HR: Can mark Pending → Under Review → Verified OR Rejected
+- HR: Can mark Pending → Under Review → Verified OR Rejected
 - Team Lead: Can view documents (read-only)
 - All Others: Cannot view other workers' documents
+
+**How Document Verification Works:**
+1. **Pending:** Worker hasn't uploaded yet
+2. **Under Review:** HR opens document in Cloud Storage → Status auto-changes
+3. **Verified:** HR approves → Document is acceptable
+4. **Rejected:** HR rejects with reason → Worker must upload NEW document (not modify old one)
+
+**Example Workflow:**
+- Worker uploads Aadhaar → Status: Pending
+- HR clicks "View Document" → Status: Under Review
+- HR reviews in browser (signed URL, no download)
+- HR either:
+  - Clicks "Verify" → Status: Verified
+  - Clicks "Reject" + reason → Status: Rejected → Worker uploads new document
 
 **Goal Management**
 - Senior HR: Can view all, edit all
