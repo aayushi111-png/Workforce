@@ -533,57 +533,390 @@ async def handle_zoho_webhook(request: Request):
 5. Check email: Welcome email should be sent
 6. Check Google Drive: Folder created
 
-### Gusto Integration (US Employees Only - SYNC ONLY, No Auto-Create)
+### Gusto Integration (US Employees Only - REAL-TIME SYNC)
 
 **IMPORTANT:** Gusto SYNCS existing workers (doesn't auto-create). Workers must already exist in WOP.
 
-**Purpose:** Real-time sync of US employee payroll data between WOP and Gusto
+**Purpose:** Real-time sync of US employee payroll data between WOP and Gusto (30-second sync window)
 
-**Applies To:** US-based employees only  
+**Applies To:** US-based employees ONLY  
 **Does NOT apply to:** Indian employees, contractors, interns
 
-**Data Flow (Real-Time Sync):**
+---
 
-**WOP → Gusto (HR makes changes in WOP):**
-1. HR updates worker in WOP (name, salary, department, job title, etc.)
-2. WOP detects change and calls Gusto API within 30 seconds
-3. Gusto receives updated data and reflects in payroll system
-4. Next paycheck uses updated information
+## **HOW: 30-SECOND SYNC MECHANISM**
 
-**Gusto → WOP (Payroll processed):**
-1. Payroll run in Gusto (bi-weekly, monthly, etc.)
-2. Gusto sends back: pay date, amount, deductions, taxes, YTD
-3. WOP receives and stores for HR/worker to view
-4. Workers can see pay stubs in WOP (read-only)
+### **WOP → Gusto (HR Updates Trigger Sync)**
 
-**Sync Endpoint:** `POST /api/integrations/gusto/sync`
+**Step 1: HR Updates in WOP (0 seconds)**
+```
+HR clicks on worker profile
+├─ Updates: Salary $120,000 → $130,000
+├─ Updates: Job Title "Engineer" → "Senior Engineer"
+├─ Updates: Department "Engineering" → "Product"
+└─ Clicks [Save Changes]
+```
 
-**Data Synced WOP → Gusto (US Employees):**
+**Step 2: WOP Detects Change (0-2 seconds)**
+```
+WOP backend:
+├─ Receives update request
+├─ Validates: Is this a US employee? (checks location = "US")
+├─ Validates: Is Gusto sync enabled? (checks gusto_sync_enabled = true)
+├─ Validates: What changed? (salary, title, department)
+└─ If valid: Proceed to sync
+
+Status: Change detected, ready for sync
+```
+
+**Step 3: WOP Sends to Gusto API (2-5 seconds)**
+```
+WOP backend calls Gusto API:
+├─ Endpoint: POST https://api.gusto.com/v1/employees/{id}
+├─ Authentication: Bearer [Gusto API key]
+├─ Method: PATCH (update only changed fields)
+├─ Payload:
+│  {
+│    "salary": 130000,
+│    "job_title": "Senior Engineer",
+│    "department": "Product"
+│  }
+└─ Timeout: 10 seconds (retry if fails)
+```
+
+**Step 4: Gusto Receives & Processes (5-15 seconds)**
+```
+Gusto servers:
+├─ Receive API request
+├─ Validate: Employee exists in Gusto? ✓
+├─ Validate: New salary within legal bounds? ✓
+├─ Update Gusto database:
+│  ├─ employees/john-smith/salary = 130000
+│  ├─ employees/john-smith/job_title = "Senior Engineer"
+│  └─ employees/john-smith/department = "Product"
+├─ Mark: "Last sync: 2026-07-01 10:30:45 UTC"
+└─ Return: 200 OK (success confirmation)
+```
+
+**Step 5: WOP Confirms Sync (15-20 seconds)**
+```
+WOP backend receives Gusto response:
+├─ Status: 200 OK ✓
+├─ Update Firestore:
+│  └─ gusto_sync:
+│     ├─ sync_status = "synced"
+│     ├─ last_sync = "2026-07-01 10:30:45 UTC"
+│     └─ last_sync_fields = ["salary", "job_title", "department"]
+├─ Log audit trail: "Salary synced to Gusto: $120,000 → $130,000"
+└─ HR sees: "✓ Synced to Gusto" (green checkmark)
+```
+
+**Step 6: HR Sees Confirmation (20-30 seconds total)**
+```
+WOP UI updates:
+├─ Green checkmark appears: "✓ Synced to Gusto"
+├─ Shows: "Last sync: just now"
+├─ Shows: "Gusto has latest data"
+└─ HR can close profile and continue
+
+Total time: 30 seconds (or less)
+```
+
+**Full Timeline (John's Salary Increase Example):**
+```
+10:30:15 AM - HR clicks [Save Changes] (salary $120k → $130k)
+10:30:17 AM - WOP detects change
+10:30:19 AM - WOP sends to Gusto API
+10:30:25 AM - Gusto processes & updates database
+10:30:27 AM - Gusto confirms back to WOP
+10:30:30 AM - HR sees "✓ Synced to Gusto"
+
+Total: 15 seconds (within 30-second window)
+```
+
+---
+
+## **HOW: GUSTO ALWAYS HAS LATEST DATA**
+
+### **Real-Time Data Synchronization**
+
+**Gusto's Database After Sync:**
+```
+Employee: John Smith
+├─ Salary: $130,000 (UPDATED from WOP) ✓
+├─ Job Title: Senior Engineer (UPDATED from WOP) ✓
+├─ Department: Product (UPDATED from WOP) ✓
+├─ Start Date: 2026-06-15 (unchanged)
+├─ Location: US (unchanged)
+├─ Last Sync: 2026-07-01 10:30:27 UTC
+└─ Sync Status: CURRENT ✓
+
+Next Payroll Run: Uses $130,000 (latest)
+```
+
+**What Happens If HR Updates Again (Same Day):**
+```
+10:45:00 AM - HR updates: Department "Product" → "Engineering"
+10:45:05 AM - WOP detects change
+10:45:07 AM - WOP sends to Gusto API
+10:45:12 AM - Gusto updates: Department = "Engineering"
+10:45:15 AM - Confirmation sent back to WOP
+
+Gusto now has: 
+└─ Latest salary ($130,000) ✓
+└─ Latest title (Senior Engineer) ✓
+└─ Latest department (Engineering) ✓
+
+Status: ALWAYS UP-TO-DATE
+```
+
+### **Gusto's Sync Status Tracking**
+
+**In Firestore (WOP's record of Gusto sync):**
 ```json
+workers/john-smith/gusto_mapping
 {
-  "first_name": "John",
-  "last_name": "Smith",
-  "email": "john@katbotz.com",
-  "department": "Engineering",
-  "start_date": "2026-06-15",
-  "salary": 120000,
-  "location": "US",
-  "job_title": "Senior Engineer"
+  "gusto_id": "emp-789456",
+  "gusto_sync_enabled": true,
+  "sync_status": "synced",              ← "synced" = current
+  "first_synced_at": "2026-06-15T14:00:00Z",
+  "last_sync": "2026-07-01T10:30:27Z",  ← Most recent sync
+  "last_sync_fields": [
+    "salary",
+    "job_title", 
+    "department"
+  ],
+  "sync_error": null,                    ← No errors
+  "retry_count": 0,                      ← No retries needed
+  "next_retry_at": null
 }
 ```
 
-**Data Synced Gusto → WOP:**
+**If Sync Fails (Gusto temporarily down):**
 ```json
 {
-  "pay_date": "2026-07-15",
-  "gross_pay": 4615.38,
-  "net_pay": 3400.00,
-  "deductions": 500.00,
-  "taxes_withheld": 715.38,
-  "ytd_gross": 9230.76,
-  "ytd_net": 6800.00
+  "sync_status": "pending",              ← Waiting to retry
+  "last_sync": "2026-07-01T10:30:27Z",   ← Last successful sync
+  "sync_error": "Connection timeout",    ← Why it failed
+  "retry_count": 1,                      ← Attempted 1 retry
+  "next_retry_at": "2026-07-01T10:35:27Z" ← Retry in 5 min
 }
+
+Retry Schedule:
+├─ Attempt 1-12: Every 5 minutes (for 1 hour)
+├─ Attempt 13-36: Every 1 hour (for 1 day)
+├─ Attempt 37+: Manual review needed (escalate to HR)
+└─ HR gets email: "Gusto sync failed for John Smith"
 ```
+
+---
+
+## **HOW: NEXT PAYCHECK CALCULATED WITH UPDATED INFO**
+
+### **Payroll Calculation with Updated Salary**
+
+**Before Update (Paycheck for June 30 - July 13):**
+```
+Employee: John Smith
+Salary: $120,000 (annual)
+Calculation:
+├─ Annual salary: $120,000
+├─ Per pay period (bi-weekly): $120,000 ÷ 26 = $4,615.38
+├─ Gross pay (80 hours): $4,615.38
+├─ Taxes withheld: ~$715
+├─ Deductions: ~$500
+└─ Net pay: ~$3,400
+
+Pay date: July 15, 2026
+Amount: $3,400 (with old salary)
+```
+
+**HR Updates Salary on July 1:**
+```
+10:30 AM - HR updates in WOP: $120,000 → $130,000
+10:30:30 AM - ✓ Synced to Gusto
+Gusto's database now reflects: $130,000
+```
+
+**After Update (Paycheck for July 14 - July 27):**
+```
+Employee: John Smith
+Salary: $130,000 (UPDATED - synced from WOP)
+Calculation:
+├─ Annual salary: $130,000 (UPDATED)
+├─ Per pay period (bi-weekly): $130,000 ÷ 26 = $5,000.00
+├─ Gross pay (80 hours): $5,000.00 (INCREASED)
+├─ Taxes withheld: ~$775 (higher due to higher gross)
+├─ Deductions: ~$500
+└─ Net pay: ~$3,725 (INCREASED by $325)
+
+Pay date: July 28, 2026
+Amount: $3,725 (with new salary)
+Increase: +$325 compared to previous paycheck
+```
+
+### **Real-World Example: Salary Increase Impact**
+
+**Scenario: John Gets Promotion on July 1**
+```
+Before (June 30 paycheck):
+├─ Salary: $120,000/year
+├─ Bi-weekly gross: $4,615.38
+├─ Take-home: $3,400.00
+└─ Pay date: July 15
+
+Update on July 1 at 10:30 AM:
+├─ HR updates WOP: Salary $120,000 → $130,000
+├─ WOP syncs to Gusto (30-second sync)
+├─ Gusto's payroll system updated
+└─ Status: "✓ Synced to Gusto"
+
+After (July 28 paycheck - NEXT PAY RUN):
+├─ Salary: $130,000/year (from Gusto - synced from WOP)
+├─ Bi-weekly gross: $5,000.00 (+$384.62)
+├─ Take-home: $3,725.00 (+$325)
+└─ Pay date: July 28
+
+Year-to-Date (YTD) Impact:
+├─ Increases by $325 per pay period
+├─ Over 26 pay periods: +$8,450 extra per year
+└─ Gusto shows updated YTD in next run
+```
+
+### **Gusto's Payroll Processing Timeline**
+
+```
+Timeline: John's Promotion
+
+July 1, 10:30 AM:
+└─ HR updates in WOP: Salary $130,000
+└─ WOP syncs to Gusto (✓ synced)
+
+July 1-27: Status in Gusto
+└─ Employee records: $130,000 salary
+└─ Next payroll setup: Uses $130,000
+
+July 28, Payroll Run:
+├─ Gusto processes bi-weekly payroll
+├─ Looks up: John's salary from Gusto database
+├─ Finds: $130,000 (synced from WOP on July 1)
+├─ Calculates:
+│  ├─ Gross: $130,000 ÷ 26 = $5,000.00 per period
+│  ├─ Taxes: Calculated on $5,000
+│  ├─ Deductions: Applied
+│  └─ Net: $5,000 - taxes - deductions
+├─ Generates: Pay stub with $5,000 gross
+└─ Transfers: To John's bank account
+
+July 28, John's Paycheck:
+├─ Gross: $5,000.00 (reflecting promotion)
+├─ Net: $3,725.00 (increased by $325)
+└─ Status: "Based on updated salary from WOP"
+
+July 28, WOP Shows:
+├─ John's pay stub (read-only)
+├─ Gross: $5,000.00
+├─ Net: $3,725.00
+├─ YTD Gross: $23,115.38 (updated)
+└─ Source: "Synced from Gusto"
+```
+
+### **What Data Gets Used for Payroll?**
+
+**Gusto Uses These Fields (All Synced from WOP):**
+```
+From WOP → To Gusto (for payroll calculation):
+├─ Salary amount ($130,000)
+├─ Pay frequency (bi-weekly)
+├─ Job title (Senior Engineer) - for records
+├─ Department (Product) - for cost center tracking
+├─ Location (US) - for tax calculations
+├─ Start date (2026-06-15) - for benefits eligibility
+└─ Status (active) - to process payroll
+
+Gusto Then Calculates:
+├─ Gross pay per period: salary ÷ pay periods
+├─ Federal income tax: Based on W4 + salary
+├─ State income tax: Based on location + salary
+├─ FICA (Social Security + Medicare): 7.65% of salary
+├─ Benefits deductions: Health insurance, 401k, etc.
+├─ Net pay: Gross - all deductions
+└─ YTD totals: Running total for the year
+```
+
+---
+
+## **SYNC FAILURES & RECOVERY**
+
+### **If Gusto Temporarily Unavailable (What Happens)**
+
+**Timeline: Gusto Down for 30 Minutes**
+
+```
+10:30 AM - HR updates salary in WOP
+10:30:05 AM - WOP tries to send to Gusto API
+10:30:10 AM - Gusto API timeout (Gusto down)
+10:30:15 AM - Error: "Connection refused"
+
+WOP Response:
+├─ Status: sync_status = "pending"
+├─ Error logged: "Gusto API unreachable"
+├─ Retry scheduled: 5 minutes later
+└─ HR notification: None yet (still retrying)
+
+Retry Attempt 1 (10:35 AM):
+├─ WOP retries: Still fails
+└─ Retry scheduled: 5 minutes later
+
+Retry Attempt 2 (10:40 AM):
+├─ WOP retries: Still fails
+└─ Retry scheduled: 5 minutes later
+
+Gusto Comes Back Online (11:00 AM):
+
+Retry Attempt 7 (11:00 AM):
+├─ WOP sends update again
+├─ Gusto receives and processes ✓
+├─ Confirms back to WOP ✓
+├─ sync_status = "synced"
+└─ Last sync = "2026-07-01 11:00:42 UTC"
+
+Result: Update eventually synced
+        No manual action needed
+        Gusto has latest data
+```
+
+### **Retry Logic**
+
+```
+Sync Failure Handling:
+├─ Attempt 1-12: Retry every 5 minutes (1 hour total)
+├─ Attempt 13-36: Retry every 1 hour (24 hours total)
+├─ Attempt 37+: Send alert to HR (requires manual intervention)
+│  └─ Email: "Gusto sync failed for [employee] after 24 hours"
+│  └─ HR action: Check Gusto status, verify employee exists
+│  └─ Manual sync: HR can trigger manual sync if needed
+└─ Automatic resume: When Gusto comes back online, resume syncing
+
+Safety: Never gives up (keeps retrying until HR intervenes)
+```
+
+---
+
+## **SUMMARY: WOP → GUSTO REAL-TIME SYNC**
+
+| Feature | Details |
+|---------|---------|
+| **Sync Time** | 30 seconds or less |
+| **Trigger** | HR updates in WOP |
+| **What Syncs** | Salary, job title, department, location, etc. |
+| **Where** | US employees only (location = "US") |
+| **Gusto Status** | Always has latest data from WOP |
+| **Payroll Impact** | Next paycheck uses updated salary |
+| **Failures** | Auto-retries every 5 min for 1 hour, then hourly |
+| **No Manual Action** | Fully automatic, HR just clicks [Save] |
+
+**Result: Gusto's payroll system is ALWAYS up-to-date with latest data from WOP** ✓
 
 **Indian Employees & Contractors:**
 - NO sync to Gusto (they use separate payroll)
