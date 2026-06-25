@@ -799,21 +799,507 @@ Result:
 
 ---
 
-## 12. AUDIT TRAIL
+## 12. AUDIT TRAIL (Complete Action History — Forever)
 
-**What it records:**
-- Who did what
-- When they did it
-- What changed
+**Complete Logging System: Every Action Tracked**
 
-**Example:**
 ```
-June 23, 10:30 AM — Priya verified PAN (Rohan)
-June 23, 09:15 AM — Rohan uploaded Aadhaar
-June 22, 04:45 PM — Priya verified Degree (Rohan)
+WHO    → User/service account that performed action
+WHAT   → Specific action (upload, verify, approve, delete, etc.)
+WHEN   → Exact timestamp (date, time, timezone)
+WHERE  → Which resource affected (worker ID, document ID, etc.)
+RESULT → Success/failure and any errors
 ```
 
-**Who sees:** HR only (for compliance)
+---
+
+### **WHAT GETS LOGGED (Everything)**
+
+**Worker Management:**
+```
+✓ Worker created (who, when, type)
+✓ Worker details updated (who changed what, when)
+✓ Worker marked for exit (who, when, exit date)
+✓ Worker reactivated (who, when)
+✓ Worker deleted/restored (who, when, reason)
+```
+
+**Documents:**
+```
+✓ Document uploaded (by whom, when, filename, size)
+✓ Signed URL generated (by whom, when, validity)
+✓ Document viewed (by whom, when, duration)
+✓ Document verified (by whom, when, reason)
+✓ Document rejected (by whom, when, rejection reason)
+✓ Document re-uploaded (by whom, when)
+✓ Document deleted (by whom, when, reason)
+```
+
+**Projects & Goals:**
+```
+✓ Project assigned (who assigned, when, to whom)
+✓ Goal created (who, when, goal text, deadline)
+✓ Goal updated (who changed what, when)
+✓ Goal marked complete (by whom, when)
+✓ Goal deleted (who, when, reason)
+```
+
+**Reviews & Performance:**
+```
+✓ Review created (by whom, when, for whom)
+✓ Review submitted (by whom, when, rating)
+✓ Review updated (who changed what, when)
+✓ Performance rating changed (by whom, from X to Y, when)
+✓ Feedback added (by whom, when, text)
+```
+
+**Contracts (Contractors):**
+```
+✓ Contract created (who, when)
+✓ Contract details updated (who changed what, when)
+✓ Amendment recorded (who, what changed, when)
+✓ Contract marked for renewal (who, when)
+✓ Contract expired (system, when)
+✓ Renewal alert sent (system, when, which alert)
+```
+
+**Invoices (Contractors):**
+```
+✓ Invoice submitted (by whom, when, amount)
+✓ Invoice approved (by whom, when)
+✓ Invoice rejected (by whom, when, reason)
+✓ Invoice marked paid (by whom, when)
+```
+
+**Offboarding:**
+```
+✓ Worker marked for exit (who, when, exit date)
+✓ Offboarding workflow started (system, when)
+✓ Data deletion scheduled (system, when, deletion date)
+✓ Data auto-deleted (system, when)
+✓ Deletion logged (proof, permanent)
+```
+
+**Access & Security:**
+```
+✓ Login attempt (user, when, success/failure)
+✓ Permission check (user accessed what, when, allowed/denied)
+✓ Failed access attempt (user, what tried to access, when, reason denied)
+✓ Role changed (who changed, for whom, when, old → new role)
+```
+
+**System Events:**
+```
+✓ Backup created (system, when, size, status)
+✓ Backup restored (who, when, from which backup)
+✓ Data imported (who, when, what imported)
+✓ Webhook received (from where, when, what data)
+✓ Integration synced (system, when, what synced)
+```
+
+---
+
+### **WHERE SAVED: Firestore (Encrypted, Forever)**
+
+**Storage Location:**
+```
+Firestore Database
+├─ Collection: audit_logs
+├─ Location: Same as other worker data
+├─ Encryption: CMEK (AES-256, military-grade)
+├─ Redundancy: Auto-replicated across Google regions
+└─ Retention: FOREVER (never auto-deleted)
+```
+
+**Structure of Each Audit Entry:**
+
+```json
+audit_logs/entry-20260623-103000-001
+{
+  "entry_id": "audit-2026-06-23-10-30-00-priya-verified-pan",
+  "timestamp": "2026-06-23T10:30:00Z",
+  "timestamp_unix": 1776950400,
+  
+  "WHO":
+  {
+    "user_id": "priya@katbotz.com",
+    "user_role": "HR",
+    "ip_address": "192.168.1.200",
+    "user_agent": "Mozilla/5.0 Chrome/95.0"
+  },
+  
+  "WHAT":
+  {
+    "action": "document_verified",
+    "action_category": "document_management",
+    "resource_type": "document",
+    "resource_id": "worker-001/pan.pdf",
+    "details": {
+      "document_type": "PAN",
+      "status_before": "Pending",
+      "status_after": "Verified",
+      "reason": "Clear image, readable",
+      "verification_method": "Google Cloud Viewer"
+    }
+  },
+  
+  "RESULT":
+  {
+    "status": "success",
+    "error_code": null,
+    "error_message": null,
+    "changes_applied": 1
+  },
+  
+  "CONTEXT":
+  {
+    "worker_id": "worker-001",
+    "worker_name": "Rohan Mehta",
+    "request_id": "req-20260623-103000-abc123",
+    "session_id": "sess-priya-20260623-093000"
+  },
+  
+  "ENCRYPTION":
+  {
+    "encrypted": true,
+    "encryption_key": "cmek-katbotz-workforce",
+    "key_version": 2,
+    "encryption_time": "2026-06-23T10:30:00Z"
+  },
+  
+  "IMMUTABLE": true
+  └─ This entry cannot be modified or deleted
+}
+```
+
+---
+
+### **DETAILED EXAMPLE: One Worker's Complete Audit Trail**
+
+```
+╔════════════════════════════════════════════════════════════╗
+║ COMPLETE AUDIT TRAIL: ROHAN MEHTA (worker-001)            ║
+╚════════════════════════════════════════════════════════════╝
+
+June 20, 2026 @ 14:30:00 UTC
+├─ ACTION: Zoho auto-created worker
+├─ WHO: System (webhook from Zoho Recruit)
+├─ WHAT: New worker profile created
+│  ├─ Name: Rohan Mehta
+│  ├─ Email: rohan@katbotz.com
+│  ├─ Type: Employee (Indian)
+│  └─ Source: Zoho Recruit webhook
+├─ RESULT: Success
+└─ LOGGED: ✓
+
+June 20, 2026 @ 14:30:30 UTC
+├─ ACTION: Worker created notification sent
+├─ WHO: System
+├─ WHAT: Welcome email sent
+│  ├─ To: rohan@katbotz.com
+│  ├─ Subject: Your WOP account is ready
+│  └─ Status: Sent
+├─ RESULT: Success
+└─ LOGGED: ✓
+
+June 20, 2026 @ 14:35:00 UTC
+├─ ACTION: Worker logged in (first time)
+├─ WHO: rohan@katbotz.com
+├─ WHAT: Successful login
+│  ├─ IP: 192.168.1.101
+│  ├─ Method: Google OAuth
+│  └─ Session created
+├─ RESULT: Success
+└─ LOGGED: ✓
+
+June 20, 2026 @ 14:35:30 UTC
+├─ ACTION: Document uploaded
+├─ WHO: rohan@katbotz.com (worker)
+├─ WHAT: PAN document uploaded
+│  ├─ Filename: PAN-rohan.pdf
+│  ├─ Size: 2.1 MB
+│  ├─ Status: Pending verification
+│  └─ Location: gs://katbotz-workforce-docs/2026/worker-001/pan.pdf
+├─ RESULT: Success
+└─ LOGGED: ✓
+
+June 23, 2026 @ 10:30:05 UTC
+├─ ACTION: Signed URL generated
+├─ WHO: priya@katbotz.com (HR)
+├─ WHAT: Document preview link created
+│  ├─ Document: worker-001/pan.pdf
+│  ├─ Validity: 1 hour (expires 11:30:05)
+│  └─ IP: 192.168.1.200
+├─ RESULT: Success
+└─ LOGGED: ✓
+
+June 23, 2026 @ 10:30:30 UTC
+├─ ACTION: Document viewed
+├─ WHO: priya@katbotz.com (HR)
+├─ WHAT: Document accessed for review
+│  ├─ Document: PAN (pan.pdf)
+│  ├─ Duration: 15 minutes (until 10:45:30)
+│  ├─ Tool: Google Cloud Viewer
+│  └─ IP: 192.168.1.200
+├─ RESULT: Success
+└─ LOGGED: ✓ (every 30 seconds)
+
+June 23, 2026 @ 10:45:30 UTC
+├─ ACTION: Document verified
+├─ WHO: priya@katbotz.com (HR)
+├─ WHAT: Document status changed
+│  ├─ Document: PAN
+│  ├─ Status before: Pending
+│  ├─ Status after: Verified
+│  ├─ Reason: Clear image, readable
+│  └─ Signed URL expired at: 11:30:05
+├─ RESULT: Success
+└─ LOGGED: ✓
+
+June 23, 2026 @ 14:00:00 UTC
+├─ ACTION: Project assigned
+├─ WHO: priya@katbotz.com (HR)
+├─ WHAT: Project assigned to worker
+│  ├─ Project: Mobile App Redesign
+│  ├─ Project Lead: Akshat
+│  ├─ Start Date: June 23, 2026
+│  └─ Worker: Rohan Mehta
+├─ RESULT: Success
+└─ LOGGED: ✓
+
+June 23, 2026 @ 15:00:00 UTC
+├─ ACTION: Goals created
+├─ WHO: akshat@katbotz.com (Team Lead)
+├─ WHAT: 3 goals created for worker
+│  ├─ Goal 1: Complete wireframes (deadline June 30)
+│  ├─ Goal 2: Get stakeholder approval (deadline July 5)
+│  └─ Goal 3: Implement designs (deadline July 20)
+├─ RESULT: Success (3 goals created)
+└─ LOGGED: ✓ (one entry per goal)
+
+June 30, 2026 @ 16:00:00 UTC
+├─ ACTION: Goal marked complete
+├─ WHO: rohan@katbotz.com (worker)
+├─ WHAT: Goal status changed
+│  ├─ Goal: Complete wireframes
+│  ├─ Status: Completed
+│  ├─ Completion date: June 30, 2026
+│  └─ Achievement: On schedule
+├─ RESULT: Success
+└─ LOGGED: ✓
+
+June 30, 2026 @ 17:30:00 UTC
+├─ ACTION: 30-day review created
+├─ WHO: akshat@katbotz.com (Team Lead)
+├─ WHAT: Review filled for worker
+│  ├─ Rating: 4.5/5 stars
+│  ├─ Feedback: Great progress, quick learner
+│  ├─ Date: June 30, 2026 (30 days from hire)
+│  └─ Status: Submitted
+├─ RESULT: Success
+└─ LOGGED: ✓
+
+June 30, 2026 @ 18:00:00 UTC
+├─ ACTION: Review notification sent
+├─ WHO: System
+├─ WHAT: Worker notified of review completion
+│  ├─ To: rohan@katbotz.com
+│  ├─ Message: Your 30-day review is complete
+│  └─ Rating: 4.5/5
+├─ RESULT: Success
+└─ LOGGED: ✓
+
+... (similar entries for future milestones)
+
+DECEMBER 31, 2029 @ 23:59:59 UTC
+├─ ACTION: Worker marked for exit
+├─ WHO: priya@katbotz.com (HR)
+├─ WHAT: Worker scheduled for exit
+│  ├─ Last day: December 31, 2029
+│  ├─ Auto-delete date: December 31, 2032 (3 years)
+│  └─ Reason: Resignation
+├─ RESULT: Success
+└─ LOGGED: ✓
+
+DECEMBER 31, 2032 @ 01:00:00 UTC
+├─ ACTION: Worker data deleted
+├─ WHO: System (auto-delete job)
+├─ WHAT: All worker data deleted (3-year retention complete)
+│  ├─ Deleted: Worker profile
+│  ├─ Deleted: Documents
+│  ├─ Deleted: Goals, reviews, projects
+│  ├─ Deleted: Firestore records
+│  └─ Kept: This audit entry (forever)
+├─ RESULT: Success
+└─ LOGGED: ✓ (PERMANENT PROOF)
+
+FOREVER (After deletion):
+├─ AUDIT TRAIL: COMPLETE
+├─ IMMUTABLE: Cannot be changed
+├─ ACCESSIBLE: Founder can view full history
+└─ COMPLIANCE: Proof of all actions and deletion
+```
+
+---
+
+### **WHO CAN ACCESS AUDIT LOGS**
+
+```
+Founder:
+├─ Full access to ALL audit logs
+├─ Can filter by: date, user, worker, action
+├─ Can download: Reports, exports
+├─ Can analyze: Patterns, compliance
+└─ Purpose: Complete oversight
+
+Senior HR:
+├─ Can see: Audit logs for their actions
+├─ Can see: Document verification history
+├─ Can see: Worker lifecycle events
+├─ Cannot see: Other HR's actions
+└─ Purpose: Verify own work
+
+HR:
+├─ Can see: Document verification history
+├─ Can see: Their own actions
+├─ Cannot see: Payroll, deletions, other HR
+└─ Purpose: Compliance proof
+
+Workers:
+├─ Can see: Actions affecting their profile
+├─ Cannot see: Other workers' data
+├─ Cannot see: HR actions on them
+└─ Purpose: Transparency (if enabled)
+
+System:
+├─ Logs: Automated actions (backups, webhooks)
+├─ Cannot modify: Any logs
+└─ Purpose: Transparency
+```
+
+---
+
+### **QUERYING AUDIT LOGS (Examples)**
+
+**Query 1: All actions by Priya today**
+```
+SELECT * FROM audit_logs 
+WHERE user_id = "priya@katbotz.com" 
+  AND DATE(timestamp) = "2026-06-23"
+ORDER BY timestamp DESC
+
+Results:
+├─ 10:30:05 — Signed URL generated (pan.pdf)
+├─ 10:30:30 — Document viewed (15 min)
+├─ 10:45:30 — Document verified (pan)
+├─ 14:00:00 — Project assigned (to Rohan)
+└─ ... (more actions)
+```
+
+**Query 2: All document verifications for worker-001**
+```
+SELECT * FROM audit_logs 
+WHERE resource_id LIKE "worker-001/%" 
+  AND action = "document_verified"
+ORDER BY timestamp DESC
+
+Results:
+├─ 2026-06-23 10:45:30 — PAN verified (Clear image)
+├─ 2026-06-22 04:45:00 — Degree verified (Legible)
+└─ 2026-06-21 09:30:00 — Aadhaar verified (Both sides)
+```
+
+**Query 3: All data deletions (for compliance report)**
+```
+SELECT * FROM audit_logs 
+WHERE action_category = "data_management" 
+  AND action = "worker_deleted"
+ORDER BY timestamp DESC
+
+Results:
+├─ 2032-12-31 01:00:00 — worker-001 deleted (3-year retention complete)
+├─ 2032-12-24 01:00:00 — worker-002 deleted (3-year retention complete)
+└─ ... (all deletions, with proof)
+```
+
+---
+
+### **ENCRYPTION & IMMUTABILITY**
+
+**Encryption:**
+```
+Algorithm: AES-256 (military-grade)
+Key: CMEK (Customer-Managed Encryption Keys)
+Storage: Google Cloud KMS
+Key rotation: Automatic quarterly
+Result: Even Google can't read audit logs
+```
+
+**Immutability:**
+```
+├─ Once written: Cannot be modified
+├─ Cannot be deleted: Except if illegal hold lifted
+├─ Append-only: New entries added, old preserved
+├─ Tamper-proof: Hash verification on read
+└─ Compliance: Proves no tampering occurred
+```
+
+---
+
+### **LEGAL COMPLIANCE**
+
+**DPDP Act (India Privacy Law):**
+```
+Requirement: Document all data processing
+✓ WOP compliance:
+├─ All actions logged
+├─ Timestamps recorded
+├─ User identity tracked
+├─ Purpose documented
+├─ Retention tracked
+└─ Deletion proof kept
+```
+
+**Labor Law:**
+```
+Requirement: Keep records 3 years for disputes
+✓ WOP compliance:
+├─ Complete audit trail
+├─ Timestamps (proof of when)
+├─ User identity (proof of who)
+├─ Changes tracked (proof of what)
+└─ Permanent after deletion (proof of compliance)
+```
+
+**Litigation:**
+```
+If sued: Complete audit trail as evidence
+├─ "Prove what happened on June 23"
+│  └─ Audit log shows every action
+├─ "Prove we deleted the data"
+│  └─ Audit log shows deletion timestamp
+├─ "Prove we didn't access after exit"
+│  └─ Audit log shows no access after exit date
+└─ "Prove worker consented"
+   └─ Audit log shows worker uploaded documents
+```
+
+---
+
+### **SUMMARY: Audit Trail System**
+
+```
+✓ WHAT: Every action logged (who, what, when, result)
+✓ WHERE: Firestore (encrypted, immutable)
+✓ HOW LONG: FOREVER (never deleted, even after data deletion)
+✓ ENCRYPTED: CMEK AES-256 (military-grade)
+✓ IMMUTABLE: Cannot be modified or deleted
+✓ ACCESSIBLE: Founder full access, HR limited access
+✓ QUERYABLE: SQL queries for compliance reports
+✓ COMPLIANT: DPDP Act + Labor Law + Litigation defense
+
+RESULT: Complete, auditable proof of all actions
+```
 
 ---
 
