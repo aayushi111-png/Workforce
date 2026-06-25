@@ -64,7 +64,7 @@ One web application where:
 - Personal to-do lists (per worker, visible to HR)
 
 **Operations**
-- Invoice workflow for contractors: Submitted → Approved → Finance Review → Paid
+- Invoice workflow for contractors: Submitted → Approved by HR → Paid
 - Automatic data deletion after 3 years (DPDP compliance)
 - Audit trail for all actions (legal proof)
 
@@ -574,7 +574,7 @@ If sync fails:
 - Day 2: Contract storage schema (scope, rate, duration, SOW, amendments)
 - Day 3: Renewal alert system (90, 60, 30, 7 days before expiry)
 - Day 4: Contract amendment workflow (track all scope/rate/duration changes)
-- Day 5: Invoice workflow (Submitted → Approved → Finance Review → Paid)
+- Day 5: Invoice workflow (Submitted → Approved by HR → Paid)
 - Status: Full contractor + contract management system
 
 **Week 5: Integrations & Advanced (July 28-Aug 1)**

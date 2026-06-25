@@ -1048,7 +1048,7 @@ Worker Profile → Actions → "Sync to Gusto Now"
 - Required docs: PAN, Signed agreement, Bank proof
 - Salary: ₹ INR (Indian Rupees only)
 - Gusto: NO (separate payroll)
-- Invoices: YES (full approval workflow: Submitted → Approved → Finance Review → Paid)
+- Invoices: YES (full approval workflow: Submitted → Approved → Paid)
 - Student ID: NO
 - Review schedule: Contract-based (renewal-focused)
 - Contracts: YES (scope, rate, duration, amendments, renewal alerts 90/60/30/7 days)
@@ -1069,7 +1069,7 @@ Worker Profile → Actions → "Sync to Gusto Now"
 - Required docs: Tax ID or equivalent, Signed agreement, Bank proof
 - Salary: $ USD (US) or EUR/GBP/other (International)
 - Gusto: YES (US-based only, USD) / NO (International - external payroll)
-- Invoices: YES (full approval workflow: Submitted → Approved → Finance Review → Paid)
+- Invoices: YES (full approval workflow: Submitted → Approved → Paid)
 - Student ID: NO
 - Review schedule: Contract-based (delivery-focused)
 - Contracts: YES (scope, rate, duration, amendments, renewal alerts 90/60/30/7 days)

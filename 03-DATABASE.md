@@ -170,12 +170,10 @@ workers/{worker_id}
       date_submitted: "2026-06-30",
       invoice_period: "2026-06-01 to 2026-06-30",
       amount: 12000,
-      status: "Submitted", // or "Approved", "Finance Review", "Paid"
+      status: "Submitted", // or "Approved", "Paid"
       file_link: "https://drive.google.com/.../invoice.pdf",
       approved_by: null,
       approved_date: null,
-      finance_reviewed_by: null,
-      finance_reviewed_date: null,
       paid_date: null
     },
     {
@@ -187,8 +185,6 @@ workers/{worker_id}
       file_link: "https://drive.google.com/.../invoice2.pdf",
       approved_by: "Priya (HR)",
       approved_date: "2026-07-31",
-      finance_reviewed_by: null,
-      finance_reviewed_date: null,
       paid_date: null
     }
   ]

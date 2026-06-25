@@ -63,7 +63,7 @@
 - **Day 2 (July 22):** Contract storage schema (scope, rate, duration, SOW, amendments)
 - **Day 3 (July 23):** Renewal alert system (90, 60, 30, 7 days before expiry)
 - **Day 4 (July 24):** Contract amendment workflow (tracking scope/rate/duration changes)
-- **Day 5 (July 25):** Invoice workflow (Submitted → Approved → Finance Review → Paid)
+- **Day 5 (July 25):** Invoice workflow (Submitted → Approved by HR → Paid)
 
 **Status:** Full contractor + contract management system.
 

@@ -689,9 +689,8 @@ Current Status:
 
 **Invoice States:**
 1. **Submitted** — Contractor submits invoice
-2. **Approved** — HR approves (amount verified)
-3. **Finance Review** — Finance team reviews (payment details checked)
-4. **Paid** — Payment processed (marked complete)
+2. **Approved** — HR reviews and approves (amount, rate, payment details verified)
+3. **Paid** — Payment processed (marked complete)
 
 **Contractor Submits Invoice:**
 1. Click "Submit Invoice"
@@ -705,43 +704,37 @@ Current Status:
 4. Click [Submit]
 5. Status: Submitted
 
-**HR Approves:**
+**HR Approves & Processes:**
 1. Sees notification: "New invoice from [Contractor]"
-2. Reviews invoice
-3. Verifies:
-   - Amount matches contract rate
+2. Reviews invoice and verifies:
+   - Amount matches contract rate (₹500/hr × 160 hrs = ₹80,000 ✓)
    - Work period is correct
    - Invoice format is acceptable
-4. Clicks ☑ [Approve] or ✗ [Reject with reason]
-5. If approved → Status: Approved
-
-**Finance Review:**
-1. Sees notification: "Invoice approved by HR, ready for payment"
-2. Reviews:
-   - Payment details (bank account)
-   - Amount verification
-   - Tax implications (1099 if US contractor)
-3. Clicks ☑ [Ready for Payment] or ✗ [Reject]
-4. If approved → Status: Finance Review
-
-**Payment Processing:**
-1. Finance processes payment through Gusto (US) or bank transfer (others)
-2. Payment sent to contractor bank account
-3. Invoice marked: ☑ [Paid]
-4. Contractor notified: "Your invoice was paid on [date]"
+   - Bank account details correct (for payment)
+   - Tax implications if applicable
+3. Clicks ☑ [Approve & Process] or ✗ [Reject with reason]
+4. If approved:
+   - Status changes: Approved
+   - Payment process initiated
+   - HR (or finance partner) transfers funds
+   - Invoice marked: ☑ [Paid]
+   - Contractor notified: "Your invoice was paid on [date]"
 
 **Example Timeline:**
 ```
-June 30: Contractor submits invoice
-July 1 09:00 AM: HR approves
-July 1 10:30 AM: Finance reviews
-July 2: Payment processed
+June 30: Contractor submits invoice (₹80,000)
+July 1 09:00 AM: HR reviews invoice
+   ├─ Verifies: ₹500/hr × 160 hrs = ₹80,000 ✓
+   ├─ Checks: Bank account on file
+   ├─ Confirms: Dates match work period
+   └─ Approves & initiates payment
+July 2: Payment processed (bank transfer)
 July 3: Status: Paid
 ```
 
 **Contractor View:**
 - List of all invoices (with status)
-- "Pending payment" count (Submitted + Approved + Finance Review)
+- "Pending payment" count (Submitted + Approved)
 - "Paid" section (completed invoices)
 
 **HR View:**
@@ -749,6 +742,7 @@ July 3: Status: Paid
 - Filter by status
 - Total outstanding (not yet paid)
 - Total paid (this month, this year)
+- Payment tracking per contractor
 
 ---
 
@@ -858,7 +852,7 @@ Other            → User selects from dropdown
 6. Performance reviews (30/60/90-day, annual)
 7. Contract management with renewal alerts (90, 60, 30, 7 days)
 8. Contract amendments tracking (scope, rate, duration, SOW)
-9. Invoice workflow (Submitted → Approved → Finance Review → Paid)
+9. Invoice workflow (Submitted → Approved by HR → Paid)
 10. Personal to-do lists
 11. Automatic data deletion after 3 years
 12. Zoho Recruit integration (auto-create workers)
