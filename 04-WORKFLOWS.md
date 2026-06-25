@@ -4,15 +4,58 @@
 
 ## WORKFLOW 1: Worker Onboarding
 
-**Option A: Zoho Auto-Creates Worker (Preferred - No Manual Entry)**
+**TWO OPTIONS — BOTH ALWAYS AVAILABLE:**
+
+---
+
+**Option A: HR MANUALLY CREATES WORKER (Always Available)**
+
+**When to use:** 
+- Anytime HR wants to create a worker
+- Direct creation without Zoho
+- Override for urgent hires
+- **ALWAYS available as primary option**
+
+**How to Manually Create:**
+1. HR logs into WOP
+2. Clicks [+ Create Worker] button (always visible)
+3. Fills form:
+   - Name: [Full name]
+   - Email: [name@katbotz.com]
+   - Type: [Employee/Contractor/Intern/Global Contractor/Global Intern]
+   - Department: [Engineering, HR, Sales, etc.]
+   - Team Lead: [Select from list]
+   - Location: [India/US/Other] (for currency/Gusto)
+4. Clicks [Create]
+5. System auto-generates:
+   - Worker ID (auto)
+   - Document checklist (based on type)
+   - Google Drive folder
+   - Welcome email
+6. Worker receives email: "Your WOP account is ready"
+7. Worker can log in immediately to WOP
+
+**Time to create:** 2-3 minutes  
+**Manual entry required:** Yes (but simple form)  
+**No Zoho dependency:** Works anytime  
+
+---
+
+**Option B: ZOHO AUTO-CREATES WORKER (Automated - If Using Zoho)**
+
+**When to use:**
+- If using Zoho Recruit for hiring
+- To automate worker creation
+- Zero manual entry
+- Faster for high-volume hiring
 
 **How It Works (WEBHOOK):**
 ```
 Zoho Recruit (HR accepts offer)
          ↓
-    Webhook sends data
+    Webhook sends data automatically
          ↓
-WOP auto-creates worker
+WOP auto-creates worker (zero manual entry)
          ↓
 Worker gets email
 ```
@@ -22,6 +65,7 @@ Worker gets email
 2. Zoho webhook automatically sends data to WOP
 3. WOP backend receives webhook:
    - Validates email (@katbotz.com)
+   - Extracts: Name, email, position, department, joining date, type
    - Creates worker in Firestore (worker_id auto-generated)
    - Creates Google Drive folder for documents
    - Generates document checklist (based on worker type)
@@ -37,22 +81,25 @@ Worker gets email
 - When offer marked "Accepted" in Zoho → Auto-sends to WOP
 - Worker created in seconds
 
+**Time to create:** 5-10 seconds (automatic)  
+**Manual entry required:** No (fully automated)  
+**Zoho dependency:** Requires Zoho Recruit integration  
+
 ---
 
-**Option B: HR Manually Creates Worker (Backup - If Zoho Not Connected)**
+**Which option to use?**
 
-**When to use:** Zoho not available, or manual override needed
+| Scenario | Use Manual | Use Zoho |
+|----------|-----------|----------|
+| **Regular hiring** | ✓ Simpler | ✓ Faster |
+| **Emergency hire** | ✓ Immediately | ❌ Need Zoho setup |
+| **Contractor onboarding** | ✓ Direct | ❌ Zoho may not have |
+| **Quick add** | ✓ 2-3 minutes | ❌ Setup required |
+| **High volume** | ❌ Too manual | ✓ Automated |
+| **Zoho integrated** | ✓ Still works | ✓ Preferred |
+| **Zoho down** | ✓ Works anyway | ❌ Can't use |
 
-**Step 1: HR Creates Worker Manually**
-1. HR goes to WOP → [+ Create Worker]
-2. Enters: Name, Email, Type (Employee/Contractor/Intern)
-3. Selects: Department, Team Lead
-4. Clicks [Create]
-5. System auto-generates:
-   - Document checklist
-   - Google Drive folder
-   - Welcome email to worker
-6. Worker gets email and can log in
+**KEY: Manual creation [+ Create Worker] button is ALWAYS visible and ALWAYS works** ✓
 
 ---
 

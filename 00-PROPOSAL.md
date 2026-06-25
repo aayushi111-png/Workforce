@@ -78,8 +78,12 @@ One web application where:
 - Automatic data deletion after 3 years (DPDP compliance)
 - Audit trail for all actions (legal proof)
 
+**Worker Creation (Always Available)**
+- Manual [+ Create Worker] button: ALWAYS available, HR can create any worker anytime (2-3 min form)
+- Zoho Recruit (Optional): AUTO-CREATE workers when offer accepted (one-way, no manual entry) — if using Zoho
+
 **Integrations**
-- Zoho Recruit: AUTO-CREATE workers when offer accepted (one-way, no manual entry)
+- Zoho Recruit: Optional auto-create when offer accepted (webhook) OR use manual creation anytime
 - Gusto: SYNC payroll data for US employees only (two-way real-time, syncs existing workers)
 
 ---
@@ -105,7 +109,8 @@ One web application where:
 
 | System | Purpose | How It Works |
 |--------|---------|------------------|
-| Zoho Recruit | Hiring (AUTO-CREATE) | Offer marked "Accepted" in Zoho → Auto-creates worker in WOP with all details → No manual entry needed |
+| Manual Creation | Worker creation (ALWAYS) | HR clicks [+ Create Worker] → Fills form (2-3 min) → System auto-generates worker profile → Works anytime, no dependencies |
+| Zoho Recruit | Hiring (OPTIONAL AUTO) | Offer marked "Accepted" in Zoho → Auto-creates worker in WOP → Zero manual entry → If using Zoho Recruit |
 | Gusto | Payroll (SYNC ONLY) | Worker already in WOP → Real-time sync: name/email/salary/dept changes → Gusto always has latest data (US employees only) |
 | Google Cloud Storage | Document storage (primary) | Workers upload → Files stored in Cloud Storage → Auto-delete after 3 years via lifecycle policy → Audit logs all access |
 | Google Drive | Document backup | Daily automatic export of all documents → 30-day rolling backup → Recovery if needed (5-min restore) |

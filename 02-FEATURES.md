@@ -430,7 +430,53 @@ June 22, 04:45 PM — Priya verified Degree (Rohan)
 
 ---
 
-## 13. ZOHO RECRUIT INTEGRATION (AUTO-CREATE via Webhook)
+## 13. WORKER CREATION (ALWAYS MANUAL OPTION AVAILABLE)
+
+**What it does:** HR can create any worker manually at any time using [+ Create Worker] button
+
+**MANUAL CREATION — ALWAYS AVAILABLE:**
+
+HR can create a worker anytime by clicking [+ Create Worker]:
+```
+HR clicks: [+ Create Worker]
+         ↓
+Fills form:
+├─ Name
+├─ Email (@katbotz.com)
+├─ Type (Employee/Contractor/Intern/Global)
+├─ Department
+├─ Team Lead
+└─ Location (for Gusto/currency)
+         ↓
+Clicks: [Create]
+         ↓
+System auto-generates:
+├─ Worker ID
+├─ Document checklist
+├─ Drive folder
+├─ Welcome email
+         ↓
+Worker logs in immediately
+```
+
+**When to Use Manual Creation:**
+✓ Emergency hire (need worker now)  
+✓ Direct onboarding (not from Zoho)  
+✓ Contractor onboarding (Zoho may not track)  
+✓ Quick addition (2-3 minute form)  
+✓ Zoho not available (system down)  
+✓ Any time HR decides to add worker  
+
+**Time Required:** 2-3 minutes  
+**Manual Entry:** Yes (simple form)  
+**Dependency:** None (works anytime)  
+**Backup if Zoho fails:** YES (always available)  
+
+**KEY: [+ Create Worker] button is ALWAYS visible and ALWAYS works** ✓
+
+---
+
+## 13B. ZOHO RECRUIT INTEGRATION (AUTO-CREATE via Webhook)
 
 **What it does:** Auto-pulls "offer accepted" from Zoho → auto-creates worker in WOP
 
