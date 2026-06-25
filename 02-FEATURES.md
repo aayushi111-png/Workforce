@@ -2,13 +2,59 @@
 
 ---
 
-## 1. LOGIN
+## 1. LOGIN & SECURITY
 
-**How:** Click "Sign in with Google" → enter katbotz email → password
+**How:** Click "Sign in with Google" → enter @katbotz.com email → authenticate through Google
 
-**Who:** Anyone with katbotz.com email
+**Who:** Anyone with @katbotz.com email (external emails blocked)
 
-**Access:** Automatically routed to role (worker sees own profile, HR sees all workers)
+**Access:** Automatically routed to role:
+- Workers: See only their own profile, projects, documents
+- HR: See all workers, all documents, all projects
+- Team Leads: See only their team members
+- Founder: View-only access to all data
+
+**Security Features:**
+- ✓ No passwords stored in WOP (Google handles authentication)
+- ✓ OAuth tokens expire automatically (no indefinite access)
+- ✓ Only @katbotz.com domain allowed (prevents unauthorized access)
+- ✓ All data encrypted in transit (HTTPS)
+- ✓ If employee enables 2FA in Google Account, WOP inherits that protection
+- ✓ Industry-standard authentication (trusted by Fortune 500 companies)
+- ✓ Even if WOP is compromised, no passwords to steal
+
+**Data Retention (3 Years After Exit):**
+- ✓ All projects assigned to worker → Saved with worker data
+- ✓ All goals set for worker → Saved with worker data
+- ✓ All reviews completed → Saved with worker data
+- ✓ All documents uploaded → Saved with worker data
+- ✓ All invoices submitted → Saved with worker data
+- ✓ All work summaries written → Saved with worker data
+- ✓ Complete audit trail of all actions → Saved forever (legal compliance)
+- ✓ Auto-deleted after 3 years → DPDP Act compliant
+- ✓ Audit logs prove when deletion occurred
+
+**Example:**
+```
+Employee: Rohan Mehta
+Exit Date: June 30, 2026
+
+All his data saved:
+├─ Projects: Mobile App Redesign, API Development
+├─ Goals: 5 goals with completion status
+├─ Reviews: 30-day, 60-day, 90-day reviews
+├─ Documents: PAN, Aadhaar, Degree, Marksheets, Bank proof
+├─ Performance ratings and feedback
+├─ Weekly summaries (26 weeks)
+├─ Audit trail: Every action logged with timestamp
+└─ Auto-delete date: June 30, 2029 (3 years later)
+
+Why 3 years?
+├─ Legal compliance: Labor law requires 3-year record retention
+├─ Dispute resolution: If employee sues later, evidence exists
+├─ Audit proof: Complete history shows what happened when
+└─ Auto-delete: Proof of deletion logged forever
+```
 
 ---
 

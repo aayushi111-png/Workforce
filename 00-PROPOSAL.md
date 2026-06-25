@@ -42,8 +42,18 @@ Impact:
 One web application where:
 
 **Authentication & Access**
-- Workers log in with company email (Google OAuth, katbotz.com domain only)
-- 7 roles: Founder (read-only), Senior HR (everything), HR (verify/assign), Team Lead (team only), Employee (self), Contractor (self), Intern (self)
+- Workers log in with company email (Google OAuth, @katbotz.com domain only)
+- No passwords stored in WOP (Google handles all authentication securely)
+- 2FA supported (inherited from Google Account if enabled)
+- 7 roles with strict access control: Founder (read-only), Senior HR (everything), HR (verify/assign), Team Lead (team only), Employee (self), Contractor (self), Intern (self)
+- Automatic logout after 1 hour of inactivity
+
+**Data Retention (3 Years After Worker Exit)**
+- All projects, goals, reviews, documents, performance data saved with worker record
+- Locked from modification for 3 years (compliance requirement)
+- Auto-deleted after 3 years (DPDP Act compliant)
+- Audit trail kept forever (legal proof of deletion)
+- Why: Labor law requires 3-year record retention for disputes
 
 **Document Management**
 - Workers upload required documents (stored in Cloud Storage with daily Drive backup)

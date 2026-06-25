@@ -5,10 +5,12 @@
 ## Login Security
 
 **Google OAuth only**
-- No passwords stored in WOP
-- Google handles all passwords
-- Only katbotz.com emails allowed
+- No passwords stored in WOP (Google handles all authentication)
+- Only @katbotz.com emails allowed (blocks external emails)
 - Automatic logout after 1 hour of inactivity
+- 2FA inherited from Google Account (if enabled)
+- Tokens expire automatically (can't be used indefinitely)
+- Industry-standard authentication (trusted by 1000+ enterprises)
 
 ---
 
@@ -80,19 +82,39 @@ HR can view audit log anytime.
 
 ---
 
-## Document Retention
+## Data Retention (3 Years After Exit)
 
-**Normal workers (employed):**
-- Documents kept for duration of employment
-- Can be deleted by HR anytime (with permission)
+**All worker data saved for 3 years:**
+- ✓ Documents: PAN, Aadhaar, Degree, Marksheets, Bank proof, Contracts
+- ✓ Projects: All projects assigned to worker
+- ✓ Goals: All goals set and tracked
+- ✓ Reviews: All 30/60/90-day and annual reviews
+- ✓ Performance ratings and feedback
+- ✓ Weekly summaries and progress updates
+- ✓ Invoices (contractors only)
+- ✓ Contract details and amendments (contractors only)
+- ✓ Complete audit trail of all actions
+- ✓ Locked from modification (can't change or delete)
 
-**Exited workers:**
-- Documents locked for 3 years (can't modify or delete)
-- After 3 years: Auto-deleted by system
-- Why: Legal requirement
+**Timeline:**
+```
+Day 0: Worker exits (HR marks exit date)
+Days 1-1095 (3 years): All data kept, locked, accessible to HR
+Day 1096: System auto-deletes all worker data
+Forever: Audit trail remains (proves deletion occurred)
+```
 
-**Audit trail:**
-- Never deleted (kept forever for legal proof)
+**Why 3 years?**
+- Legal requirement: Labor law mandates 3-year record retention
+- Dispute resolution: If employee sues later, all evidence exists
+- Compliance: DPDP Act 2023 requires retention for accountability
+- Audit proof: System logs prove deletion occurred and when
+
+**After 3 years:**
+- Auto-deletion: System automatically deletes all data
+- No manual action needed: Happens at 1 AM on anniversary
+- Proof logged: Audit trail shows "Worker data deleted [date]"
+- Irreversible: Deleted data cannot be recovered
 
 ---
 

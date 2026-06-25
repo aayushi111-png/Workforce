@@ -327,17 +327,33 @@ KATBOTZ Workforce (Backup)/
 
 1. **Active Employee:** Data kept indefinitely (as long as employed)
 2. **Exit Date:** HR marks worker for exit with last day date
-3. **Retention Period:** Data locked for 3 years after exit date
+3. **Retention Period:** Data locked for 3 years after exit date (all data saved)
 4. **Auto-Delete:** System automatically deletes all data 3 years after exit
-5. **Audit Trail:** Kept forever (for legal compliance)
+5. **Audit Trail:** Kept forever (for legal compliance & deletion proof)
+
+### What Gets Saved (All Worker Data for 3 Years)
+
+**All projects, goals, reviews, and documents saved with worker record:**
+- ✓ Worker profile (name, email, type, department, team lead, joining date)
+- ✓ All projects assigned (project name, lead, start date, status)
+- ✓ All goals set and tracked (goal description, deadline, status)
+- ✓ All reviews completed (30/60/90-day, annual reviews with ratings/feedback)
+- ✓ Performance ratings and feedback from team lead
+- ✓ All documents uploaded (PAN, Aadhaar, Degree, Marksheets, Bank proof)
+- ✓ Weekly summaries and progress updates
+- ✓ Personal to-do lists and tasks
+- ✓ Invoices submitted (contractors only)
+- ✓ Contract details and amendments (contractors only)
+- ✓ Complete audit trail (every action with timestamp and user)
 
 ### Automatic Deletion Process
 
-- **Schedule:** Runs first of each month
+- **Schedule:** Runs daily at 1 AM, checks all exited workers
 - **Criteria:** Worker exit date + 3 years = today or earlier
-- **Action:** Delete worker profile, documents, goals, reviews, performance data
-- **Log Entry:** Record in audit trail "Worker data deleted [date]"
-- **Verification:** HR can see deletion occurred in audit logs
+- **Action:** Delete worker profile, documents, goals, reviews, performance data (everything except audit trail)
+- **Log Entry:** Record in audit trail "Worker data deleted [date]" — this entry stays forever
+- **Verification:** HR can see deletion occurred in audit logs anytime
+- **Irreversible:** Deleted data cannot be recovered (no undelete option)
 
 ### Legal Compliance
 
