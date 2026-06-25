@@ -12,7 +12,7 @@
 - Workers: See only their own profile, projects, documents
 - HR: See all workers, all documents, all projects
 - Team Leads: See only their team members
-- Founder: View-only access to all data
+- Founder: Full authority — can make any changes to any data
 
 **Security Features:**
 - ✓ No passwords stored in WOP (Google handles authentication)

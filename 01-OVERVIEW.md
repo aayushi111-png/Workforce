@@ -125,15 +125,18 @@ When HR (HR or Senior HR role) logs in, they see administrative dashboard contai
 ## Role-Based Permission Matrix
 
 ### Founder Role
-- **Access Level:** View all data (read-only)
-- **Dashboard:** Read-only view of all workers
-- **Documents:** View all documents (read-only)
-- **Goals:** View all goals (read-only)
-- **Reviews:** View all reviews (read-only)
+- **Access Level:** FULL ADMINISTRATIVE AUTHORITY
+- **Dashboard:** View all workers, edit any worker
+- **Documents:** View, verify, reject any documents
+- **Goals:** View, create, edit, delete any goals
+- **Reviews:** View, fill, edit, delete any reviews
 - **Reports:** Access all reports and analytics
 - **Audit Log:** Full access to audit trail
-- **Permissions:** Cannot make any changes
-- **Special Capability:** View all reports, complete visibility
+- **Permissions:** CAN MAKE ANY CHANGES (full authority)
+- **Special Capability:** Complete visibility, ultimate decision-maker, override any settings
+- **Worker Management:** Create, edit, delete workers; mark for exit; trigger manual deletion
+- **System Control:** Override any decisions, access all features
+- **Note:** Founder is the ultimate authority with no restrictions
 
 ### Senior HR Role
 - **Access Level:** Full administrative access

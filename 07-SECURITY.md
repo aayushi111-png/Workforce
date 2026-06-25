@@ -29,13 +29,14 @@
 
 ## Access Control
 
-**Who sees what:**
-- Worker: Only their own profile
-- Team Lead: Only their team members + can edit their goals + fill reviews
-- HR: All workers, all data
-- Founder: All data (read-only)
+**Who sees what and what they can change:**
+- Worker: Only their own profile (can edit own data)
+- Team Lead: Only their team members (can edit team goals, fill reviews)
+- HR: All workers, all data (can verify documents, assign projects, manage workers)
+- Senior HR: All workers, all data (can mark for exit, approve reviews, full admin)
+- Founder: All data, ALL CHANGES (full authority, ultimate decision-maker, can override anything)
 
-System enforces this. No exceptions.
+System enforces this. Founder has no restrictions.
 
 ---
 

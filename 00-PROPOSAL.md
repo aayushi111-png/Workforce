@@ -45,7 +45,7 @@ One web application where:
 - Workers log in with company email (Google OAuth, @katbotz.com domain only)
 - No passwords stored in WOP (Google handles all authentication securely)
 - 2FA supported (inherited from Google Account if enabled)
-- 7 roles with strict access control: Founder (read-only), Senior HR (everything), HR (verify/assign), Team Lead (team only), Employee (self), Contractor (self), Intern (self)
+- 7 roles with strict access control: Founder (full authority - can make any changes), Senior HR (everything except system override), HR (verify/assign), Team Lead (team only), Employee (self), Contractor (self), Intern (self)
 - Automatic logout after 1 hour of inactivity
 
 **Data Retention (3 Years After Worker Exit)**
@@ -210,7 +210,7 @@ One web application where:
 
 | Role | View | Create | Edit | Delete | Approve | Special Permission |
 |------|------|--------|------|--------|---------|-------------------|
-| **Founder** | All data (read-only) | No | No | No | No | View all reports, view audit logs |
+| **Founder** | All data | Yes | Yes | Yes | Yes | Full authority, can make ANY changes, ultimate decision-maker |
 | **Senior HR** | All workers | Yes | Yes | Yes (mark exit) | Yes (activate) | Mark for exit, approve reviews, manage all |
 | **HR** | All workers | Yes | Documents | No | Verify docs | Assign projects, edit goals, approve docs |
 | **Team Lead** | Team only | No | Team goals | No | No | Edit team goals, fill team reviews |
