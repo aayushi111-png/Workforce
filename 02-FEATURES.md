@@ -794,20 +794,194 @@ July 3: Status: Paid
 
 ## 17. AUTO-DELETE (After 3 Years)
 
-**What happens:**
-1. Worker exits on June 30, 2026
-2. System marks: "Delete all data on June 30, 2029"
-3. June 30, 2029 arrives
-4. System automatically deletes:
-   - Worker profile
-   - All documents
-   - All data
-   - From Firestore + Google Drive
-5. Logs: "Worker data deleted June 30, 2029"
+**What Gets Deleted:**
+- ✓ Worker profile (name, email, department, etc.)
+- ✓ All documents (PAN, Aadhaar, Degree, etc.)
+- ✓ All projects assigned
+- ✓ All goals and progress tracking
+- ✓ All reviews (30/60/90-day, annual)
+- ✓ All performance ratings and feedback
+- ✓ All weekly summaries
+- ✓ All invoices (contractors)
+- ✓ All contracts and amendments
+- ✓ Personal to-do lists
+- ✗ Audit trail (KEPT FOREVER — never deleted)
 
-**No manual action needed. Automatic.**
+**HOW: Automatic Deletion Process**
 
-**Why?** Legal requirement (DPDP Act). After 3 years, data can be deleted. Audit trail kept forever.
+**Scheduled Job (Runs Daily at 1 AM UTC):**
+```
+Step 1: Check all exited workers
+Step 2: Calculate: exit_date + 3 years = deletion_date
+Step 3: If today >= deletion_date:
+   a) Delete from Firestore (database)
+   b) Delete from Cloud Storage (documents)
+   c) Delete from Google Drive (backups)
+   d) Log deletion in audit trail
+   e) Send HR notification email
+Step 4: Process repeats daily (ensures nothing is missed)
+```
+
+**WHERE: Complete Deletion From All Systems**
+
+**1. Firestore Database → DELETED**
+```
+Firestore /workers collection:
+├─ Before: worker-001 record exists (all documents, goals, reviews)
+└─ After: worker-001 record DELETED (completely removed)
+
+Firestore /documents collection:
+├─ Before: 20 documents for worker-001 (PAN, Aadhaar, etc.)
+└─ After: All 20 documents DELETED (by worker_id filter)
+
+Firestore /projects collection:
+├─ Before: 3 projects for worker-001
+└─ After: All 3 projects DELETED
+
+Firestore /goals, /reviews, /invoices, /contracts:
+├─ Before: All records for worker-001 exist
+└─ After: ALL DELETED by worker_id
+```
+
+**2. Cloud Storage Buckets → DELETED**
+```
+gs://katbotz-workforce-docs/2026/worker-001/
+├─ Before: Folder contains:
+│  ├─ pan.pdf (3 versions)
+│  ├─ aadhaar.jpg (2 versions)
+│  ├─ degree.pdf (1 version)
+│  ├─ contract.pdf (5 versions)
+│  └─ 20+ other files
+└─ After: ENTIRE FOLDER DELETED (all versions removed)
+
+Lifecycle Policy (automatic):
+├─ Deletes all versioned files
+├─ Clears storage immediately
+└─ No recovery possible
+```
+
+**3. Google Drive (Backups) → DELETED**
+```
+KATBOTZ Workforce Backups/2026/Rohan Mehta/
+├─ Before: Daily backup folder with:
+│  ├─ Documents/ (snapshots)
+│  ├─ Projects/ (project details)
+│  ├─ Reviews/ (PDFs)
+│  └─ Invoices/ (invoice files)
+└─ After: ENTIRE FOLDER DELETED
+
+Drive Trash:
+├─ Moves to trash
+├─ Auto-empties after 30 days
+└─ Permanently removed
+```
+
+**4. Audit Trail (Database) → KEPT FOREVER**
+```
+audit_logs/ collection:
+├─ Before: 100+ logs for worker-001
+│  ├─ "Uploaded PAN on June 1"
+│  ├─ "Verified Aadhaar on June 5"
+│  ├─ "Marked for exit on June 30"
+│  └─ ...
+└─ After: ALL LOGS KEPT + NEW ENTRY ADDED
+   └─ "Rohan Mehta data deleted on June 30, 2029"
+
+Audit Trail is PERMANENT PROOF:
+├─ Everything that happened is logged
+├─ Deletion itself is logged (with timestamp)
+├─ Never deleted (legal compliance)
+└─ Accessible to HR forever
+```
+
+**Complete Example: Rohan's 3-Year Lifecycle**
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+YEAR 0: June 30, 2026 - Worker Exits
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+HR marks Rohan for exit:
+├─ Exit date: June 30, 2026
+├─ All data locked (can't modify)
+├─ Auto-delete date calculated: June 30, 2029
+└─ Audit log: "Rohan marked for exit"
+
+Status: Data is ACTIVE but LOCKED (3 years countdown starts)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+YEARS 1-3: July 1, 2026 - June 29, 2029 - Retention Period
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+All data remains accessible:
+├─ Firestore: ✓ Worker profile exists
+├─ Cloud Storage: ✓ Documents accessible
+├─ Google Drive: ✓ Daily backups continue
+├─ HR can view: ✓ All projects, goals, reviews
+└─ Data locked: ✓ Can't be deleted manually
+
+Status: Data AVAILABLE but LOCKED (for litigation defense)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+YEAR 3: June 30, 2029 at 1:00 AM UTC - AUTO-DELETE EXECUTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Automatic deletion job runs:
+
+1:00:01 AM - Firestore Deletion:
+└─ DELETE: workers/worker-001
+└─ DELETE: All documents, projects, goals, reviews, invoices
+└─ Status: REMOVED from database ✓
+
+1:00:15 AM - Cloud Storage Deletion:
+└─ DELETE: gs://katbotz-workforce-docs/2026/worker-001/
+└─ DELETE: All versions of all files
+└─ Status: Folder and contents REMOVED ✓
+
+1:00:30 AM - Google Drive Deletion:
+└─ DELETE: KATBOTZ Backups/Rohan Mehta/
+└─ Status: Folder moved to trash (auto-empties in 30 days) ✓
+
+1:00:45 AM - Audit Trail Log:
+└─ ADD: "Rohan Mehta data deleted on June 30, 2029 1:00:42 AM UTC"
+└─ Status: LOGGED forever (never deleted) ✓
+
+1:05 AM - Email Notification:
+└─ TO: HR Team
+└─ SUBJECT: "Auto-deletion completed for 1 worker"
+└─ BODY: "Rohan Mehta - deleted June 30, 2029"
+
+Status: ALL DATA DELETED (except audit trail)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VERIFICATION: Check if Deletion Worked
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+HR can verify:
+✓ Search WOP for "Rohan" → No results found
+✓ Check Cloud Storage → Folder gone
+✓ Check Google Drive → Folder gone (in trash)
+✓ Check audit trail → "Data deleted June 30, 2029"
+✓ Try to recover → No recovery option
+
+Status: DELETION CONFIRMED
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FOREVER: Audit Trail Preserved
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Even 10 years later:
+├─ Rohan's data: DELETED (no recovery)
+├─ Audit trail: COMPLETE (all actions logged)
+│  ├─ "June 1, 2026: Rohan onboarded"
+│  ├─ "June 30, 2026: Rohan marked for exit"
+│  ├─ "June 30, 2029: Rohan data deleted"
+│  └─ ...100+ audit entries
+└─ Legal proof: PERMANENT (if litigation arises)
+```
+
+**No manual action needed. Completely automatic.**
+
+**Why 3 Years?**
+- Legal requirement: Labor law requires 3-year retention
+- Dispute resolution: If employee sues later, evidence exists
+- DPDP compliance: Requires accountability period
+- Audit proof: Shows when and how data was deleted
 
 ---
 

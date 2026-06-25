@@ -110,11 +110,174 @@ Forever: Audit trail remains (proves deletion occurred)
 - Compliance: DPDP Act 2023 requires retention for accountability
 - Audit proof: System logs prove deletion occurred and when
 
-**After 3 years:**
-- Auto-deletion: System automatically deletes all data
-- No manual action needed: Happens at 1 AM on anniversary
-- Proof logged: Audit trail shows "Worker data deleted [date]"
-- Irreversible: Deleted data cannot be recovered
+**After 3 Years: HOW & WHERE Data Gets Deleted**
+
+### **HOW: Auto-Deletion Process (Fully Automatic)**
+
+**Scheduled Deletion Job:**
+```
+Trigger: Daily at 1:00 AM UTC
+Process:
+├─ Check all workers marked "exited"
+├─ Calculate: exit_date + 3 years = deletion_date
+├─ If today >= deletion_date:
+│  ├─ Delete from Firestore (database)
+│  ├─ Delete from Cloud Storage (documents)
+│  ├─ Delete from Google Drive (backups)
+│  ├─ Log deletion in audit trail
+│  └─ Send HR notification email
+└─ Process repeats daily (catches any missed deletions)
+
+Status: "Deleted on [date]"
+Irreversible: No recovery possible (data gone)
+```
+
+### **WHERE: Complete Deletion Across All Systems**
+
+**1. Firestore (Database) - DELETED**
+```
+Before deletion:
+workers/worker-001/
+├─ name: "Rohan Mehta"
+├─ email: "rohan@katbotz.com"
+├─ documents: [PAN, Aadhaar, Degree, ...]
+├─ projects: [Mobile App, API Dev, ...]
+├─ goals: [5 goals with status]
+├─ reviews: [30-day, 60-day, 90-day, annual]
+├─ invoices: [INV-001, INV-002, ...]
+└─ contracts: [contract-001 with amendments]
+
+After deletion:
+workers/worker-001/
+└─ DELETED (record removed from database)
+```
+
+**2. Cloud Storage (Documents) - DELETED**
+```
+Before deletion:
+gs://katbotz-workforce-docs/2026/worker-001/
+├─ pan.pdf (versioning enabled, 3 versions kept)
+├─ aadhaar.jpg (versioning enabled, 2 versions kept)
+├─ degree.pdf
+├─ marksheet_10th.pdf
+├─ marksheet_12th.pdf
+├─ bank_proof.pdf
+├─ contract.pdf (3 versions with amendments)
+└─ invoices/ (5 invoices stored)
+
+After deletion:
+gs://katbotz-workforce-docs/2026/worker-001/
+└─ DELETED (entire folder removed, all versions deleted)
+
+Note: Lifecycle policy automatically deletes versioned files
+```
+
+**3. Google Drive (Backup) - DELETED**
+```
+Before deletion:
+KATBOTZ Workforce Backups/2026/
+└─ Rohan Mehta/
+   ├─ Documents/ (daily backups)
+   ├─ Projects/ (project details)
+   ├─ Reviews/ (review PDFs)
+   └─ Invoices/ (invoice files)
+
+After deletion:
+KATBOTZ Workforce Backups/2026/
+└─ Rohan Mehta/
+   └─ DELETED (entire folder removed)
+
+Note: Drive trash auto-empties after 30 days
+```
+
+**4. Firestore Metadata - DELETED**
+```
+Before deletion:
+documents/ collection:
+├─ doc-001: {worker_id: "worker-001", status: "Verified", ...}
+├─ doc-002: {worker_id: "worker-001", status: "Verified", ...}
+└─ doc-003: {worker_id: "worker-001", status: "Verified", ...}
+
+After deletion:
+documents/ collection:
+└─ All records with worker_id="worker-001" DELETED
+```
+
+**5. Audit Trail - KEPT FOREVER (NEVER DELETED)**
+```
+Before deletion:
+audit_logs/ collection:
+├─ log-1: "Rohan uploaded PAN on June 1"
+├─ log-2: "Priya verified PAN on June 5"
+├─ log-3: "Rohan marked for exit on June 30"
+└─ ...100+ logs for this worker
+
+After deletion:
+audit_logs/ collection:
+├─ log-1: "Rohan uploaded PAN on June 1" ← STILL HERE
+├─ log-2: "Priya verified PAN on June 5" ← STILL HERE
+├─ log-3: "Rohan marked for exit on June 30" ← STILL HERE
+├─ log-101: "Worker data deleted on June 30, 2029" ← NEW ENTRY
+└─ ...all logs preserved forever
+```
+
+### **Safety Mechanisms**
+
+**Prevent Accidental Deletion:**
+```
+✓ Only delete if: marked "exited" AND exit_date + 3 years <= today
+✓ Double-check: Run dry-run first, verify before actual deletion
+✓ Logging: Every deletion logged with timestamp and reason
+✓ No cascade: Only worker data deleted, not company-wide data
+✓ Irreversible: Deleted from all backups too (no recovery)
+```
+
+**Verification:**
+```
+HR can verify deletion by:
+1. Search for worker in WOP → "No results found" ✓
+2. Check Drive folder → Folder gone ✓
+3. Check Cloud Storage → Folder gone ✓
+4. Check audit trail → "Worker deleted [date]" ✓
+5. No data recovery possible ✓
+```
+
+**Example Timeline: Rohan's Deletion**
+
+```
+June 30, 2026: Rohan exits
+└─ HR marks: Exit date = June 30, 2026
+└─ System calculates: Delete date = June 30, 2029
+
+June 30, 2029: Auto-Deletion Executes at 1:00 AM
+├─ Firestore:
+│  └─ DELETE workers/worker-001 ✓
+│  └─ DELETE all documents with worker_id="worker-001" ✓
+│  └─ DELETE all projects/goals/reviews/invoices ✓
+│
+├─ Cloud Storage:
+│  └─ DELETE gs://katbotz-workforce-docs/2026/worker-001/ ✓
+│  └─ DELETE all versioned files ✓
+│
+├─ Google Drive:
+│  └─ DELETE KATBOTZ Workforce Backups/2026/Rohan Mehta/ ✓
+│  └─ Move to Drive trash (auto-empties in 30 days) ✓
+│
+└─ Audit Trail:
+   ├─ DELETE: NO (kept forever)
+   └─ ADD: "Rohan Mehta data deleted on June 30, 2029 at 1:00 AM UTC" ✓
+
+June 30, 2029 1:05 AM: Email to HR
+└─ "Auto-deletion completed for 1 worker (Rohan Mehta)"
+└─ "Deletion timestamp: June 30, 2029 1:00:42 AM UTC"
+└─ "Audit log entry: log-102"
+```
+
+**No manual action needed: Happens automatically**
+- No manual action needed
+- No confirmation required
+- No recovery options
+- Proof logged forever
 
 ---
 
