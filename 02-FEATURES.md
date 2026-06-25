@@ -396,19 +396,406 @@ Date: June 23, 2026
 
 ---
 
-## 11. NOTIFICATIONS
+## 11. IN-PORTAL NOTIFICATIONS (No Email - Secure & Encrypted)
 
-**In-portal alerts (no email):**
+**What It Is:**
+Workers and HR see notifications INSIDE WOP dashboard, not via email. All notifications encrypted.
 
-Worker sees:
-- Jun 23 — Your PAN was verified ✓
-- Jun 20 — 30-day review due in 1 week
-- Jun 15 — Project assigned: Mobile App
+---
 
-HR sees:
-- Jun 23 — Rohan's PAN verified
-- Jun 20 — 30-day reviews pending: Rohan, Sara
-- Jun 15 — 3 documents submitted for verification
+## **HOW IN-PORTAL NOTIFICATIONS WORK**
+
+### **1. Notification is Created (Event Triggers)**
+
+```
+Event Happens:
+├─ Document verified by HR
+├─ Project assigned to worker
+├─ 30-day review due
+├─ Invoice submitted
+├─ Contract renewal alert (7 days)
+└─ Offboarding scheduled
+
+System Detects → Creates notification object
+```
+
+### **2. Notification Stored (Encrypted in Firestore)**
+
+```
+Firestore Database (Encrypted):
+notifications/notification-id-001
+{
+  "notification_id": "notif-2026-001",
+  "worker_id": "worker-001",
+  "type": "document_verified",
+  "title": "Your PAN document was verified",
+  "message": "PAN uploaded on Jun 20 verified by Priya on Jun 23",
+  "timestamp": "2026-06-23T10:30:45Z",
+  "read": false,
+  "priority": "medium",
+  "action_url": "/worker/documents"
+}
+
+Encryption: ✓ Firestore CMEK (encrypted at rest)
+```
+
+### **3. Worker Logs In (Notifications Load)**
+
+```
+Worker logs into WOP:
+  │
+  └─ Browser loads dashboard
+      │
+      └─ JavaScript fetches notifications
+          │
+          ├─ API request: GET /api/worker/{id}/notifications
+          │
+          ├─ WOP backend retrieves from Firestore (encrypted)
+          │
+          ├─ Data decrypted by Firestore (automatic)
+          │
+          ├─ Backend sends to browser over HTTPS (encrypted)
+          │
+          └─ Browser displays in notification panel
+```
+
+### **4. Worker Sees Notifications (In-Portal Dashboard)**
+
+```
+┌──────────────────────────────────────────┐
+│ WORKER DASHBOARD - Notifications         │
+├──────────────────────────────────────────┤
+│ 3 new notifications                      │
+│                                          │
+│ ✓ Jun 23 — Your PAN was verified        │
+│   Verified by Priya, clear image        │
+│   [View details]                         │
+│                                          │
+│ ⏳ Jun 20 — 30-day review due           │
+│   Your review is scheduled for Jun 30   │
+│   [Complete review]                     │
+│                                          │
+│ 📌 Jun 15 — Project assigned            │
+│   Team Lead: Akshat                     │
+│   Project: Mobile App Redesign          │
+│   [View project]                        │
+│                                          │
+│ [Mark all as read]                      │
+└──────────────────────────────────────────┘
+```
+
+### **5. Notifications Marked as Read**
+
+```
+Worker clicks notification (reads it):
+  │
+  └─ JavaScript sends: PATCH /api/notifications/{id}/read
+      │
+      ├─ WOP backend updates: "read": true
+      │
+      ├─ Saves to Firestore (encrypted)
+      │
+      └─ UI updates: "New" badge disappears
+
+Status: Read (but never deleted)
+```
+
+---
+
+## **ENCRYPTION: HOW NOTIFICATIONS ARE PROTECTED**
+
+### **At Rest (In Database - Firestore)**
+
+```
+Firestore Storage:
+┌───────────────────────────────────────┐
+│ notifications/ collection              │
+│                                        │
+│ Each notification encrypted with:      │
+│                                        │
+│ ✓ CMEK (Customer-Managed Encryption   │
+│   Keys) — Google Cloud default        │
+│                                        │
+│ ✓ AES-256 encryption standard          │
+│                                        │
+│ ✓ Key rotation: Quarterly              │
+│                                        │
+│ ✓ Legal hold: Can't be deleted if     │
+│   litigation pending                  │
+└───────────────────────────────────────┘
+
+Result: Notification data encrypted on disk
+        No one can read raw data
+        Only authorized WOP app can decrypt
+```
+
+### **In Transit (From Server to Browser)**
+
+```
+WOP Server → Worker's Browser:
+
+Step 1: Server retrieves notification
+├─ Notification: "Your PAN was verified"
+└─ Status: Encrypted in Firestore
+
+Step 2: Server sends to browser
+├─ Uses HTTPS protocol
+├─ Encryption: TLS 1.3 (industry standard)
+├─ Data encrypted: Yes
+├─ Eavesdropping blocked: Yes
+└─ Man-in-middle prevented: Yes
+
+Step 3: Browser receives notification
+├─ Browser decrypts (automatic)
+├─ Displays in UI
+└─ Never shown in plain text in network
+
+Result: Safe from eavesdropping
+        Safe from interception
+        Safe from tampering
+```
+
+### **On Device (Browser/Phone)**
+
+```
+Notification displayed in WOP dashboard:
+├─ Only shown to logged-in worker
+├─ Only visible if browser has valid session
+├─ Only visible if worker has permission
+├─ Disappears on logout
+├─ Not cached insecurely
+└─ No local storage of sensitive data
+
+Browser Security:
+├─ HttpOnly cookies (JavaScript can't access)
+├─ SameSite policy (prevents CSRF)
+├─ Content Security Policy (prevents XSS)
+└─ Secure flag (only sent over HTTPS)
+```
+
+---
+
+## **ALL DOCUMENTS: WHERE STORED & HOW ENCRYPTED**
+
+### **PRIMARY STORAGE: Google Cloud Storage**
+
+```
+Location: gs://katbotz-workforce-docs/2026/worker-001/
+          ├─ pan.pdf
+          ├─ aadhaar.jpg
+          ├─ degree.pdf
+          ├─ contract.pdf
+          └─ invoices/invoice.pdf
+
+Encryption:
+├─ CMEK: Customer-Managed Encryption Keys
+├─ Algorithm: AES-256 (military-grade)
+├─ Key management: Google Cloud KMS
+├─ Automatic encryption: Every file
+├─ No plain text: Files encrypted immediately on upload
+├─ 99.99% SLA: Google Cloud Storage reliability
+└─ Versioning enabled: Keep all versions
+
+Access Control:
+├─ Private bucket: Not publicly accessible
+├─ Worker: Can upload to their folder
+├─ HR: Can view via signed URLs (temporary, 1 hour)
+├─ Audit logging: All access logged
+└─ Immutable: Once uploaded, can't be modified
+
+Backup: Daily export to Google Drive (also encrypted)
+```
+
+### **BACKUP STORAGE: Google Drive**
+
+```
+Location: KATBOTZ Workforce Backups/2026/Rohan Mehta/
+          ├─ Documents/
+          │  ├─ pan.pdf
+          │  ├─ aadhaar.jpg
+          │  └─ degree.pdf
+          │
+          └─ Projects/
+             └─ [project files]
+
+Encryption:
+├─ Google Workspace encryption: Default
+├─ Encryption in transit: HTTPS
+├─ Encryption at rest: AES-256
+├─ 30-day rolling retention: Old backups auto-deleted
+└─ No manual access: Backups are for recovery only
+
+Purpose: Backup only (primary is Cloud Storage)
+```
+
+---
+
+## **HOW DOCUMENT UPLOADS ARE ENCRYPTED**
+
+### **Upload Process (5 Steps)**
+
+```
+Step 1: Worker Selects File (Local Computer)
+└─ File: pan.pdf (on worker's computer, not encrypted yet)
+
+Step 2: Browser to WOP (HTTPS - Encrypted)
+└─ Worker clicks [Upload]
+└─ Browser opens file
+└─ Sends to WOP backend over HTTPS
+└─ Encryption: TLS 1.3 (in transit)
+└─ No eavesdropping possible
+
+Step 3: WOP Backend Validation (Encrypted)
+└─ Receives file: pan.pdf
+└─ Validates: Format (PDF), Size (≤10 MB)
+└─ Status: Valid → Proceed to storage
+
+Step 4: Upload to Cloud Storage (Encrypted)
+└─ Backend uploads to: gs://katbotz-workforce-docs/2026/worker-001/
+└─ Encryption applied: CMEK (AES-256)
+└─ File stored: Encrypted on disk
+└─ Versioning: Previous versions kept (v1, v2, v3, etc.)
+
+Step 5: Metadata Saved to Firestore (Encrypted)
+└─ Document record created:
+   {
+     "document_id": "doc-001",
+     "file_path": "gs://katbotz-workforce-docs/2026/worker-001/pan.pdf",
+     "status": "Pending",
+     "uploaded_at": "2026-06-20T14:30:00Z",
+     "file_size": 2145678,
+     "version": 1
+   }
+└─ Metadata encrypted: CMEK in Firestore
+└─ Audit log entry: "Worker uploaded PAN"
+
+Result:
+├─ File encrypted in Cloud Storage ✓
+├─ Metadata encrypted in Firestore ✓
+├─ Audit trail logged ✓
+├─ Backup created in Drive ✓
+└─ All encrypted end-to-end ✓
+```
+
+---
+
+## **HOW HR VIEWS DOCUMENTS (Securely)**
+
+```
+HR Verification Process:
+
+HR clicks [View Document]:
+  │
+  └─ WOP backend generates signed URL
+      │
+      ├─ URL is temporary (expires in 1 hour)
+      ├─ URL is unique (can't be reused)
+      ├─ URL is secure (requires valid session)
+      │
+      └─ Browser opens Google Cloud Viewer
+          │
+          ├─ Document displayed: pan.pdf
+          ├─ No download button (secure view only)
+          ├─ HR can review in browser
+          └─ Access logged in audit trail
+
+HR returns to WOP:
+  │
+  └─ Clicks [Verify] or [Reject]
+      │
+      ├─ Updates status: "Verified" or "Rejected"
+      ├─ Saves to Firestore (encrypted)
+      ├─ Sends notification to worker
+      └─ Logs in audit trail
+
+Result:
+├─ Document reviewed securely (no download) ✓
+├─ HR can't extract/modify file ✓
+├─ Access is temporary (1 hour) ✓
+├─ Audit trail shows who viewed when ✓
+└─ File stays encrypted in Cloud Storage ✓
+```
+
+---
+
+## **ENCRYPTION SUMMARY TABLE**
+
+| Where | Encryption | Standard | Key Management | Details |
+|-------|-----------|----------|-----------------|---------|
+| **Cloud Storage (Files)** | ✓ Yes | AES-256 | CMEK (Google KMS) | Primary document storage |
+| **Firestore (Metadata)** | ✓ Yes | AES-256 | CMEK (Google KMS) | Document records, notifications |
+| **Google Drive (Backup)** | ✓ Yes | AES-256 | Google default | 30-day rolling backup |
+| **In Transit (Upload)** | ✓ Yes | TLS 1.3 | HTTPS | Browser to WOP server |
+| **In Transit (API)** | ✓ Yes | TLS 1.3 | HTTPS | WOP server to browser |
+| **Notifications** | ✓ Yes | AES-256 | CMEK | In Firestore, in transit, in browser |
+| **Audit Trail** | ✓ Yes | AES-256 | CMEK | Complete action history |
+| **Passwords** | N/A | N/A | Google OAuth | Not stored in WOP (Google handles) |
+
+---
+
+## **NOTIFICATIONS VS EMAIL**
+
+| Feature | In-Portal Notifications | Email |
+|---------|------------------------|-------|
+| **Delivery** | Instant (in WOP) | Delayed (email server) |
+| **Encryption** | ✓ HTTPS + Firestore CMEK | ✓ Email encryption (TLS) |
+| **Privacy** | ✓ Only in WOP (no external) | ⚠️ Sent to external email |
+| **Control** | ✓ HR controls format | ❌ Email system controls |
+| **Spam** | ✓ No spam risk | ⚠️ Can be marked spam |
+| **Compliance** | ✓ Data stays internal | ⚠️ Shared with email provider |
+| **Real-time** | ✓ Yes (instant) | ⚠️ Minutes delay |
+
+**Choice: In-portal only** = More secure + More private + More control
+
+---
+
+## **COMPLETE NOTIFICATION FLOW (Example)**
+
+```
+════════════════════════════════════════════════════════════
+SCENARIO: HR Verifies Rohan's PAN Document
+════════════════════════════════════════════════════════════
+
+10:30 AM — Rohan uploads PAN.pdf
+├─ File uploaded to: gs://katbotz-workforce-docs/2026/worker-001/
+├─ Encryption: CMEK-AES-256 applied
+├─ Metadata saved: Firestore (encrypted)
+├─ Audit log: "Rohan uploaded PAN"
+└─ Status: Pending verification
+
+10:35 AM — HR Verifies Document
+├─ HR in WOP clicks [View Document]
+├─ WOP generates temporary signed URL
+├─ Browser opens Google Cloud Viewer
+├─ HR reviews: PAN.pdf (no download)
+├─ HR returns to WOP
+├─ HR clicks [Verify]
+└─ Status updated: Verified
+
+10:35:30 AM — Notification Created (Encrypted)
+├─ System creates notification object
+├─ Content: "Your PAN was verified ✓"
+├─ Encrypted: CMEK in Firestore
+├─ Audit log: "Priya verified PAN (Rohan)"
+└─ Notification stored: Firestore
+
+10:36 AM — Rohan Logs Into WOP
+├─ Browser fetches dashboard
+├─ API request: GET /api/notifications
+├─ Server retrieves from Firestore (encrypted)
+├─ Data decrypted by Firestore (automatic)
+├─ Sent to browser over HTTPS (encrypted)
+├─ Browser displays notification
+└─ Rohan sees: "Jun 23 — Your PAN was verified ✓"
+
+Result:
+✓ Document encrypted end-to-end
+✓ Notification encrypted end-to-end
+✓ All access logged
+✓ No email sent (private)
+✓ Complete audit trail
+════════════════════════════════════════════════════════════
+```
 
 ---
 
