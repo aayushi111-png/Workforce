@@ -207,17 +207,16 @@ When HR (HR or Senior HR role) logs in, they see administrative dashboard contai
 
 ### Where Data is Stored
 
-| Data Category | Primary Storage | Secondary Storage | Access Pattern |
-|--------------|-----------------|-------------------|-----------------|
-| Worker Profiles | Firestore (database) | Daily backup (Cloud Storage) | Query by ID, department, team lead |
-| Documents (Files) | Cloud Storage (buckets) | Daily backup (Google Drive) | Accessed via signed URLs from WOP |
-| Document Metadata | Firestore (database) | Daily backup | Query by status, type, worker |
-| Goals and Progress | Firestore (database) | Daily backup | Query by worker, by project |
-| Weekly Summaries | Firestore (database) | Daily backup | Query by worker, by week |
-| Performance Reviews | Firestore (database) | Daily backup | Query by worker, by type |
-| Contract Records | Firestore (database) | Daily backup | Query by renewal date, worker |
-| Audit Trail | Firestore (database) | Daily backup | Query by worker, by action, by date |
-| System Backups | Cloud Storage | Encrypted with separate key | Monthly retention (30 days kept) |
+| Data Category | Primary Storage | Backup Storage | Retention | Access Pattern |
+|--------------|-----------------|-----------------|-----------|-----------------|
+| Worker Profiles | Firestore | Daily backup (Firestore) | 3 years | Query by ID, department, team lead |
+| Documents (Files) | Cloud Storage (3 yr) | Google Drive (30-day) | 3 years (primary) / 30 days (backup) | Signed URLs from WOP |
+| Document Metadata | Firestore | Daily backup (Firestore) | 3 years | Query by status, type, worker |
+| Goals and Progress | Firestore | Daily backup (Firestore) | 3 years | Query by worker, by project |
+| Weekly Summaries | Firestore | Daily backup (Firestore) | 3 years | Query by worker, by week |
+| Performance Reviews | Firestore | Daily backup (Firestore) | 3 years | Query by worker, by type |
+| Contract Records | Firestore | Daily backup (Firestore) | 3 years | Query by renewal date, worker |
+| Audit Trail | Firestore | Daily backup (Firestore) | FOREVER | Query by worker, by action, by date |
 
 ### Document Storage Structure
 
@@ -250,12 +249,14 @@ KATBOTZ Workforce (Backup)/
     └── [historical years]
 ```
 
-**Access Pattern:**
+**Access Pattern (VERY SPECIFIC RETENTION):**
 - Workers: Upload-only to their folder (signed upload URLs)
 - HR: View via signed URLs (no download needed)
-- Backup: Daily automatic export to Drive (30-day rolling)
-- Auto-delete: Lifecycle policy deletes after 1095 days (3 years)
-- Audit: All access logged to Cloud Logging
+- Primary Storage (Cloud Storage): Files kept for 3 YEARS after worker exit
+- Backup Storage (Google Drive): Daily export with 30-day rolling retention (disaster recovery only)
+- Auto-delete: Cloud Storage lifecycle policy deletes after 1095 days (3 years)
+- Backup auto-delete: Google Drive backups older than 30 days automatically deleted
+- Audit Trail: ALL access logged to Cloud Logging (kept forever for legal compliance)
 
 ---
 

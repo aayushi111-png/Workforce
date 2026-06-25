@@ -231,56 +231,262 @@ audit_logs/{log_id}
 
 ---
 
-## 3. DOCUMENT STORAGE: CLOUD STORAGE (Primary) + GOOGLE DRIVE (Backup)
+## 3. DOCUMENT STORAGE: TWO-TIER SYSTEM (Primary + Backup)
 
-### Architecture Decision
+### Storage Architecture (VERY SPECIFIC RETENTION)
 
-**Primary Storage:** Google Cloud Storage (buckets)  
-**Backup Storage:** Google Drive (daily export)  
-**Why this approach:**
-- Auto-delete after 3 years (DPDP compliance) ✓
-- Audit trail & legal proof ✓
-- Legal hold capability (for litigation) ✓
-- Signed URLs for HR preview (no download) ✓
-- Scalable to 5000+ employees ✓
-- Cost: ₹2-3/month (minimal increase) ✓
+| Storage | Location | What | How Long | Purpose | Encrypted |
+|---------|----------|------|----------|---------|-----------|
+| **PRIMARY** | Cloud Storage | Actual documents | 3 YEARS after exit | Long-term legal retention | ✓ CMEK |
+| **BACKUP** | Google Drive | Daily snapshots | 30 days (rolling) | Disaster recovery only | ✓ AES-256 |
+| **AUDIT TRAIL** | Firestore | All actions | FOREVER | Compliance & proof | ✓ CMEK |
 
-### Document Storage Flow
+---
 
-**Primary Storage (Cloud Storage Buckets):**
+### PRIMARY STORAGE: Google Cloud Storage (3-Year Retention)
+
+**Location:** `gs://katbotz-workforce-docs/`
+
+**Structure:**
 ```
 gs://katbotz-workforce-docs/
 └── 2026/
     ├── worker-id-001/
-    │   ├── pan.pdf (v1, v2, v3 - versioning)
-    │   ├── aadhaar.jpg
+    │   ├── pan.pdf (v1, v2, v3 - all kept for 3 years)
+    │   ├── aadhaar.jpg (v1, v2 - all kept for 3 years)
     │   ├── degree.pdf
     │   ├── marksheet_10th.pdf
     │   ├── marksheet_12th.pdf
     │   ├── bank_proof.pdf
-    │   └── contract.pdf (for contractors)
+    │   └── contract.pdf (3 versions)
     ├── worker-id-002/
-    │   └── [documents...]
+    │   └── [all documents...]
     └── [other workers]/
 ```
 
-**Backup Storage (Google Drive):**
+**Retention Policy (SPECIFIC):**
 ```
-KATBOTZ Workforce (Backup)/
-└── 2026/ (daily export)
-    ├── Rohan Mehta/
-    │   └── [copies of all documents]
-    └── [other workers]/
+Timeline:
+├─ Day 0: Worker exits (e.g., June 30, 2026)
+├─ Days 1-1095 (3 years): Documents kept in Cloud Storage
+│  └─ Accessible to HR
+│  └─ All versions kept
+│  └─ All access logged
+├─ Day 1096 (June 30, 2029): Auto-delete execution
+│  └─ Lifecycle policy triggers
+│  └─ All files deleted from Cloud Storage
+│  └─ All versions deleted
+│  └─ Backup copies also deleted
+│  └─ Deletion logged in audit trail
+└─ Forever: Audit trail kept (proof of deletion)
+
+Key Point: Documents stay for EXACTLY 3 YEARS (1095 days)
+           Then auto-deleted (no manual action)
+           Audit proof kept forever
 ```
 
-### How Documents Flow
+**Encryption:** CMEK (Customer-Managed Encryption Keys)  
+**Versioning:** Enabled (all versions kept for 3 years)  
+**Audit Logging:** Complete access history  
+**Cost:** ₹1-3/month for 50-500 workers  
 
-1. **Upload:** Worker uploads file → Cloud Run receives → Stored in Cloud Storage
-2. **Access:** HR clicks document → WOP generates signed URL → Viewer opens in browser
-3. **Verification:** HR reviews file → Marks status (Pending/Under Review/Verified/Rejected)
-4. **Backup:** Nightly job exports to Google Drive (30-day rolling backup)
-5. **Retention:** Cloud Storage lifecycle policy: auto-delete after 1095 days (3 years)
-6. **Compliance:** Audit logs show who accessed what when, deletion proof
+---
+
+### BACKUP STORAGE: Google Drive (30-Day Rolling Only)
+
+**Location:** `KATBOTZ Workforce Backups/`
+
+**Structure:**
+```
+KATBOTZ Workforce Backups/
+└── 2026/ (changes daily)
+    ├── Jun-23-2026/ (daily snapshot)
+    │   ├── Rohan Mehta/
+    │   │   └── [copies of documents as of Jun 23]
+    │   ├── Sara Singh/
+    │   │   └── [copies of documents as of Jun 23]
+    │   └── [other workers...]
+    │
+    ├── Jun-24-2026/ (next day's snapshot)
+    │   └── [documents from Jun 24...]
+    │
+    └── Jun-30-2026/ (most recent)
+        └── [latest documents...]
+
+Oldest kept: Last 30 days only
+Auto-deleted: Backups older than 30 days
+```
+
+**Retention Policy (VERY SPECIFIC):**
+```
+Timeline Example:
+├─ Jun 1: Backup created (day 1 of 30)
+├─ Jun 15: Backup created (day 15 of 30) 
+├─ Jun 30: Backup created (day 30 of 30)
+├─ Jul 1: NEW backup created
+│  └─ Jun 1 backup AUTO-DELETED (31 days old)
+│  └─ Only last 30 days kept
+├─ Jul 15: Backup created (day 30)
+├─ Aug 1: NEW backup created
+│  └─ Jun 2 backup AUTO-DELETED
+│  └─ Rolling window: always last 30 days
+
+Key Point: Drive backups are ROLLING (30 days)
+           Not cumulative
+           Old backups auto-deleted
+           For disaster recovery ONLY (not long-term)
+```
+
+**Encryption:** AES-256 (Google Workspace standard)  
+**Frequency:** Daily at 2:00 AM UTC  
+**Retention:** 30-day rolling window (auto-delete old)  
+**Purpose:** Disaster recovery if Cloud Storage corrupted  
+**Cost:** Included in Google Workspace  
+
+---
+
+### AUDIT TRAIL: Firestore (FOREVER Retention)
+
+**Location:** Firestore `audit_logs` collection
+
+**What's Logged:**
+```
+Every action tracked:
+├─ Jun 20: Worker uploaded PAN
+├─ Jun 23: HR verified PAN
+├─ Jun 30: Worker marked for exit
+├─ Jun 30, 2029: Worker data deleted
+│  └─ File: pan.pdf deleted
+│  └─ File: aadhaar.jpg deleted
+│  └─ All documents: DELETED
+│  └─ Audit entry: Proof of deletion
+└─ Kept FOREVER (legal proof)
+```
+
+**Retention:** PERMANENT (never deleted)  
+**Encryption:** CMEK  
+**Purpose:** Legal compliance & litigation defense  
+
+---
+
+### How Documents Flow (Detailed)
+
+```
+════════════════════════════════════════════════════════════
+STEP 1: Upload (Worker uploads PAN)
+════════════════════════════════════════════════════════════
+Worker uploads → Cloud Run receives
+        ↓
+Stored: Cloud Storage (PRIMARY)
+└─ Location: gs://katbotz-workforce-docs/2026/worker-001/pan.pdf
+└─ Encryption: CMEK (immediate)
+└─ Retention: 3 YEARS from now
+└─ Status: Kept until Jun 30, 2029
+
+════════════════════════════════════════════════════════════
+STEP 2: Access (HR verifies document)
+════════════════════════════════════════════════════════════
+HR clicks [View] → Signed URL generated (1 hour)
+        ↓
+Document viewed: Cloud Storage via secure URL
+        ↓
+HR marks: Verified ✓
+        ↓
+Stored: Firestore metadata (encrypted)
+├─ Status: Verified
+├─ Verified by: Priya
+├─ Verified date: Jun 23, 2026
+└─ Audit log: Access logged
+
+════════════════════════════════════════════════════════════
+STEP 3: Backup (Daily 2:00 AM automated export)
+════════════════════════════════════════════════════════════
+Scheduled job at 2:00 AM:
+  │
+  ├─ Reads: All documents from Cloud Storage
+  ├─ Exports: Copy to Google Drive
+  │  └─ Location: KATBOTZ Backups/2026/Jun-23/[worker]/
+  │  └─ Retention: 30-day rolling (auto-delete old)
+  │  └─ Purpose: Disaster recovery only
+  │
+  └─ Keeps: Last 30 days of backups
+
+════════════════════════════════════════════════════════════
+STEP 4: Retention (3 Years)
+════════════════════════════════════════════════════════════
+After worker exits (Jun 30, 2026):
+
+Cloud Storage (PRIMARY):
+├─ Document kept: Jun 30, 2026 → Jun 30, 2029 (exactly 3 years)
+├─ Location: gs://katbotz-workforce-docs/2026/worker-001/pan.pdf
+├─ Encryption: CMEK
+├─ Versioning: All versions kept (v1, v2, v3)
+├─ Access: Available to HR (read-only)
+└─ Purpose: Legal requirement (labor law)
+
+Google Drive (BACKUP):
+├─ Daily backups created (rolling 30-day)
+├─ Oldest backup kept: Last 30 days
+├─ Older backups: Auto-deleted
+├─ Example: If last backup is Jul 30, all Jun backups gone
+└─ Purpose: Disaster recovery ONLY
+
+Firestore (AUDIT):
+├─ All actions logged: Who, what, when
+├─ Deletion scheduled: Jun 30, 2029
+└─ Kept: FOREVER (legal proof)
+
+════════════════════════════════════════════════════════════
+STEP 5: Auto-Delete (Day 1096 = Jun 30, 2029)
+════════════════════════════════════════════════════════════
+Scheduled at 1:00 AM UTC:
+
+Cloud Storage:
+├─ Lifecycle policy triggered
+├─ Deletes: gs://katbotz-workforce-docs/2026/worker-001/
+│  └─ ALL files deleted
+│  └─ ALL versions deleted (v1, v2, v3)
+└─ Result: Folder empty, then folder deleted
+
+Google Drive:
+├─ Backup job finds: 30 days passed
+├─ Deletes: KATBOTZ Backups/Jun-30 (and older)
+├─ Result: No older backups kept
+└─ Status: Disaster recovery data deleted
+
+Firestore (AUDIT - NEVER DELETED):
+├─ Adds entry: "Worker data deleted Jun 30, 2029"
+├─ Logs: Complete history still available
+└─ Kept: FOREVER (legal proof of deletion)
+
+════════════════════════════════════════════════════════════
+RESULT
+════════════════════════════════════════════════════════════
+
+✓ Documents: Deleted after 3 years (DPDP compliant)
+✓ Backups: 30-day rolling (disaster recovery only)
+✓ Audit Trail: Kept forever (legal proof)
+✓ No manual action: All automatic
+
+════════════════════════════════════════════════════════════
+```
+
+### Security & Compliance
+
+**Cloud Storage Features (PRIMARY - 3 Years):**
+- CMEK encryption (customer-managed encryption keys)
+- Signed URLs (secure, temporary access links for HR)
+- Audit logging (all access logged to Cloud Logging)
+- Legal hold API (block deletion if litigation)
+- Lifecycle policies (auto-delete after 1095 days, logged)
+- Retention policies (DPDP compliance)
+
+**Google Drive Features (BACKUP - 30 Days):**
+- AES-256 encryption (Google Workspace standard)
+- Daily automated export (no manual work)
+- 30-day rolling retention (auto-delete old)
+- Recovery capability (restore in 5 minutes)
+- Workspace sharing (HR team access)
 
 ### Security & Compliance
 
