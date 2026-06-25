@@ -550,27 +550,488 @@ RESULT
 - Auditors: Read-only access with logging
 - System: Automatic lifecycle job (no human access)
 
-### Signed URLs for HR Preview
+### Document Access Security: 4-Layer System
 
-HR doesn't need to download - signed URLs allow browser preview:
+**Layer 1: CMEK Encryption (Customer-Managed Keys)**
+**Layer 2: Signed URLs (Temporary Access)**
+**Layer 3: Browser-Only Preview (No Downloads)**
+**Layer 4: Complete Access Logging (Audit Trail)**
+
+---
+
+#### **LAYER 1: CMEK Encryption (At Rest)**
+
+**What is CMEK?**
 ```
-HR clicks "View Document" in WOP
-↓
-WOP generates signed URL (valid 1 hour)
-↓
-URL opens in browser with Google Cloud Viewer
-↓
-HR sees PDF/image directly (no download)
-↓
-HR clicks back to WOP to mark Verified/Rejected
+CMEK = Customer-Managed Encryption Keys
+
+Encryption happens automatically:
+├─ Every file uploaded
+├─ Encrypted with AES-256 (military-grade)
+├─ Keys managed by Google Cloud KMS
+├─ KATBOTZ controls the keys (not Google)
+└─ Files stay encrypted on disk forever
+
+How it works:
+├─ File uploads: Employee uploads pan.pdf
+├─ Encryption applied: Immediately encrypted
+├─ Storage: Encrypted on disk in Cloud Storage
+├─ Key management: Keys in Google Cloud KMS
+└─ Access: Only WOP app can decrypt (with key)
+
+Result:
+✓ Even Google engineers can't read files (without key)
+✓ If storage is stolen, files are useless (encrypted)
+✓ Keys are protected separately from files
+✓ You control who has access to keys
 ```
 
-**Benefits:**
-- No file downloads (faster)
-- No files on local computers (security)
-- HR preview in browser (convenient)
-- All actions logged (audit trail)
-- Temporary access (URLs expire)
+**Key Management (Google Cloud KMS):**
+```
+Key Location: Google Cloud Key Management Service
+├─ Stored: Secure hardware security modules
+├─ Rotation: Automatic quarterly rotation
+├─ Backup: Geo-redundant backups
+├─ Access: Only WOP service account can use
+└─ Logging: All key access logged
+
+Example Timeline:
+├─ File encrypted with Key-v1 (Q1 2026)
+├─ Key rotated: Key-v2 created (Q2 2026)
+├─ File automatically re-encrypted with Key-v2
+├─ Key-v1 retired (still available for old files)
+└─ All rotations logged and audited
+```
+
+---
+
+#### **LAYER 2: Signed URLs (Temporary Access)**
+
+**What is a Signed URL?**
+```
+Signed URL = Temporary access link
+├─ Generated: Just-in-time (when HR clicks View)
+├─ Validity: 1 hour (exact)
+├─ Reusable: NO (one-time URL)
+├─ Contains: Cryptographic signature
+└─ Verification: Google verifies signature
+
+Technical details:
+├─ Algorithm: HMAC-SHA256 (cryptographic signature)
+├─ Key: WOP's private key signs the URL
+├─ Expiration: Unix timestamp (1 hour from now)
+├─ Scope: Specific file only (pan.pdf, not all files)
+└─ Permissions: Read-only (can't modify or delete)
+
+Example URL:
+https://storage.googleapis.com/
+  katbotz-workforce-docs/
+  2026/worker-001/pan.pdf
+  ?X-Goog-Algorithm=GOOG4-RSA-SHA256
+  &X-Goog-Credential=...
+  &X-Goog-Date=20260623T103000Z
+  &X-Goog-Expires=3600
+  &X-Goog-SignedHeaders=host
+  &X-Goog-Signature=abcd1234...
+```
+
+**Timeline: How Signed URLs Work**
+
+```
+10:30:00 AM - HR clicks [View Document] in WOP
+└─ HR is viewing pan.pdf document
+
+10:30:05 AM - WOP backend generates signed URL
+├─ Creates: Cryptographically signed temporary URL
+├─ Expiration: 1 hour from now (10:30:00 + 3600 seconds)
+├─ Validity: This URL only valid for 1 hour
+├─ File: pan.pdf only (no access to other files)
+├─ Scope: WOP's service account only
+└─ Action logged: "Generated signed URL for pan.pdf"
+
+10:30:10 AM - Browser receives signed URL
+└─ Opens in new tab: Google Cloud Viewer
+
+10:30:30 AM - HR views document in browser
+├─ Google Cloud Viewer displays: pan.pdf
+├─ Access verified: Signature checked by Google
+├─ Permissions: Read-only (no download button)
+├─ Browser shows: Image/PDF preview
+└─ Access logged: "HR viewed pan.pdf"
+
+10:30:45 AM - HR reviews and marks Verified
+├─ Returns to WOP
+├─ Clicks [Verify]
+├─ Closes viewer tab
+└─ Signed URL no longer needed
+
+10:31:00 AM - Signed URL still valid (30 seconds)
+├─ Could click URL again: Still works (1 hour window)
+└─ Would see: Same document preview
+
+11:30:00 AM - Signed URL expires (EXACTLY 1 hour)
+├─ URL becomes invalid
+├─ If HR tries to use: "Access Denied"
+├─ Message: "Signature expired"
+└─ Status: NO access after 1 hour (ever)
+
+11:30:01 AM - After expiration
+├─ URL is dead
+├─ Can't access with old URL
+├─ Must generate new signed URL
+└─ Triggers audit log entry: "New signed URL generated"
+```
+
+---
+
+#### **LAYER 3: Google Cloud Viewer (Browser-Only, No Downloads)**
+
+**How HR Sees Documents (Without Downloading)**
+
+```
+WOP Backend:
+└─ Generates signed URL (1 hour validity)
+
+Browser:
+└─ Opens Google Cloud Viewer with signed URL
+
+Google Cloud Viewer Interface:
+┌──────────────────────────────┐
+│ Pan Card - PAN001.pdf        │
+├──────────────────────────────┤
+│                              │
+│    [IMAGE OF PAN CARD]       │
+│    (Secure embedded viewer)  │
+│                              │
+│    No download button        │
+│    No print option           │
+│    No save option            │
+│    No copy/paste             │
+│    (Depends on file type)    │
+│                              │
+├──────────────────────────────┤
+│ Page 1 of 1  [Navigation]    │
+│ Zoom: [+] [-]               │
+│ Full screen: [Open in new]  │
+│ Back to WOP: [Close]        │
+└──────────────────────────────┘
+
+What HR CAN do:
+✓ View document in browser
+✓ Zoom in/out
+✓ Navigate pages (if multi-page)
+✓ Full screen viewing
+✓ See document clearly
+
+What HR CANNOT do:
+✗ Download file to computer
+✗ Save file locally
+✗ Print document
+✗ Copy/paste content
+✗ Extract text
+✗ Modify document
+✗ Share document
+✗ Forward link to others
+```
+
+**Why No Download?**
+
+```
+Security advantage:
+├─ File never touches HR's computer
+├─ No local copies to lose/leak
+├─ No email sharing possible
+├─ No forwarding to others
+├─ No accidental uploads elsewhere
+└─ Document stays in secure environment
+
+Compliance advantage:
+├─ Auditable: Can track exactly who viewed
+├─ Temporal: Access limited (1 hour)
+├─ Immutable: Can't save modified version
+├─ Logged: Every access recorded
+└─ Compliant: Meets data protection requirements
+```
+
+---
+
+#### **LAYER 4: Complete Access Logging (Audit Trail)**
+
+**What Gets Logged (Everything):**
+
+```
+Firestore audit_logs collection records:
+
+DOCUMENT UPLOAD:
+├─ Timestamp: 2026-06-20T14:30:00Z
+├─ Action: "Document uploaded"
+├─ Worker: "worker-001"
+├─ Document: "pan.pdf"
+├─ File size: "2.1 MB"
+├─ Status: "Pending verification"
+└─ IP address: "192.168.1.100"
+
+SIGNED URL GENERATION:
+├─ Timestamp: 2026-06-23T10:30:05Z
+├─ Action: "Signed URL generated"
+├─ Requestor: "priya@katbotz.com"
+├─ Document: "worker-001/pan.pdf"
+├─ Expiration: "2026-06-23T11:30:05Z"
+├─ Validity period: "3600 seconds"
+└─ IP address: "192.168.1.200"
+
+DOCUMENT VIEW:
+├─ Timestamp: 2026-06-23T10:30:30Z
+├─ Action: "Document viewed"
+├─ Viewer: "priya@katbotz.com"
+├─ Document: "worker-001/pan.pdf"
+├─ Viewer tool: "Google Cloud Viewer"
+├─ Duration: "15 minutes"
+└─ IP address: "192.168.1.200"
+
+VERIFICATION:
+├─ Timestamp: 2026-06-23T10:30:45Z
+├─ Action: "Document verified"
+├─ Verifier: "priya@katbotz.com"
+├─ Document: "pan.pdf"
+├─ Status changed: "Pending" → "Verified"
+├─ Reason: "Clear image, readable"
+└─ IP address: "192.168.1.200"
+
+SIGNED URL EXPIRATION:
+├─ Timestamp: 2026-06-23T11:30:00Z
+├─ Action: "Signed URL expired"
+├─ URL: "https://storage.googleapis.com/...abcd1234"
+├─ Original expiration: "2026-06-23T11:30:05Z"
+└─ Status: "Access denied" (if attempted after)
+```
+
+**What's Logged (Complete List):**
+
+```
+Access Events:
+✓ Every file upload (who, when, what, size)
+✓ Every signed URL generation (who, when, validity)
+✓ Every document view (who, when, how long)
+✓ Every verification action (who, when, result)
+✓ Every rejection (who, when, reason)
+✓ Every download attempt (yes/no/blocked)
+✓ Every failed access attempt (who, when, why denied)
+
+Metadata:
+✓ Timestamp (exact second)
+✓ User/Service account (who did it)
+✓ Document path (which file)
+✓ Action taken (what happened)
+✓ Result (success/failure)
+✓ IP address (where from)
+✓ Duration (how long viewed)
+
+Encryption:
+✓ All audit logs encrypted (CMEK)
+✓ Stored in Firestore (secure)
+✓ Never deleted (forever retention)
+✓ Immutable (can't be changed)
+```
+
+**Audit Trail Access:**
+
+```
+Who can see audit logs?
+
+Founder:
+✓ Full access to all audit logs
+✓ Can filter by date, user, document
+✓ Can download reports
+✓ Can analyze patterns
+
+Senior HR:
+✓ Full access to all audit logs
+✓ Can filter by worker, document
+✓ Can see who viewed what
+✓ Can audit document verification
+
+HR:
+✓ View own actions only
+✓ See document verification history
+✓ Cannot see other HR's actions
+
+Everyone else:
+✗ No access to audit logs
+
+System:
+✓ Automated checks (lifecycle job)
+✓ Compliance reporting
+✓ Legal hold verification
+```
+
+---
+
+### **COMPLETE SECURITY FLOW (All 4 Layers)**
+
+```
+════════════════════════════════════════════════════════════
+STEP 1: WORKER UPLOADS DOCUMENT
+════════════════════════════════════════════════════════════
+
+Worker clicks [Upload] → Selects pan.pdf (2.1 MB)
+
+Layer 1 (Encryption):
+├─ File sent to WOP: Encrypted during transit (HTTPS)
+├─ WOP receives: pan.pdf
+├─ Cloud Storage stores: WITH CMEK encryption applied
+├─ Result: Encrypted at rest on disk
+└─ Audit log: "Document uploaded - encrypted"
+
+Layer 4 (Logging):
+├─ Logs: "worker-001 uploaded pan.pdf"
+├─ Timestamp: 2026-06-20T14:30:00Z
+├─ File size: 2.1 MB
+└─ Status: Pending verification
+
+════════════════════════════════════════════════════════════
+STEP 2: HR CLICKS [VIEW DOCUMENT]
+════════════════════════════════════════════════════════════
+
+Priya (HR) in WOP clicks [View Document] for pan.pdf
+
+Layer 2 (Signed URL):
+├─ WOP backend generates: Cryptographically signed URL
+├─ Validity: Exactly 1 hour (3600 seconds)
+├─ Signature: HMAC-SHA256 with WOP's private key
+├─ Scope: Only pan.pdf (not other files)
+└─ Example: https://storage.googleapis.com/...?X-Goog-Expires=3600&X-Goog-Signature=abcd1234
+
+Layer 3 (Viewer):
+├─ Browser opens: Google Cloud Viewer
+├─ Shows: pan.pdf image/PDF preview
+├─ No download button: Secure viewing only
+├─ Available: 1 hour from generation
+
+Layer 4 (Logging):
+├─ Logs: "Signed URL generated for worker-001/pan.pdf"
+├─ Generated by: priya@katbotz.com
+├─ Expires: 2026-06-23T11:30:00Z
+└─ Purpose: Document verification
+
+════════════════════════════════════════════════════════════
+STEP 3: HR VIEWS DOCUMENT IN BROWSER
+════════════════════════════════════════════════════════════
+
+Priya views pan.pdf in Google Cloud Viewer for 15 minutes
+
+Layer 1 (Encryption):
+├─ Cloud Storage retrieves: Encrypted file from disk
+├─ Decryption: Uses CMEK key from Google Cloud KMS
+├─ Only WOP can decrypt: Has credentials to access key
+├─ Stream: Decrypted data sent to Priya over HTTPS
+
+Layer 3 (Viewer):
+├─ Preview: Document shown in secure Google viewer
+├─ Interface: No save/download/print options
+├─ Display: PDF/image rendered in browser
+├─ Copy protection: Can't copy text (if enabled)
+
+Layer 4 (Logging):
+├─ Logs: "Viewed document" every 30 seconds
+├─ Viewer: priya@katbotz.com
+├─ Document: worker-001/pan.pdf
+├─ Duration: 15 minutes total
+├─ IP: 192.168.1.200
+└─ Tool: Google Cloud Viewer
+
+════════════════════════════════════════════════════════════
+STEP 4: HR CLICKS [VERIFY] OR [REJECT]
+════════════════════════════════════════════════════════════
+
+Priya clicks [Verify] - Document clear and readable
+
+Layer 1 (Encryption):
+├─ Verification record: Encrypted before storage
+├─ Firestore writes: Status "Verified" + CMEK encryption
+└─ Result: Encrypted in database
+
+Layer 4 (Logging):
+├─ Logs: "Document verified"
+├─ Verifier: priya@katbotz.com
+├─ Document: worker-001/pan.pdf
+├─ Status change: "Pending" → "Verified"
+├─ Time: 2026-06-23T10:30:45Z
+└─ Timestamp: Immutable audit entry
+
+════════════════════════════════════════════════════════════
+STEP 5: WHAT HAPPENS AFTER 1 HOUR
+════════════════════════════════════════════════════════════
+
+Original signed URL expires at: 2026-06-23T11:30:00Z
+
+If Priya tries to use same URL after expiration:
+├─ Google Cloud Storage checks: URL signature
+├─ Verifies: Expiration timestamp
+├─ Result: "Access Denied - Signature expired"
+├─ HTTP: 403 Forbidden
+└─ Audit: "Signed URL access attempt - DENIED (expired)"
+
+If Priya needs to view again:
+├─ Clicks [View Document] again in WOP
+├─ WOP generates: NEW signed URL (new 1-hour window)
+├─ Opens: Viewer again with fresh URL
+└─ Audit: "New signed URL generated"
+
+════════════════════════════════════════════════════════════
+STEP 6: AUDIT TRAIL (FOREVER)
+════════════════════════════════════════════════════════════
+
+Complete audit record (never deleted):
+
+Timeline:
+├─ 2026-06-20 14:30: Uploaded by worker-001
+├─ 2026-06-23 10:30: Signed URL generated by priya
+├─ 2026-06-23 10:30-10:45: Viewed by priya (15 min)
+├─ 2026-06-23 11:00: Expired access attempt - DENIED
+├─ 2026-06-23 11:05: New signed URL generated by priya
+├─ 2026-06-23 11:05-11:10: Viewed by priya (5 min)
+├─ 2026-06-23 11:10: Verified by priya
+└─ Forever: All entries kept (legal proof)
+
+Evidence:
+✓ Proof of upload (date, size, person)
+✓ Proof of access (who, when, duration)
+✓ Proof of verification (who, when, result)
+✓ No tampering possible (encrypted, immutable)
+
+════════════════════════════════════════════════════════════
+SECURITY RESULT
+════════════════════════════════════════════════════════════
+
+✓ File encrypted at rest (CMEK - military-grade)
+✓ Access encrypted in transit (HTTPS TLS 1.3)
+✓ Preview secure (browser-only, no download)
+✓ Access temporary (1-hour signed URLs)
+✓ All access logged (complete audit trail)
+✓ Forever record (legal compliance)
+✓ Immutable history (can't be changed)
+
+Security Chain:
+Layer 1: CMEK Encryption (file protected)
+Layer 2: Signed URLs (temporary access only)
+Layer 3: Browser Preview (no local copies)
+Layer 4: Audit Logging (complete history)
+
+Result: Military-grade security for documents
+════════════════════════════════════════════════════════════
+```
+
+---
+
+### **Summary: 4-Layer Security**
+
+| Layer | What | How | Result |
+|-------|------|-----|--------|
+| **1. CMEK Encryption** | File at rest | AES-256 with managed keys | Even Google can't read (without key) |
+| **2. Signed URLs** | Access control | 1-hour cryptographic signatures | Temporary access, not reusable |
+| **3. Browser Viewer** | Download prevention | Google Cloud Viewer, no buttons | No local copies, no sharing |
+| **4. Audit Logging** | Accountability | All access recorded, encrypted | Complete history, legal proof |
 
 ---
 
