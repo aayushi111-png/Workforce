@@ -771,9 +771,85 @@ July 3: Status: Paid
 
 ---
 
+## 18. MULTI-CURRENCY SUPPORT (INR & USD + International)
+
+**Supported Currencies:**
+
+Every contractor has a currency based on their location:
+
+```
+Location         → Auto Currency
+────────────────────────────────
+India            → ₹ INR
+United States    → $ USD
+Spain/EU         → € EUR
+United Kingdom   → £ GBP
+Canada           → $ CAD
+Australia        → $ AUD
+Other            → User selects from dropdown
+```
+
+**How It Works:**
+
+1. **At Contractor Creation:**
+   - HR clicks [Create Contractor]
+   - Enters: Name, Email, Location (dropdown)
+   - System auto-sets currency based on location
+   - Example: Rohan (India) → ₹ INR, John Smith (US) → $ USD
+   - No currency conversion in WOP
+
+2. **Rate Entry (Stored in Native Currency):**
+   - HR enters rate for contract
+   - Rate shows: "₹500 per hour" or "$50 per hour" or "€45 per hour"
+   - System stores: Numeric rate (500) + currency code (INR)
+   - No conversion between currencies
+
+3. **In Invoices & Reporting:**
+   ```
+   Indian Contractor:
+   ├─ Invoice: ₹500/hour × 160 hours = ₹80,000 INR
+   
+   US Contractor:
+   ├─ Invoice: $50/hour × 160 hours = $8,000 USD
+   
+   EU Contractor:
+   ├─ Invoice: €45/hour × 160 hours = €7,200 EUR
+   ```
+
+4. **Multi-Currency Dashboard:**
+   ```
+   HR sees all contractors with native currency:
+   
+   Contractor List:
+   ├─ Rohan (India): ₹500/hour
+   ├─ John Smith (US): $50/hour
+   ├─ Maria (Spain): €45/hour
+   
+   Monthly Payroll (No Mixing):
+   ├─ INR Total: ₹152,000
+   ├─ USD Total: $16,800
+   ├─ EUR Total: €14,880
+   └─ Finance handles conversion externally if needed
+   ```
+
+5. **Gusto Integration (US Only):**
+   - US contractors with $ USD sync to Gusto
+   - Indian contractors with ₹ INR: NO Gusto sync (external payroll)
+   - EU contractors with € EUR: NO Gusto sync (external payroll)
+
+6. **Amendment with Currency Change:**
+   - If contractor relocates (e.g., India → US)
+   - HR marks location change in amendment
+   - Currency auto-updates: ₹ → $
+   - System records old and new currency in amendment history
+
+**Key Point:** WOP stores every contractor in their native currency. No automatic conversion. Finance team handles currency conversion externally if needed.
+
+---
+
 ## Feature Summary
 
-17 features implemented:
+18 features implemented:
 1. Worker profiles and types (Employee, Contractor, Intern, Global Intern, Global Contractor + Student ID)
 2. Document management with 4-state verification (Pending, Under Review, Verified, Rejected)
 3. Project assignment and tracking
@@ -791,3 +867,4 @@ July 3: Status: Paid
 15. Audit trail and logging
 16. In-portal notifications
 17. Offboarding workflows
+18. Multi-currency support (INR, USD, EUR, GBP, etc.)

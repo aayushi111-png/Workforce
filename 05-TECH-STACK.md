@@ -1037,7 +1037,7 @@ Worker Profile → Actions → "Sync to Gusto Now"
 
 **1. Indian Employee**
 - Required docs: PAN, Aadhaar, Degree, 10th/12th marksheets, Bank proof
-- Salary: ₹ (Indian Rupees)
+- Salary: ₹ INR (Indian Rupees only)
 - Gusto: NO (separate payroll system)
 - Invoices: NO
 - Student ID: NO
@@ -1046,41 +1046,245 @@ Worker Profile → Actions → "Sync to Gusto Now"
 
 **2. Indian Contractor**
 - Required docs: PAN, Signed agreement, Bank proof
-- Salary: ₹ (Indian Rupees)
+- Salary: ₹ INR (Indian Rupees only)
 - Gusto: NO (separate payroll)
 - Invoices: YES (full approval workflow: Submitted → Approved → Finance Review → Paid)
 - Student ID: NO
 - Review schedule: Contract-based (renewal-focused)
 - Contracts: YES (scope, rate, duration, amendments, renewal alerts 90/60/30/7 days)
+- Currency: ₹ (fixed, no conversion)
 
 **3. Indian Intern**
 - Required docs: PAN, Aadhaar, Degree, 10th/12th marksheets, Student ID (required)
-- Salary: ₹ (Indian Rupees) or stipend
+- Salary: ₹ INR (Indian Rupees) or stipend
 - Gusto: NO (separate system)
 - Invoices: NO
 - Student ID: YES (required field for tracking)
 - Review schedule: Weekly check-ins + monthly summaries
 - Completion: PPO recommendation or exit (data retained 3 years after exit)
 - Contracts: NO
+- Currency: ₹ (fixed, no conversion)
 
 **4. Global Contractor (US or International)**
 - Required docs: Tax ID or equivalent, Signed agreement, Bank proof
-- Salary: $ or equivalent
-- Gusto: YES (US-based only) / NO (International - external payroll)
+- Salary: $ USD (US) or EUR/GBP/other (International)
+- Gusto: YES (US-based only, USD) / NO (International - external payroll)
 - Invoices: YES (full approval workflow: Submitted → Approved → Finance Review → Paid)
 - Student ID: NO
 - Review schedule: Contract-based (delivery-focused)
 - Contracts: YES (scope, rate, duration, amendments, renewal alerts 90/60/30/7 days)
+- Currency: Auto-selected based on location (US=USD, EU=EUR, etc.)
 
 **5. Global Intern**
 - Required docs: Tax ID or equivalent, Passport/ID, Degree, 10th/12th marksheets, Student ID (required)
-- Salary: $ or ₹ equivalent
-- Gusto: YES (if US-based) / NO (if international)
+- Salary: $ USD (US) or EUR/GBP/₹ (International)
+- Gusto: YES (if US-based, USD) / NO (if international)
 - Invoices: NO
-- Student ID: YES (required field for tracking)
+- Student ID: YES (required)
+- Currency: Auto-selected based on location
 - Review schedule: Weekly check-ins + monthly summaries
 - Completion: PPO recommendation or exit (data retained 3 years after exit)
 - Contracts: NO
+
+---
+
+## 8B. MULTI-CURRENCY SUPPORT (INR & USD + International)
+
+### Supported Currencies
+
+**Automatically Selected by Location:**
+```
+Location         → Auto Currency
+────────────────────────────────
+India            → ₹ INR
+United States    → $ USD
+Spain/EU         → € EUR
+United Kingdom   → £ GBP
+Canada           → $ CAD
+Australia        → $ AUD
+Other            → User selects
+```
+
+**Currency Rules:**
+
+| Worker Type | Currency Options | Auto-Selected? | Conversion? |
+|------------|------------------|-----------------|-------------|
+| Indian Employee | ₹ INR only | YES | NO |
+| Indian Contractor | ₹ INR only | YES | NO |
+| Indian Intern | ₹ INR only | YES | NO |
+| Global Contractor (US) | $ USD only | YES | NO |
+| Global Contractor (Intl) | EUR/GBP/etc | User selects | NO |
+| Global Intern (US) | $ USD only | YES | NO |
+| Global Intern (Intl) | EUR/GBP/etc | User selects | NO |
+
+**Important:** WOP stores native currency, no conversion. Finance team handles conversion externally if needed.
+
+### How Currency Works in WOP
+
+**1. At Worker Creation:**
+```
+HR clicks [Create Contractor]
+        ↓
+System asks: Location?
+├─ India → Currency auto-set to ₹ INR
+├─ US → Currency auto-set to $ USD
+├─ EU (Spain) → Currency auto-set to € EUR
+└─ Other → Currency dropdown to select
+
+Rate Entry:
+├─ Shows: "[₹/$/€] [amount] per hour/month"
+├─ Stores: Numeric amount + currency code
+└─ No conversion possible
+```
+
+**2. In Database (Firestore):**
+```json
+workers/contractor-001
+{
+  "name": "Rohan",
+  "location": "India",
+  "currency": "INR",
+  "currency_symbol": "₹",
+  
+  "contract": {
+    "rate": 500,
+    "rate_currency": "INR",
+    "rate_currency_symbol": "₹"
+  }
+}
+
+workers/contractor-002
+{
+  "name": "John Smith",
+  "location": "US",
+  "currency": "USD",
+  "currency_symbol": "$",
+  
+  "contract": {
+    "rate": 50,
+    "rate_currency": "USD",
+    "rate_currency_symbol": "$"
+  }
+}
+
+workers/contractor-003
+{
+  "name": "Maria",
+  "location": "Spain",
+  "currency": "EUR",
+  "currency_symbol": "€",
+  
+  "contract": {
+    "rate": 45,
+    "rate_currency": "EUR",
+    "rate_currency_symbol": "€"
+  }
+}
+```
+
+**3. In UI Display:**
+```
+HR Dashboard (Multi-Currency):
+┌──────────────────────────────────┐
+│ CONTRACTOR LIST                  │
+├──────────────────────────────────┤
+│ Name       | Location | Rate     │
+├──────────────────────────────────┤
+│ Rohan      | India    | ₹500/hr  │
+│ John Smith | US       | $50/hr   │
+│ Maria      | Spain    | €45/hr   │
+└──────────────────────────────────┘
+
+Contractor Invoice:
+┌──────────────────────────────────┐
+│ INVOICE #INV-2026-001            │
+├──────────────────────────────────┤
+│ Contractor: Rohan                │
+│ Rate: ₹500/hour                  │
+│ Hours: 160                       │
+│ Total: ₹80,000 INR               │
+│ Status: Submitted                │
+└──────────────────────────────────┘
+```
+
+**4. Amendment with Currency Change:**
+```
+Original: ₹500/hour (India)
+        ↓
+HR marks: Location changed to US
+        ↓
+System updates:
+├─ Currency: INR → USD
+├─ Old rate: ₹500/hour recorded
+├─ New rate: Enter in USD (e.g., $20/hour)
+├─ Reason: Relocation
+└─ Amendment records both currencies
+```
+
+### Currency & Integrations
+
+**Gusto (US-Only):**
+```
+US Contractor:
+├─ Currency: $ USD (auto)
+├─ Rate stored: 50 (numeric)
+├─ Gusto sync: YES
+└─ Gusto receives: salary in USD
+
+Indian Contractor:
+├─ Currency: ₹ INR (auto)
+├─ Rate stored: 500 (numeric)
+├─ Gusto sync: NO
+└─ Payroll: External system (not Gusto)
+
+International Contractor (Spain):
+├─ Currency: € EUR (user selected)
+├─ Rate stored: 45 (numeric)
+├─ Gusto sync: NO
+└─ Payroll: External system
+```
+
+**Payroll & Invoices:**
+```
+Indian Contractor Invoice:
+├─ Amount in ₹ INR
+├─ No USD conversion
+└─ Finance handles if needed
+
+US Contractor Invoice:
+├─ Amount in $ USD
+├─ Syncs to Gusto (USD)
+└─ Payroll processed in Gusto
+
+EU Contractor Invoice:
+├─ Amount in € EUR
+├─ No conversion
+└─ Sent to external payroll
+```
+
+### Multi-Currency Reporting
+
+**Monthly Payroll Report:**
+```
+By Currency (No Mixing):
+
+INR (₹):
+├─ Rohan (Contractor): ₹80,000
+├─ Priya (Contractor): ₹72,000
+└─ Total: ₹152,000
+
+USD ($):
+├─ John (Contractor): $8,000
+├─ Sarah (Contractor): $8,800
+└─ Total: $16,800
+
+EUR (€):
+├─ Maria (Contractor): €7,200
+├─ Klaus (Contractor): €7,680
+└─ Total: €14,880
+
+Note: Finance team handles conversion if needed
+```
 
 ---
 
