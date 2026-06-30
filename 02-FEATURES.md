@@ -75,6 +75,20 @@ Why 3 years?
 
 **NOT Accepted:** Word docs, Excel, ZIP, Video, RAW, files >limit
 
+**For US Contractors/Interns - ADDITIONAL REQUIRED:**
+
+| Document | Formats | Max Size | Notes |
+|----------|---------|----------|-------|
+| **W-4 Form (US Only)** | PDF, JPG, PNG | 5 MB | **REQUIRED for US contractors/interns - IRS tax form** |
+
+**W-4 Requirement Details:**
+- **When:** Automatically required if worker location = "US" AND type = "Global Contractor" or "Global Intern"
+- **Why:** US law requires W-4 on file before any payment
+- **Validity:** 12 months from verification
+- **Expiration:** Auto-alert at 30 days before expiry
+- **Renewal:** Must renew before expiry (no payment without valid W-4)
+- **Gusto Sync Blocker:** Cannot sync to Gusto without verified W-4
+
 **How Upload Works:**
 
 1. **Worker Uploads:**
@@ -230,7 +244,60 @@ All versions kept until worker exits (3-year retention)
 
 ---
 
-## 3. PROJECT ASSIGNMENT
+## 3. WORKER CREATION (Duplicate Prevention - FIX #1)
+
+**Before Creating Worker - System Checks:**
+```
+When HR creates worker manually OR Zoho sends webhook:
+
+Step 1: Validate email
+├─ Check: Is email @katbotz.com?
+├─ If NO → Error: "Invalid email domain"
+└─ If YES → Continue
+
+Step 2: Check for duplicates (CRITICAL)
+├─ Check: Does this email already exist in WOP?
+├─ If YES → Error: "Email already registered"
+├─   └─ Show who else has this email (user type, status)
+└─ If NO → Continue
+
+Step 3: Check Zoho duplicates
+├─ Check: Is this email already created from Zoho?
+├─ If YES → Error: "Worker already created from Zoho"
+└─ If NO → Continue
+
+Step 4: Create worker safely
+└─ All checks passed → Worker created
+```
+
+**Why This Matters (FIX #1: Duplicate Email Prevention):**
+```
+Without this check:
+├─ HR creates: rohan@katbotz.com (Employee)
+├─ Zoho creates: rohan@katbotz.com (Contractor) — same email
+└─ Result: TWO workers, login system confused
+
+With this check:
+├─ HR creates: rohan@katbotz.com → Success
+├─ Zoho tries same email → Error: "Email already registered"
+└─ Result: Only ONE worker, system safe
+```
+
+**HR sees error example:**
+```
+Error: Email already registered
+├─ Email: rohan@katbotz.com
+├─ Existing worker:
+│  ├─ Name: Rohan Mehta
+│  ├─ Type: Employee
+│  └─ Status: Active
+│
+└─ Action: Use different email or check if same person
+```
+
+---
+
+## 4. PROJECT ASSIGNMENT
 
 **HR does:**
 - Click "Assign Project"
@@ -324,7 +391,7 @@ Feedback: "Good progress, quick learner"
 
 ---
 
-## 7. REVIEWS
+## 7. REVIEWS (With Immutable Lock - FIX #7)
 
 **Automatic schedule:**
 
@@ -341,9 +408,58 @@ Rating: 4/5
 Feedback: "Great progress on designs, quick iteration"
 Reviewed by: Akshat
 Date: June 23, 2026
+Status: Locked (cannot be edited)
 ```
 
-**History:** All reviews saved (worker can see past feedback)
+**Review States (FIX #7: Review Lock After Submit):**
+
+```
+STATE 1: DRAFT (Can edit)
+├─ Team Lead creates review
+├─ Fills rating + feedback (optional fields)
+├─ Can edit freely
+├─ Status: "Draft"
+└─ Action: [Save Draft] or [Submit]
+
+↓
+
+STATE 2: SUBMITTED → LOCKED (Cannot edit)
+├─ Team Lead clicks [Submit Review]
+├─ System validates: Rating + feedback filled
+├─ Status changes: Draft → Submitted (LOCKED)
+├─ Submitted date recorded
+├─ Worker gets notification
+├─ If attempt to edit → Error: "Review is locked"
+└─ Action: Cannot change
+
+↓
+
+STATE 3: IF CHANGE NEEDED (Create new)
+├─ Team Lead cannot edit old review
+├─ Must create NEW review instead
+├─ New review replaces old (shows reason)
+├─ Old review still visible (superseded)
+├─ Audit trail: Shows original + replacement
+└─ Action: [Create Updated Review]
+```
+
+**Why Reviews Are Locked (FIX #7):**
+```
+Problem (without lock):
+├─ Team Lead rates Rohan: 4/5 stars (excellent)
+├─ Clicks [Submit Review]
+├─ Later regrets: Changes to 2/5 stars (bad)
+├─ Rohan doesn't know original was 4/5
+└─ Unfair + no proof
+
+Solution (with lock):
+├─ Once submitted: Review locked
+├─ Cannot tamper with ratings
+├─ If change needed: Create new review (audit trail shows both)
+└─ Fair + transparent
+```
+
+**History:** All reviews saved (worker can see past feedback + replacements)
 
 ---
 
@@ -365,32 +481,135 @@ Date: June 23, 2026
 
 ---
 
-## 9. CONTRACT RENEWAL
+## 9. CONTRACT RENEWAL & AMENDMENTS (With Rate Locking - FIX #4)
 
-**HR enters (manual):**
+**HR enters (manual) - Original Contract (v1):**
 - Contract start date
-- Contract end date
+- Contract end date (locked)
+- Contract rate (locked - cannot change retroactively)
 - Renewal date (if applicable)
 
 **System shows:**
 - "Expires in X days"
 - "Renew by [date]"
+- Renewal alerts: 90, 60, 30, 7 days before expiry
 
-**Used for:** Remembering when contracts end, need renewal decision
+**Contract Amendments (FIX #4: Rate Locking & Versioning):**
+
+```
+SCENARIO: Salary needs to change mid-contract
+
+Original Contract (v1) — LOCKED:
+├─ Rate: ₹50,000/month
+├─ Start: June 1, 2026
+├─ End: June 1, 2027
+├─ Status: IMMUTABLE (cannot be changed)
+└─ Used for: Invoices before amendment date
+
+Amendment Needed:
+├─ Reason: Performance increase / Rate adjustment / Scope change
+├─ HR clicks: [Create Amendment]
+├─ System creates: Amendment (v2)
+
+Amendment (v2) — NEW VERSION:
+├─ What changed: Rate 50k → 55k
+├─ Effective date: Sept 1, 2026 (when change takes effect)
+├─ Status: "Draft" (pending approval)
+├─ Approval: Founder must approve
+├─ Once approved: v2 becomes current version
+├─ Audit trail: Shows who changed what, when, why
+└─ Used for: Invoices from Sept 1 onwards
+
+Which Rate Applies?
+├─ Invoice dated Aug 1: Uses v1 (₹50,000)
+├─ Invoice dated Sept 1: Uses v2 (₹55,000)
+├─ No retroactive changes: Clear, fair, auditable
+└─ History: Can always see all versions + dates
+```
+
+**Why Amendments (FIX #4: Multi-Currency Rate Locking):**
+```
+Problem (without amendments):
+├─ Contract: "₹50,000/month for 12 months"
+├─ Month 6: HR changes to ₹55,000
+├─ Question: Did rate increase apply retroactively to month 1?
+├─ Contractor: "We agreed on 50k!"
+├─ HR: "Contract was updated"
+└─ Dispute
+
+Solution (with amendments):
+├─ v1: ₹50,000 (locked, immutable)
+├─ v2: ₹55,000 starting Sept 1
+├─ Each invoice clear: Which version applied?
+├─ Retroactive claim: Audit trail proves NO
+└─ Clear, fair, legal
+```
+
+**Used for:** 
+- Remembering when contracts end
+- Managing salary changes (with full audit trail)
+- Invoice processing (which rate applies?)
+- Legal protection (amendment history proves fairness)
 
 ---
 
-## 10. OFFBOARDING
+## 10. OFFBOARDING (With Invoice Protection - FIX #2)
 
 **When worker leaves:**
 
 **HR clicks:** [Mark for Exit]
 
+**BEFORE Marking Exit - System Checks (FIX #2: Invoice Lock):**
+
+```
+For contractors only:
+
+Step 1: Check for unpaid invoices
+├─ Query: Any invoices with status = "Submitted"?
+├─ If YES → Block exit, show error:
+│  ├─ "Cannot exit with pending invoices"
+│  ├─ "Pending invoices: 3"
+│  └─ "Action: Approve/reject all invoices first"
+└─ If NO → Continue
+
+Step 2: Require invoice resolution
+├─ HR must visit Invoices section
+├─ Approve: Pay the invoice (status: Paid)
+├─ Reject: Cancel the invoice (status: Rejected)
+├─ Status: All invoices must have FINAL status
+└─ Action: [Approve Invoice] or [Reject Invoice]
+
+Step 3: Only after ALL invoices resolved
+├─ HR returns to offboarding
+├─ Click [Mark for Exit] again
+├─ System confirms: All invoices resolved
+└─ Proceed to exit
+```
+
 **System does:**
 1. Records: Last day (e.g., June 30, 2026)
 2. Locks all documents (can't modify)
-3. Marks: "Delete after June 30, 2029" (3 years)
-4. Auto-deletes on that date
+3. Locks all invoices (can't change status)
+4. Marks: "Delete after June 30, 2029" (3 years)
+5. Auto-deletes on that date (only if all invoices finalized)
+
+**Why Invoice Lock (FIX #2):**
+```
+Problem (without lock):
+├─ Contractor submits invoice: ₹50,000 (May 1)
+├─ HR marks contractor for exit (June 1)
+├─ 3 years later: Data auto-deleted
+├─ Invoice deleted with contractor
+└─ ₹50,000 lost, contractor unpaid
+
+Solution (with lock):
+├─ HR marks for exit
+├─ System says: "3 pending invoices"
+├─ HR must: Approve/reject before exit
+├─ Cannot exit until all invoices finalized
+├─ Contractor always gets paid
+└─ Safe
+```
 
 **Why 3 years?** Legal requirement. If worker sues later, documents exist for proof.
 
@@ -899,7 +1118,7 @@ RESULT → Success/failure and any errors
 
 ---
 
-### **WHERE SAVED: Firestore (Encrypted, Forever)**
+### **WHERE SAVED: Firestore (Encrypted, Forever, IMMUTABLE - FIX #3)**
 
 **Storage Location:**
 ```
@@ -908,7 +1127,42 @@ Firestore Database
 ├─ Location: Same as other worker data
 ├─ Encryption: CMEK (AES-256, military-grade)
 ├─ Redundancy: Auto-replicated across Google regions
-└─ Retention: FOREVER (never auto-deleted)
+├─ Retention: FOREVER (never auto-deleted)
+└─ Immutability: LOCKED (cannot be modified or deleted, even by Founder)
+```
+
+**Immutability Details (FIX #3: Audit Logs Are Tamper-Proof):**
+
+```
+CRITICAL SECURITY: Audit logs CANNOT be deleted or modified by ANYONE
+
+Attempts to modify:
+├─ DELETE audit log entry → Error 403: "Forbidden"
+├─ EDIT audit log entry → Error 403: "Forbidden"
+├─ MODIFY audit log entry → Error 403: "Forbidden"
+└─ WHO: Even Founder, even system admin
+
+Only allowed:
+├─ CREATE: Add new entries (system only)
+├─ READ: View entries (based on role)
+└─ APPEND: Add to logs (never overwrite)
+
+Why (FIX #3: Founder Cannot Delete Evidence):**
+```
+Problem (without immutability):
+├─ Audit log: "Rohan was paid ₹50,000 on June 1"
+├─ Founder (full authority): Deletes this log entry
+├─ Result: No proof Rohan was paid
+├─ If Rohan sues: No evidence to defend
+└─ Legal disaster
+
+Solution (with immutability):
+├─ Founder cannot delete logs
+├─ Founder can VIEW all logs
+├─ Founder cannot MODIFY any logs
+├─ Evidence stays forever
+├─ Legal protection: Proof exists
+└─ DPDP Act compliant
 ```
 
 **Structure of Each Audit Entry:**
@@ -1411,7 +1665,49 @@ Worker ready to log in (seconds later)
 - Joining date
 - Offer details
 
-**No manual data entry. No HR work. Completely automatic.** ✓
+**Webhook Reliability (FIX #5: Retry on Failure)**
+
+```
+What if WOP is down when Zoho sends webhook?
+
+Without retry:
+├─ Zoho sends data
+├─ WOP is offline (broken/down)
+├─ Webhook lost
+├─ Worker never created
+└─ HR: "Why no worker in WOP?"
+
+With retry system:
+├─ Zoho sends data
+├─ WOP logs it immediately (even if processing fails)
+├─ Returns: "200 OK" (tells Zoho: got it)
+├─ If fails: Auto-retry in 1 hour
+├─ If fails again: Retry in 2 hours
+├─ If fails 3x: Stop retrying, log in system
+├─ HR dashboard: Shows "Failed Zoho Webhooks"
+├─ HR can: Click [Create Worker Manually] (backup)
+└─ No data loss
+```
+
+**Failed Webhook Recovery (FIX #5):**
+```
+If Zoho webhook fails 3 times:
+
+HR Dashboard Shows:
+├─ Pending Zoho Workers (Failed Webhooks)
+├─ Candidate: Rohan Mehta
+├─ Email: rohan@katbotz.com
+├─ Error: "Invalid email domain" (or other reason)
+├─ Attempts: 3/3
+├─ Last tried: 2026-07-15 10:30 AM
+├─ Actions:
+│  ├─ [Manual Create Worker] (quick workaround)
+│  ├─ [Retry Now] (try webhook again)
+│  └─ [View Error Log] (see technical details)
+└─ Result: Can always create worker manually
+```
+
+**No manual data entry needed (automatic). But if webhook fails, manual fallback always works.** ✓
 
 ---
 
@@ -1433,6 +1729,32 @@ Worker ready to log in (seconds later)
 2. WOP automatically syncs to Gusto (within 30 seconds)
 3. Gusto payroll updated with latest data
 4. Next paycheck reflects changes
+
+**Gusto Sync Requirements (FIX #6: W-4 Required):**
+```
+Before syncing US employee to Gusto, verify:
+├─ Worker location: "US"
+├─ W-4 document: UPLOADED and VERIFIED
+├─ W-4 status: Not expired
+├─ If missing/expired: Cannot sync (error)
+└─ Result: Compliant with IRS requirements
+```
+
+**Gusto Sync Rate Limiting (FIX #9: Queue System)**
+```
+Why queue?
+├─ Gusto API limit: 30 requests/minute
+├─ Problem: 50 employees sync at once → Overload
+├─ Solution: Queue them, process safely
+
+How it works:
+├─ Sync request received
+├─ Added to queue (first-in, first-out)
+├─ Process: 10 at a time (safe rate)
+├─ Failed sync: Auto-retry with exponential backoff
+├─ HR sees: [Synced] [Pending] [Failed]
+└─ Result: No surprises, all syncs complete eventually
+```
 
 **Workflow (Gusto → WOP):**
 1. Payroll processed in Gusto (bi-weekly, monthly)

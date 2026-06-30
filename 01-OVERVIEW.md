@@ -138,35 +138,60 @@ When HR (HR or Senior HR role) logs in, they see administrative dashboard contai
 - **System Control:** Override any decisions, access all features
 - **Note:** Founder is the ultimate authority with no restrictions
 
-### Senior HR Role
-- **Access Level:** Full administrative access
-- **Dashboard:** View all workers, create workers
-- **Documents:** Verify, reject, or request clarification on any document
+### Senior HR Role (FIX #8: Clear Role Distinction)
+- **Access Level:** Full administrative access (hiring/firing authority)
+- **Dashboard:** View all workers, create workers, edit worker details
+- **Documents:** Approve document verification (final decision)
 - **Goals:** Edit goals for any worker
 - **Reviews:** Fill reviews for any worker, approve reviews
-- **Offboarding:** Mark workers for exit, trigger deletions
-- **Permissions:** Edit any worker profile (except deletion)
+- **Contracts:** Create/edit contracts, approve amendments
+- **Offboarding:** Mark workers for exit, manage deletions
+- **Permissions:** Edit any worker profile (hire, fire, change department)
 - **Integrations:** Manage Zoho and Gusto syncs
-- **Special Capability:** Approve worker activation, mark for exit
+- **Audit Logs:** View own actions only
+- **Special Capability:** Full authority over workers (except system override)
+- **Cannot:** Delete audit logs, override Founder, access other HR actions
 
-### HR Role
-- **Access Level:** Administrative access (limited)
-- **Dashboard:** View all workers, create workers
-- **Documents:** Verify, reject, or request clarification on any document
-- **Goals:** Edit goals for any worker
+### HR Role (FIX #8: Clear Role Distinction)
+- **Access Level:** Administrative access (day-to-day operations)
+- **Dashboard:** View all workers, search and filter
+- **Documents:** Verify documents (check and mark verified/rejected)
+- **Goals:** View goals (read-only), cannot create/edit
 - **Reviews:** View reviews (read-only), cannot fill
+- **Contracts:** View contracts (read-only), cannot edit
 - **Offboarding:** Cannot mark for exit
-- **Permissions:** Cannot modify critical worker data
-- **Special Capability:** Assign projects, verify documents
+- **Permissions:** Cannot modify critical worker data (hire/fire)
+- **Integrations:** Cannot manage Zoho/Gusto (Senior HR only)
+- **Audit Logs:** Cannot access
+- **Special Capability:** Day-to-day document verification and project assignment
+- **Cannot:** Create/delete workers, mark for exit, edit contracts, fill reviews
 
-### Team Lead Role
+### Team Lead Role (FIX #11: Salary/Invoice Privacy)
 - **Access Level:** Limited to team members only
 - **Dashboard:** View only team members (those under them)
 - **Documents:** View team documents (read-only)
 - **Goals:** Edit goals for team members, track progress
 - **Reviews:** Fill 30/60/90-day and annual reviews for team
 - **Permissions:** Cannot view other teams, cannot delete
-- **Special Capability:** Edit team goals, fill team reviews
+
+**Team Lead CAN see:**
+├─ Team member names, emails, departments
+├─ Assigned projects
+├─ Goals (own team only)
+├─ Reviews (own team only)
+├─ Weekly summaries
+└─ Performance progress
+
+**Team Lead CANNOT see (FIX #11: Privacy Protection):**
+├─ Salary amounts (locked)
+├─ Invoice amounts (locked)
+├─ Contract rates (locked)
+├─ Worker type (employee/contractor/intern distinction)
+├─ Documents section (HR only)
+└─ Other team leads' reviews
+
+- **Special Capability:** Edit team goals, fill team reviews, track progress
+- **Reason for restrictions:** Salary and invoice amounts are confidential (FIX #11)
 
 ### Employee Role
 - **Access Level:** Self-service only

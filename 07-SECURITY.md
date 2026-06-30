@@ -322,13 +322,105 @@ No data shared with anyone. No external integrations.
 
 ---
 
+## Legal Hold (FIX #10: Clear Process)
+
+**When litigation is pending:**
+
+**Set Legal Hold:**
+```
+Founder can set legal hold on worker data:
+├─ Access: Settings → Legal Holds
+├─ Enter: Case number, reason, duration
+├─ Example: "Case #2026-LAB-001, Employment dispute, 2 years"
+├─ Effect: Auto-delete job skips this worker
+└─ Status: "Legal hold active until [date]"
+```
+
+**Auto-Delete Blocked During Hold:**
+```
+System auto-delete job (runs daily at 1 AM):
+├─ Check: Is legal hold active?
+├─ If YES: Skip this worker (don't delete)
+├─ If NO: Delete after 3 years (normal)
+└─ Audit trail: "Deletion blocked - legal hold active"
+```
+
+**Renewing Legal Hold:**
+```
+Hold expires → Must renew:
+├─ Founder must: Update case status
+├─ Options: Renew for another period OR remove
+├─ Cannot extend indefinitely
+└─ Audit trail: Hold renewed or removed
+```
+
+**Removing Legal Hold:**
+```
+When litigation ends:
+├─ Founder removes: Settings → Legal Holds → [Remove]
+├─ Effect: Auto-delete resumes
+├─ Deletion: Happens on next daily job run
+└─ Audit trail: "Legal hold removed, scheduled for deletion"
+```
+
+---
+
+## Immutable Audit Logs (FIX #3: Tamper-Proof)
+
+**Critical Security: Audit logs CANNOT be deleted**
+
+**Enforcement:**
+```
+DELETE audit log entry:
+├─ Result: Error 403 - Forbidden
+├─ Message: "Audit logs are immutable"
+└─ Who blocked: Firestore security rules
+
+EDIT audit log entry:
+├─ Result: Error 403 - Forbidden
+├─ Message: "Audit logs are immutable"
+└─ Who blocked: Firestore security rules
+
+MODIFY any field:
+├─ Result: Error 403 - Forbidden
+├─ Message: "Audit logs are immutable"
+└─ Who blocked: Firestore security rules
+
+Even Founder:
+├─ Can: VIEW all audit logs
+├─ Cannot: MODIFY any audit log
+├─ Cannot: DELETE any audit log
+└─ Result: Tamper-proof evidence
+```
+
+**Why Immutable (FIX #3):**
+```
+Without immutability:
+├─ Founder deletes: "Worker was paid ₹50,000"
+├─ No proof of payment
+├─ Worker sues: Can't defend
+└─ Legal disaster
+
+With immutability:
+├─ Audit trail permanent
+├─ Founder cannot erase
+├─ Complete legal protection
+└─ DPDP Act compliant
+```
+
+---
+
 ## Before Going Live
 
 - ✓ HTTPS enabled (secure communication)
 - ✓ OAuth configured correctly (only katbotz.com)
 - ✓ Firestore backups tested (restore works)
-- ✓ Audit logging enabled
+- ✓ Audit logging enabled (immutable)
+- ✓ Legal hold process documented
 - ✓ Access control tested (worker can't see other workers)
+- ✓ Team Lead cannot see salary/invoices (privacy)
+- ✓ Review lock after submit (tampering prevention)
+- ✓ Audit logs immutable even for Founder (tamper-proof)
 
 ---
 
