@@ -1,179 +1,186 @@
-# Build Plan — 3 Weeks (July 1 – Aug 20)
+# Build Plan — 6 Weeks (July 1 – August 13)
 
-**Timeline: Tight but doable.** 4.5 hours/day, 5 days/week = 22.5 hours/week × 3 weeks = 67.5 hours total.
-
----
-
-## Week 1 (July 1–5) — Foundations
-
-**Goal:** Login works. HR can create workers.
-
-| Day | Task | Hours |
-|-----|------|-------|
-| 1 | Next.js + FastAPI boilerplate, deploy to Cloud Run | 4h |
-| 2 | Google OAuth integration (KATBOTZ domain only) | 5h |
-| 3 | Firestore setup, worker creation endpoint | 4h |
-| 4 | HR dashboard: list all workers | 4h |
-| 5 | Test: login, create worker, see in list | 2h |
-| **Total** | | **19h** |
-
-**Done:** System is live on workforce.katbotz.com. HR can create workers. Workers can log in.
+**Timeline: 6 weeks, 4–5 hours/day, 5 days/week = 150 hours total.**
 
 ---
 
-## Week 2 (July 7–11) — Core Features
+## WEEK 1 (July 1–5) — Foundations
 
-**Goal:** Checklist works. Documents uploadable. Projects + Goals added.
+**Goal:** Login works. HR can see workers list. Database is ready.
 
-| Day | Task | Hours |
-|-----|------|-------|
-| 1 | Worker dashboard: my to-do list + document upload | 4h |
-| 2 | Document upload form (links to Drive, records in Firestore) | 4h |
-| 3 | HR checklist view: ☑ Done for each document | 4h |
-| 4 | Project assignment (HR assigns project lead to worker) | 3h |
-| 5 | Goals form (Team Lead sets goals, worker can edit) | 4h |
-| 6 | Performance tracker form (simple: rating + feedback) | 3h |
-| **Total** | | **22h** |
+**Daily breakdown:**
+- **Day 1 (July 1):** Next.js + FastAPI setup, deploy to Cloud Run
+- **Day 2 (July 2):** Google OAuth login (katbotz.com emails only)
+- **Day 3 (July 3):** Firestore database setup, worker creation
+- **Day 4 (July 4):** HR dashboard: list all workers
+- **Day 5 (July 5):** Test: Can log in? Can create worker? Can see list?
 
-**Done:** Workers can upload docs. HR can verify + check off. Project assignment works. Goals can be set and edited. Performance form works.
+**Status:** System is live at workforce.katbotz.com. Workers can log in.
 
 ---
 
-## Week 3 (July 14–20) — Finishing
+## WEEK 2 (July 7–11) — Core Features (Part 1)
 
-**Goal:** Contract tracking, reviews, weekly summary, offboarding, notifications, polish.
+**Goal:** Documents, Projects, Goals working.
 
-| Day | Task | Hours |
-|-----|------|-------|
-| 1 | Weekly summary form (workers write what happened each week) | 3h |
-| 2 | Reviews system (30/60/90-day, annual reviews) | 4h |
-| 3 | Contract tracking: renewal date alerts (simple table) | 3h |
-| 4 | Offboarding: mark for exit, set delete date (3 years) | 4h |
-| 5 | Notifications: simple alerts in portal (no email) | 2h |
-| 6 | Personal to-do list (customizable per worker) | 2h |
-| 7 | Testing + bug fixes + handover docs | 3h |
-| **Total** | | **21h** |
+**Daily breakdown:**
+- **Day 1 (July 7):** Worker dashboard skeleton + document upload form
+- **Day 2 (July 8):** Document upload to Drive, status tracking (Pending/Under Review/Verified/Rejected)
+- **Day 3 (July 9):** HR document verification UI with 4 states
+- **Day 4 (July 10):** Project assignment (HR assigns project + project lead)
+- **Day 5 (July 11):** Goals form (set goals, track progress)
 
-**Done:** All features built. Testing complete. Ready for handover.
+**Status:** Documents, projects, goals functional.
 
 ---
 
-## Week 4 (Aug 18–22) — HR Dry Run + Launch
+## WEEK 3 (July 14–18) — Core Features (Part 2)
 
-- Aug 18–20: Priya tests with real data
-- Aug 20: Fix any bugs found
-- Aug 22: Handover to KATBOTZ tech person
-- Sept 1: Live use begins
+**Goal:** Performance, reviews, to-do, weekly summaries.
 
----
+**Daily breakdown:**
+- **Day 1 (July 14):** Performance form (rating + feedback)
+- **Day 2 (July 15):** Review scheduling (30/60/90-day, annual)
+- **Day 3 (July 16):** Personal to-do lists (create, check, delete)
+- **Day 4 (July 17):** Weekly summary form (per worker)
+- **Day 5 (July 18):** Test all features end-to-end
 
-## What Gets Built
-
-### Week 1: Authentication + Worker Management
-```
-✓ Google OAuth (KATBOTZ domain)
-✓ Create worker (Senior HR only)
-✓ Assign type (employee/contractor/intern)
-✓ Assign team lead
-✓ Auto-generate checklist per type
-```
-
-### Week 2: Documents + Projects + Goals + Performance
-```
-✓ Worker dashboard (my checklist)
-✓ Upload document link (to Drive)
-✓ HR dashboard (all workers)
-✓ HR checks ☑ when verified
-✓ Project assignment (HR assigns project lead)
-✓ Goals form (set goals, deadlines, editable by team lead + worker)
-✓ Goals tracking (mark as achieved)
-✓ Performance form (rating + feedback)
-✓ Contract renewal dates (simple table)
-```
-
-### Week 3: Weekly Summary + Reviews + Offboarding + Polish
-```
-✓ Weekly summary form (workers write each week)
-✓ Reviews system (30/60/90-day, annual reviews)
-✓ Mark worker for exit
-✓ Set "delete after 3 years" date
-✓ Auto-delete after 3 years (background job)
-✓ Notifications (in-portal alerts only)
-✓ Personal to-do list (customizable)
-✓ Testing + fixes
-```
+**Status:** All 15 core features implemented.
 
 ---
 
-## Budget
+## WEEK 4 (July 21–25) — Contractor & Contract Management
 
-| Item | Cost |
-|---|---|
-| Claude subscription (3 weeks) | ₹1,200 |
-| GCP (Cloud Run, Firestore) | ₹300 |
-| **Total** | **₹1,500** |
+**Goal:** Contractor-specific features, contract tracking, renewal alerts, amendments, invoices.
 
-(Much cheaper because: no SendGrid, no complex features, fast build)
+**Daily breakdown:**
+- **Day 1 (July 21):** Contractor distinguishment (Intern vs Global Contractor) + Student ID field
+- **Day 2 (July 22):** Contract storage schema (scope, rate, duration, SOW, amendments)
+- **Day 3 (July 23):** Renewal alert system (90, 60, 30, 7 days before expiry)
+- **Day 4 (July 24):** Contract amendment workflow (tracking scope/rate/duration changes)
+- **Day 5 (July 25):** Invoice workflow (Submitted → Approved by HR → Paid)
+
+**Status:** Full contractor + contract management system.
+
+---
+
+## WEEK 5 (July 28 – Aug 1) — Integrations & Advanced Features
+
+**Goal:** Zoho Recruit, Gusto, offboarding, auto-delete, notifications.
+
+**Daily breakdown:**
+- **Day 1 (July 28):** Zoho Recruit integration (auto-create workers from offers)
+- **Day 2 (July 29):** Gusto integration (US employees only, auto-sync)
+- **Day 3 (July 30):** Offboarding workflow (mark for exit, 3-year retention, auto-delete)
+- **Day 4 (July 31):** Notifications system (in-portal alerts)
+- **Day 5 (Aug 1):** Audit trail + logging (all actions recorded)
+
+**Status:** All integrations and advanced features live.
+
+---
+
+## WEEK 6 (Aug 4–8) — Polish & Optimization
+
+**Goal:** Performance, security, error handling, code cleanup.
+
+**Daily breakdown:**
+- **Day 1 (Aug 4):** Performance optimization (query indexing, caching)
+- **Day 2 (Aug 5):** Security hardening (encryption, session management)
+- **Day 3 (Aug 6):** Error handling (Zoho, Gusto sync failures, retries)
+- **Day 4 (Aug 7):** UI/UX polish (visual refinement, accessibility)
+- **Day 5 (Aug 8):** Code review and cleanup
+
+**Status:** Production-ready codebase.
+
+---
+
+## WEEK 7–8 (Aug 11–27) — Testing & Handover Prep
+
+**Week 7 (Aug 11–15) — Full System Testing**
+- Priya (Senior HR) performs complete end-to-end testing
+- Test all workflows with real data
+- Test all integrations (Zoho, Gusto)
+- Test backup and restore procedures
+- Document all bugs and issues
+- **Status:** Bug identification complete
+
+**Week 8 (Aug 18–27) — Bug Fixes & Handover Prep**
+- Fix all critical and high-priority bugs
+- Create operational documentation
+- Prepare GitHub access transfer
+- Prepare GCP credentials transfer
+- Final infrastructure checks
+- HR training session with Priya
+- **Status:** All systems green, ready for handover
+
+---
+
+## HANDOVER PERIOD (Aug 28 – Sept 3)
+
+**Aug 28–29:** Transfer GitHub access to KATBOTZ tech person  
+**Aug 30–31:** Transfer GCP credentials and infrastructure  
+**Sept 1–2:** Final verification by KATBOTZ tech person  
+**Sept 3:** Sign-off and approval  
+
+---
+
+## GO-LIVE (Sept 4, 2026)
+
+All users switch to WOP  
+Google Sheets/Docs retired  
+System in full production use
+
+---
+
+## TOTAL TIME BREAKDOWN
+
+| Phase | Duration | Dates |
+|-------|----------|-------|
+| Development | 6 weeks | July 1 – Aug 13 |
+| Testing | 2 weeks | Aug 14 – Aug 27 |
+| Handover | 1 week | Aug 28 – Sept 3 |
+| **Total** | **9 weeks** | **July 1 – Sept 3** |
+| **Go-Live** | — | **Sept 4, 2026** |
+
+---
+
+## DAILY COMMITMENT
+
+- **Duration:** July 1 – August 13 (6 weeks)
+- **Hours per day:** 4–5 hours
+- **Days per week:** 5 days (Mon–Fri)
+- **Total hours:** ~150 hours
+- **Developer:** Aayushi Pandey
 
 ---
 
 ## Success Criteria
 
-By Aug 20:
+By Aug 13:
 - ✓ Workers can log in with katbotz email
 - ✓ Workers can upload documents (to Drive)
 - ✓ HR can see all workers + their documents
-- ✓ HR can check off completion (☑)
+- ✓ HR can verify and check off completion
 - ✓ HR can assign project to worker
-- ✓ Goals can be set and tracked (Team Lead edits, worker edits)
+- ✓ Goals can be set and tracked
 - ✓ Goals achieved can be marked
-- ✓ Weekly summary form works (worker writes, HR reads)
+- ✓ Weekly summary form works
 - ✓ Performance tracker works
 - ✓ Reviews system works (30/60/90-day, annual)
-- ✓ Contract renewal dates visible
-- ✓ Offboarding process works (documents saved 3y)
+- ✓ Contract tracking with renewal alerts
+- ✓ Contract amendments tracked
+- ✓ Invoice workflow (Submitted → Approved → Paid)
+- ✓ Offboarding process works (3-year retention, auto-delete)
 - ✓ Personal to-do lists work
-- ✓ Notifications show in portal
-- ✓ Priya has tested it end-to-end
-- ✓ Handover docs written
-
-Then: Aayushi leaves. KATBOTZ tech person takes over.
-
----
-
-## What's NOT Built (Intentionally Simple)
-
-- ✗ Automated emails
-- ✗ Scheduled jobs (except 3-year auto-delete)
-- ✗ Aadhaar locked bucket (just Drive)
-- ✗ SendGrid integration
-- ✗ Retry logic for failures
-- ✗ Complex RBAC (just: HR can see all, workers see self)
-- ✗ KYC APIs
-- ✗ Multiple integrations
+- ✓ Notifications work in portal
+- ✓ Zoho Recruit integration working
+- ✓ Gusto sync for US employees working
+- ✓ Complete audit trail logged
+- ✓ Code reviewed and ready
 
 ---
 
-## Handover (Aug 18–22)
+## SUPPORT MODEL
 
-You'll hand over:
-1. GitHub repo (code)
-2. Firestore credentials (database)
-3. Google Drive folder structure (documents)
-4. Runbook (how to restart, backup, etc.)
-5. Checklist of features (what works)
-
-KATBOTZ tech person will:
-- Watch you test with Priya
-- Ask questions
-- Take over Sept 1
-
----
-
-## Go-Live (Sept 1)
-
-HR retires Google Sheets.
-Workers start using WOP.
-That's it.
-
-Simple. Done.
+**Sept 4–30:** Aayushi on-call for critical issues (1-hour response)  
+**Oct 1+:** KATBOTZ tech person owns system

@@ -26,10 +26,10 @@ A portal where KATBOTZ workers log in with their katbotz.com email, upload docum
 
 | | |
 |---|---|
-| **Build time** | 2–3 weeks (July 1 – Aug 20) |
-| **Launch date** | Aug 20, 2026 |
-| **Live use** | Sept 1, 2026 |
-| **Budget** | ₹1,500–2,500 (Claude + Cloud) |
+| **Build time** | 6 weeks (July 1 – Aug 13) |
+| **Testing & Handover** | Aug 14 – Sept 3, 2026 |
+| **Go-Live** | September 4, 2026 |
+| **Monthly operating cost** | ₹3–5/month (50 workers) or ₹9–15/month (500 workers) |
 | **Users** | ~50 workers + 3 HR staff |
 | **Tech** | Next.js frontend, FastAPI backend, Firestore database, Google Drive storage |
 

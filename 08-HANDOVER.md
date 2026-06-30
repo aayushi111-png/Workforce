@@ -1,10 +1,10 @@
-# HANDOVER CHECKLIST — Aug 18–22
+# HANDOVER CHECKLIST — Aug 28 – Sept 3
 
-By Aug 22, hand everything over to KATBOTZ tech person so they can maintain it after you leave.
+By Sept 3, hand everything over to KATBOTZ tech person so they can maintain it after you leave.
 
 ---
 
-## Phase 1: Final Testing (Aug 18–20)
+## Phase 1: Final Testing (Aug 18–27)
 
 **Priya does full test with you watching:**
 
@@ -28,7 +28,7 @@ By Aug 22, hand everything over to KATBOTZ tech person so they can maintain it a
 
 ---
 
-## Phase 2: Documentation (Aug 20–21)
+## Phase 2: Documentation (Aug 28–29)
 
 ### Create these files:
 
@@ -148,7 +148,7 @@ A: 3 years after worker exits, then auto-deleted
 
 ---
 
-## Phase 3: Training (Aug 21)
+## Phase 3: Training (Aug 30–31)
 
 **15-minute training with KATBOTZ tech person:**
 
@@ -164,7 +164,7 @@ A: 3 years after worker exits, then auto-deleted
 
 ---
 
-## Phase 4: Handover (Aug 22)
+## Phase 4: Handover (Sept 1–2)
 
 **Transfer ownership:**
 
@@ -216,7 +216,7 @@ If all ✓, system is ready to handover:
 - Available for emergency help (₹2,000–5,000 per issue)
 - Free to focus on school
 
-**Sept 1:** System goes live. You're out.
+**Sept 4:** System goes live. You're out.
 
 ---
 
@@ -231,6 +231,6 @@ If system breaks after Aug 22:
 
 ## Done.
 
-Aug 22: Handover complete.
-Sept 1: Live.
-Sept 2 onwards: KATBOTZ owns it.
+Sept 3: Handover complete.
+Sept 4: Live.
+Sept 5 onwards: KATBOTZ owns it.
