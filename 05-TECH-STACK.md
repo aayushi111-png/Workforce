@@ -1457,16 +1457,23 @@ A webhook is an automatic messenger between Zoho and WOP:
 3. URL becomes: `https://wop-backend.katbotz.com/api/zoho/worker-created`
 
 **Phase 2: After WOP is Live (Week 3)**
-1. Go to Zoho Recruit → Settings → Webhooks
-2. Click [+ New Webhook]
-3. Configure:
+1. Generate webhook secret (once, store safely):
+   - Secret: `xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx` (32+ chars)
+   - Store in: Environment variable `ZOHO_WEBHOOK_SECRET`
+   - Share with Zoho: For their webhook signing
+   
+2. Go to Zoho Recruit → Settings → Webhooks
+3. Click [+ New Webhook]
+4. Configure:
    - Name: "WOP Worker Creation"
    - Event: "Offer Status Changed to Accepted"
    - URL: https://wop-backend.katbotz.com/api/zoho/worker-created
    - Method: POST
-4. Save
-5. Test: Mark offer as "Accepted" in Zoho
-6. Verify: Worker appears in WOP ✓
+   - Signature: Enable HMAC-SHA256
+   - Secret: (same secret from step 1)
+5. Save
+6. Test: Mark offer as "Accepted" in Zoho
+7. Verify: Worker appears in WOP ✓
 
 **Webhook Data Flow:**
 ```
@@ -1503,10 +1510,35 @@ Zoho Recruit System                    WOP Backend (FastAPI)
 }
 ```
 
-**Backend Processing Logic:**
+**Backend Processing Logic (WITH WEBHOOK AUTHENTICATION - FIX #2):**
 ```python
+import hmac
+import hashlib
+import os
+
 @app.post("/api/zoho/worker-created")
 async def handle_zoho_webhook(request: Request):
+    
+    # ✓ FIX #2: VERIFY WEBHOOK SIGNATURE (Security - prevent spoofing)
+    signature = request.headers.get("X-Webhook-Signature")
+    payload = await request.body()
+    
+    if not signature:
+        log_audit("zoho_webhook_rejected", {"reason": "Missing signature"})
+        return {"error": "Missing signature"}, 401
+    
+    # Calculate expected signature
+    secret = os.getenv("ZOHO_WEBHOOK_SECRET").encode()
+    expected_signature = hmac.new(secret, payload, hashlib.sha256).hexdigest()
+    
+    # Compare signatures (constant-time comparison to prevent timing attacks)
+    if not hmac.compare_digest(signature, expected_signature):
+        log_audit("zoho_webhook_rejected", {"reason": "Invalid signature"})
+        return {"error": "Invalid signature"}, 401
+    
+    # ✓ Signature verified! Only Zoho could have sent this
+    log_audit("zoho_webhook_verified", {"status": "signature_valid"})
+    
     data = await request.json()
     
     # VALIDATION

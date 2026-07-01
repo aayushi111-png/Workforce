@@ -1991,7 +1991,7 @@ Current Status:
 4. Click [Submit]
 5. Status: Submitted
 
-**HR Approves & Processes:**
+**HR Approves & Processes (FIX #3: Exchange Rate Handling):**
 1. Sees notification: "New invoice from [Contractor]"
 2. Reviews invoice and verifies:
    - Amount matches contract rate (₹500/hr × 160 hrs = ₹80,000 ✓)
@@ -1999,13 +1999,28 @@ Current Status:
    - Invoice format is acceptable
    - Bank account details correct (for payment)
    - Tax implications if applicable
-3. Clicks ☑ [Approve & Process] or ✗ [Reject with reason]
-4. If approved:
+
+3. ✓ FIX #3: If invoice is in foreign currency (e.g., GBP, USD, EUR):
+   - System displays: "Invoice Amount: GBP 1,000"
+   - HR action: Enter or fetch exchange rate
+   - Option A (Manual): HR types: "119" (1 GBP = ₹119)
+   - Option B (Automatic): HR clicks [Auto-fetch rate]
+     - System calls Google Finance API
+     - Gets: Current rate for that date
+     - Shows: ₹119
+   - System calculates: GBP 1,000 × 119 = INR 119,000
+   - Display: "Invoice: GBP 1,000 (INR 119,000 @ ₹119/GBP on June 30)"
+   - Stores: exchange_rate: 119, rate_source: "manual"
+
+4. Clicks ☑ [Approve & Process] or ✗ [Reject with reason]
+5. If approved:
    - Status changes: Approved
-   - Payment process initiated
+   - Exchange rate LOCKED (cannot change)
+   - Payment process initiated (amount in INR or original currency per contract)
    - HR (or finance partner) transfers funds
    - Invoice marked: ☑ [Paid]
    - Contractor notified: "Your invoice was paid on [date]"
+   - Audit trail: "Invoice approved: GBP 1,000 @ ₹119/GBP"
 
 **Example Timeline:**
 ```

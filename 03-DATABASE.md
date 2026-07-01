@@ -127,14 +127,18 @@ workers/{worker_id}
   
   ═══ CONTRACT (For Contractors Only) ═══
   contract:
-    start_date: "2026-06-01"
-    renewal_date: "2026-09-01"
-    duration_months: 3
+    start_date: "2026-06-01" (locked, immutable)
+    end_date: "2026-09-01" (locked, immutable - source of truth)
+    renewal_date: "2026-09-01" (calculated from end_date, not input)
     scope: "Build API endpoints"
     rate: 500 (₹ or $)
     rate_type: "per_hour" // or "per_month", "fixed"
     additional_sow: "Authentication module"
     status: "active"
+    
+    ✓ FIX #1: REMOVED duration_months field (was causing confusion)
+    ✓ FIX #1: end_date is source of truth (not duration_months)
+    ✓ FIX #1: renewal_date = end_date (always consistent)
     
   contract_amendments: [
     {
@@ -169,23 +173,37 @@ workers/{worker_id}
       invoice_id: "INV-2026-001",
       date_submitted: "2026-06-30",
       invoice_period: "2026-06-01 to 2026-06-30",
-      amount: 12000,
+      amount: 1000,
+      currency: "GBP", // or "USD", "EUR", "INR"
       status: "Submitted", // or "Approved", "Paid"
       file_link: "https://drive.google.com/.../invoice.pdf",
       approved_by: null,
       approved_date: null,
-      paid_date: null
+      paid_date: null,
+      
+      ✓ FIX #3: EXCHANGE RATE FIELDS (for foreign currency invoices)
+      exchange_rate: 119, // 1 GBP = ₹119 (entered by HR at approval)
+      exchange_date: "2026-06-30", // Rate on this date
+      rate_source: "manual", // or "api" (Google Finance)
+      converted_amount: 119000, // GBP 1,000 × 119 = INR 119,000
     },
     {
       invoice_id: "INV-2026-002",
       date_submitted: "2026-07-30",
       invoice_period: "2026-07-01 to 2026-07-31",
-      amount: 13200, // 550 rate × higher hours
+      amount: 13200,
+      currency: "INR", // Indian rupees (no conversion needed)
       status: "Approved",
       file_link: "https://drive.google.com/.../invoice2.pdf",
       approved_by: "Priya (HR)",
       approved_date: "2026-07-31",
-      paid_date: null
+      paid_date: null,
+      
+      ✓ FIX #3: For INR invoices, rate = 1 (no conversion)
+      exchange_rate: 1, // 1 INR = ₹1 (no conversion)
+      exchange_date: "2026-07-31",
+      rate_source: "none", // Not applicable for INR
+      converted_amount: 13200, // Same as amount (INR to INR)
     }
   ]
   
