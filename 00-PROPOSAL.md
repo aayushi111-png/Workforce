@@ -78,12 +78,16 @@ One web application where:
 - Automatic data deletion after 3 years (DPDP compliance)
 - Audit trail for all actions (legal proof)
 
-**Worker Creation (Always Available)**
-- Manual [+ Create Worker] button: ALWAYS available, HR can create any worker anytime (2-3 min form)
-- Zoho Recruit (Optional): AUTO-CREATE workers when offer accepted (one-way, no manual entry) — if using Zoho
+**Worker Onboarding (Verification-First)**
+- HR fills worker details (name, personal email, professional email, type, department, team lead)
+- HR clicks [Generate Token & Link] — system creates unique token and onboarding link
+- Worker receives link (at personal email), uploads documents (no login needed)
+- HR verifies documents from same location (Pending → Verified/Rejected)
+- HR creates professional account ONLY if verified (₹100/month only for verified workers)
+- Worker logs in — documents already verified, no re-upload needed
+- Saves ₹1,200-1,800/year by not paying for rejected workers
 
 **Integrations**
-- Zoho Recruit: Optional auto-create when offer accepted (webhook) OR use manual creation anytime
 - Gusto: SYNC payroll data for US employees only (two-way real-time, syncs existing workers)
 
 ---
@@ -109,8 +113,7 @@ One web application where:
 
 | System | Purpose | How It Works |
 |--------|---------|------------------|
-| Manual Creation | Worker creation (ALWAYS) | HR clicks [+ Create Worker] → Fills form (2-3 min) → System auto-generates worker profile → Works anytime, no dependencies |
-| Zoho Recruit | Hiring (OPTIONAL AUTO) | Offer marked "Accepted" in Zoho → Auto-creates worker in WOP → Zero manual entry → If using Zoho Recruit |
+| Verification-First Onboarding | Worker creation & verification | HR fills details → Generates token → Worker uploads documents → HR verifies → Creates account (only if verified) → Saves ₹1,200-1,800/year on rejections |
 | Gusto | Payroll (SYNC ONLY) | Worker already in WOP → Real-time sync: name/email/salary/dept changes → Gusto always has latest data (US employees only) |
 | Google Cloud Storage | Document storage (primary) | Workers upload → Files stored in Cloud Storage → Auto-delete after 3 years via lifecycle policy → Audit logs all access |
 | Google Drive | Document backup | Daily automatic export of all documents → 30-day rolling backup → Recovery if needed (5-min restore) |
@@ -121,7 +124,6 @@ One web application where:
 
 | System | Responsibility | WOP Connection |
 |--------|-----------------|-----------------|
-| Zoho Recruit | Hiring workflow, offer creation, negotiations | WOP receives: accepted offer → auto-create worker |
 | Gusto | Payroll processing, tax handling, benefits | WOP syncs: worker data → Gusto updates |
 | Google Workspace | Email, calendar, group management | WOP uses: OAuth for authentication |
 | Google Drive | Historical files, legacy documents | WOP links to: documents (no duplication) |
@@ -271,109 +273,6 @@ One web application where:
 ---
 
 ## 5. INTEGRATION SPECIFICATIONS
-
-### Zoho Recruit Integration (AUTO-CREATE Workers via Webhook)
-
-**Purpose:** Automatically create worker profiles in WOP when offer is accepted in Zoho Recruit.
-
-**How It Works: WEBHOOKS (Automatic Messenger)**
-
-A webhook is an automatic connection between Zoho and WOP:
-- Zoho is the restaurant (has job offers)
-- WOP is the delivery app (needs new worker orders)
-- Webhook is the automatic call when order (offer) is ready
-
-```
-Without Webhook (Wasteful):
-WOP asks Zoho every 5 min: "Any new offers?"
-Result: Lots of unnecessary questions
-
-With Webhook (Efficient):
-When offer accepted in Zoho → Zoho automatically calls WOP
-Result: WOP knows immediately, no wasted calls
-```
-
-**Setup Process: 2 Phases**
-
-**Phase 1: During WOP Development (Week 1-2)**
-1. WOP backend creates endpoint (like a doorbell):
-   ```
-   POST https://wop-backend.katbotz.com/api/zoho/worker-created
-   ```
-2. Endpoint logic:
-   - Receive data from Zoho
-   - Validate email (@katbotz.com)
-   - Create worker in Firestore
-   - Create Google Drive folder
-   - Send welcome email to worker
-   - Log action in audit trail
-3. Deploy to Cloud Run (server is now live)
-
-**Phase 2: After WOP is Live (Week 3)**
-1. Get WOP backend URL: https://wop-backend.katbotz.com/api/zoho/worker-created
-2. Go to Zoho Recruit → Settings → Webhooks
-3. Click [+ New Webhook]
-4. Fill in:
-   - Name: "WOP Worker Creation"
-   - Event: "Offer Status Changed to Accepted"
-   - URL: https://wop-backend.katbotz.com/api/zoho/worker-created
-   - Method: POST
-5. Click [Create]
-6. Test: Mark offer as accepted in Zoho
-7. Verify: Worker appears in WOP ✓
-
-**Webhook Flow (Automatic):**
-```
-Zoho Recruit                                    WOP Backend
-     │                                              │
-     │ HR marks offer: "ACCEPTED"                   │
-     │                                              │
-     ├─────── Webhook triggers (automatic) ───────→ │
-     │        (No manual work needed)               │
-     │                                              │
-     │                                    ✓ Receives data
-     │                                    ✓ Validates email
-     │                                    ✓ Creates worker
-     │                                    ✓ Creates Drive folder
-     │                                    ✓ Sends welcome email
-     │                                    ✓ Logs in audit trail
-     │                                              │
-     │                           SUCCESS: Worker Created!
-     │                                              │
-```
-
-**Data Flow:**
-1. Recruiter in Zoho Recruit marks offer status as "Accepted"
-2. Zoho webhook automatically sends data to WOP:
-   - Candidate name
-   - Email address (@katbotz.com)
-   - Position/Job title
-   - Department
-   - Joining date
-   - Worker type (Employee, Contractor, or Intern)
-3. WOP system receives data and:
-   - Creates new worker profile
-   - Auto-assigns team lead (based on department)
-   - Auto-generates document checklist (based on worker type)
-   - Creates Google Drive folder for documents
-   - Sends welcome email to worker
-4. Worker can immediately log in and begin uploading documents
-
-**Data Mapping:**
-
-| Zoho Field | WOP Field | Notes |
-|-----------|-----------|-------|
-| Candidate Name | Worker Name | Required |
-| Email | Worker Email | Must be katbotz.com domain |
-| Job Title | Position | Stored for reference |
-| Department | Department | Maps to team lead assignment |
-| Offer Accept Date | Created Date | System timestamp |
-| Employment Type | Worker Type | Employee/Contractor/Intern |
-| Joining Date | Joining Date | Calculated start date for reviews |
-
-**Frequency:** Real-time (within 5 minutes of offer acceptance)
-
-**Error Handling:** If integration fails, HR is notified and can manually create worker profile. No data loss.
 
 ### Gusto Integration
 
