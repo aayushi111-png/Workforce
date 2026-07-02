@@ -147,7 +147,7 @@ When HR (HR or Senior HR role) logs in, they see administrative dashboard contai
 - **Contracts:** Create/edit contracts, approve amendments
 - **Offboarding:** Mark workers for exit, manage deletions
 - **Permissions:** Edit any worker profile (hire, fire, change department)
-- **Integrations:** Manage Zoho and Gusto syncs
+- **Integrations:** Manage Gusto syncs
 - **Audit Logs:** View own actions only
 - **Special Capability:** Full authority over workers (except system override)
 - **Cannot:** Delete audit logs, override Founder, access other HR actions
@@ -161,7 +161,7 @@ When HR (HR or Senior HR role) logs in, they see administrative dashboard contai
 - **Contracts:** View contracts (read-only), cannot edit
 - **Offboarding:** Cannot mark for exit
 - **Permissions:** Cannot modify critical worker data (hire/fire)
-- **Integrations:** Cannot manage Zoho/Gusto (Senior HR only)
+- **Integrations:** Cannot manage Gusto (Senior HR only)
 - **Audit Logs:** Cannot access
 - **Special Capability:** Day-to-day document verification and project assignment
 - **Cannot:** Create/delete workers, mark for exit, edit contracts, fill reviews
@@ -286,29 +286,6 @@ KATBOTZ Workforce (Backup)/
 ---
 
 ## System Integration Points
-
-### Zoho Recruit Integration
-
-**Direction:** Inbound (Zoho to WOP)
-
-**Trigger:** When recruiter marks offer as "Accepted" in Zoho Recruit
-
-**Data Transmitted:**
-- Candidate name
-- Email address
-- Position/job title
-- Department
-- Expected joining date
-- Employment type (Employee, Contractor, Intern)
-
-**Action in WOP:**
-- Create new worker profile automatically
-- Generate document checklist based on type
-- Create Google Drive folder for documents
-- Send welcome email to worker
-- Worker can immediately log in
-
-**Frequency:** Real-time (within 5 minutes)
 
 ### Gusto Integration (US Employees Only)
 
