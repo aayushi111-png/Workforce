@@ -2,132 +2,207 @@
 
 ---
 
-## WORKFLOW 1: Worker Onboarding
+## WORKFLOW 1: Worker Onboarding (Verification-First)
 
-**TWO OPTIONS — BOTH ALWAYS AVAILABLE:**
+**THE SIMPLE PROCESS: Verify First, Then Create Account**
+
+Why this way? Saves money. Don't create accounts for people who won't pass verification.
 
 ---
 
-**Option A: HR MANUALLY CREATES WORKER (Always Available)**
+### **STEP 1: HR Creates Onboarding Link (2 minutes)**
 
-**When to use:** 
-- Anytime HR wants to create a worker
-- Direct creation without Zoho
-- Override for urgent hires
-- **ALWAYS available as primary option**
+**Part A: Fill Worker Details (1 minute)**
 
-**How to Manually Create:**
 1. HR logs into WOP
-2. Clicks [+ Create Worker] button (always visible)
-3. Fills form:
+2. Clicks [+ Create Worker]
+3. Fills in complete worker information:
    - Name: [Full name]
-   - Email: [name@katbotz.com]
-   - Type: [Employee/Contractor/Intern/Global Contractor/Global Intern]
+   - Personal Email: [personal@gmail.com] ← Where onboarding link is sent
+   - Professional Email: [name@katbotz.com] ← Will be created after verification
+   - Worker Type: [Employee/Contractor/Intern/Global Contractor/Global Intern]
    - Department: [Engineering, HR, Sales, etc.]
    - Team Lead: [Select from list]
-   - Location: [India/US/Other] (for currency/Gusto)
-4. Clicks [Create]
-5. System auto-generates:
-   - Worker ID (auto)
-   - Document checklist (based on type)
-   - Google Drive folder
-   - Welcome email
-6. Worker receives email: "Your WOP account is ready"
-7. Worker can log in immediately to WOP
+   - Location: [India/US/Other]
+4. HR reviews all details
+5. HR clicks [Generate Token & Link]
 
-**Time to create:** 2-3 minutes  
-**Manual entry required:** Yes (but simple form)  
-**No Zoho dependency:** Works anytime  
+**Part B: System Generates Token (1 minute)**
 
----
+1. System validates all fields
+2. System generates a **unique token** (32-character random code)
+3. System creates link: `workforce.katbotz.com/onboard/[token]`
+4. System stores token in Firestore with:
+   - Worker name, personal email, professional email
+   - Type, department, team lead
+   - Creation date, expiration date (7 days)
+5. HR sees confirmation with:
+   - Token: abc123xyz456def...
+   - Link: workforce.katbotz.com/onboard/abc123xyz456def...
+   - Expiration: June 30, 2026 (7 days)
+6. HR sends this link to worker's **personal email** via email/chat/message
 
-**Option B: ZOHO AUTO-CREATES WORKER (Automated - If Using Zoho)**
+Available options after token generation:
+- [Copy Link] — Copy to clipboard
+- [Email to Worker] — Send via email
+- [QR Code] — Generate QR code to scan
+- [Regenerate Token] — Create new token if needed
 
-**When to use:**
-- If using Zoho Recruit for hiring
-- To automate worker creation
-- Zero manual entry
-- Faster for high-volume hiring
-
-**How It Works (WEBHOOK):**
-```
-Zoho Recruit (HR accepts offer)
-         ↓
-    Webhook sends data automatically
-         ↓
-WOP auto-creates worker (zero manual entry)
-         ↓
-Worker gets email
-```
-
-**Detailed Steps:**
-1. Recruiter in Zoho Recruit marks candidate offer: "Accepted"
-2. Zoho webhook automatically sends data to WOP
-3. WOP backend receives webhook:
-   - Validates email (@katbotz.com)
-   - Extracts: Name, email, position, department, joining date, type
-   - Creates worker in Firestore (worker_id auto-generated)
-   - Creates Google Drive folder for documents
-   - Generates document checklist (based on worker type)
-   - Sends welcome email to worker
-   - Logs action in audit trail
-4. Worker receives email: "Your WOP account is ready"
-5. Worker can log in immediately
-6. **NO MANUAL HR ENTRY NEEDED** ✓
-
-**Webhook Setup (Once During Week 3):**
-- WOP backend has endpoint: https://wop-backend.katbotz.com/api/zoho/worker-created
-- Zoho Settings → Webhooks → Configure to send data to that URL
-- When offer marked "Accepted" in Zoho → Auto-sends to WOP
-- Worker created in seconds
-
-**Time to create:** 5-10 seconds (automatic)  
-**Manual entry required:** No (fully automated)  
-**Zoho dependency:** Requires Zoho Recruit integration  
+**Time:** 2 minutes total  
+**Cost:** Zero (no account created yet)  
+**What happens:** Worker receives link to upload documents (using personal email, not professional yet)
 
 ---
 
-**Which option to use?**
+### **STEP 2: Worker Uploads Documents (5 minutes)**
 
-| Scenario | Use Manual | Use Zoho |
-|----------|-----------|----------|
-| **Regular hiring** | ✓ Simpler | ✓ Faster |
-| **Emergency hire** | ✓ Immediately | ❌ Need Zoho setup |
-| **Contractor onboarding** | ✓ Direct | ❌ Zoho may not have |
-| **Quick add** | ✓ 2-3 minutes | ❌ Setup required |
-| **High volume** | ❌ Too manual | ✓ Automated |
-| **Zoho integrated** | ✓ Still works | ✓ Preferred |
-| **Zoho down** | ✓ Works anyway | ❌ Can't use |
+Worker clicks the link they received. **No login needed.**
 
-**KEY: Manual creation [+ Create Worker] button is ALWAYS visible and ALWAYS works** ✓
+They see:
+- Checklist of required documents (based on their type)
+- Upload buttons for each document
+
+For example (if they're an Employee):
+- ☐ PAN
+- ☐ Aadhaar
+- ☐ Degree
+- ☐ 10th Marksheet
+- ☐ 12th Marksheet
+- ☐ Bank Proof
+
+Worker:
+1. Clicks [Upload] next to "PAN"
+2. Selects file from their computer
+3. File uploads immediately
+4. Repeats for all other documents
+5. Clicks [Submit All]
+
+**Important:** Documents are uploaded to a temporary storage (not the final location yet).
+
+**Time:** 5 minutes (quick upload)  
+**Cost:** Still zero  
+**What worker sees:** "Waiting for HR to verify"
 
 ---
 
-**Step 2: Worker Logs In** (Same for Both Options)
+### **STEP 3: HR Verifies Documents (5-10 minutes)**
+
+HR logs into WOP and goes to [Pending Verification] section.
+
+They see the worker's name and all uploaded documents.
+
+For each document:
+1. HR clicks [View] to see the document
+2. Checks if it's clear, valid, and correct
+3. Either:
+   - Clicks ☑ [Mark Verified] — document approved
+   - Clicks ✗ [Reject] and selects reason from dropdown:
+     - "Unclear/Blurry"
+     - "Expired"
+     - "Invalid"
+     - "Incomplete"
+     - "Wrong Document"
+
+If **all documents are verified** → Go to Step 4
+
+If **any document is rejected** → HR sends message to worker: "Your PAN is blurry, please re-upload"
+→ Worker re-uploads via same link
+→ HR verifies again
+
+**Time:** 5-10 minutes total  
+**Cost:** Still zero (no account yet)  
+**What worker sees:** "Your PAN has been rejected. Please re-upload."
+
+---
+
+### **STEP 4: HR Creates Google Account (1 minute)**
+
+Once **all documents are verified** ✓
+
+HR clicks [Create Account for Worker]
+
+System:
+- Creates @katbotz.com email account (this is what costs money)
+- Moves documents from temporary storage to permanent storage
+- Sends worker a welcome email: "Your account is ready. Log in here."
+
+**Important:** Account only created AFTER verification is done.
+
+**Time:** 1 minute  
+**Cost:** ₹100/month (only for verified workers)  
+**Saves:** ₹100 × 12 months = ₹1,200/year per rejected worker
+
+---
+
+### **STEP 5: Worker Logs In (First Time)**
+
+Worker gets the welcome email and clicks login link.
+
 1. Goes to workforce.katbotz.com
 2. Clicks "Sign in with Google"
 3. Enters email + password
-4. Logged in (no password saved in system)
+4. Logged in
 
-**Step 3: Worker Uploads Documents**
-1. Sees checklist: ☐ PAN, ☐ Aadhaar, ☐ Degree, etc.
-2. Clicks [Upload] next to PAN
-3. Selects file from computer
-4. Confirms upload
-5. File goes to Google Drive (in their folder)
-6. Status shows: ⏳ Waiting for HR verification
+Worker sees:
+- Their profile
+- All documents they uploaded (✓ Already verified)
+- **NO need to re-upload** (this is the key!)
+- Project, goals, reviews sections (all ready to go)
 
-**Step 4: HR Verifies Documents**
-1. HR clicks on Worker name
-2. Sees: PAN — ⏳ Pending
-3. Clicks [View in Drive]
-4. Opens Drive, looks at file
-5. Returns to WOP
-6. Clicks ☑ [Mark Verified]
-7. System records: ✓ Verified by Priya on June 23
-8. Worker sees: ✓ Done
+**Time:** 1-2 minutes  
+**Cost:** Nothing new  
+**What worker sees:** "All your documents are verified. You're ready to start!"
 
-**Done:** All documents verified = Worker is ready to start
+---
+
+### **Timeline Summary**
+
+| Step | Who | Time | Cost |
+|------|-----|------|------|
+| 1. Create link | HR | 1 min | ₹0 |
+| 2. Upload docs | Worker | 5 min | ₹0 |
+| 3. Verify docs | HR | 5-10 min | ₹0 |
+| 4. Create account | HR | 1 min | ₹100/month |
+| 5. Worker logs in | Worker | 1-2 min | ₹0 |
+| **Total** | | **~25 minutes** | **₹100/month** |
+
+**Key Difference:**
+- Old way: Create account (₹100) → Worker uploads → HR verifies → Maybe reject (money wasted)
+- **New way:** HR verifies → Create account (₹100) → Worker logs in (no re-upload)
+
+**Saves ₹1,200-1,800/year** by not creating accounts for rejected workers.
+
+---
+
+### **What If Documents Are Rejected?**
+
+1. HR rejects PAN: "Document is blurry"
+2. Worker gets notification in WOP: "PAN rejected — please re-upload"
+3. Worker clicks same link, re-uploads PAN
+4. HR verifies again
+5. If approved, continue to Step 4
+6. If rejected again, repeat
+
+No account created. No money wasted.
+
+---
+
+### **FAQ**
+
+**Q: What if I need to create an account quickly?**  
+A: HR can skip verification and create account immediately (costs money). But verification-first is the default to save costs.
+
+**Q: Can the worker re-upload after rejection?**  
+A: Yes, same link works. They just click the same link again and re-upload.
+
+**Q: Does the worker lose their uploads if rejected?**  
+A: No, they stay in temporary storage and can be re-uploaded anytime.
+
+**Q: How long does the verification link work?**  
+A: 7 days. After that, HR creates a new link.
+
+**Q: Do workers have to re-upload when they log in?**  
+A: No! Documents uploaded during verification are automatically available in their account. Zero re-upload.
 
 ---
 
