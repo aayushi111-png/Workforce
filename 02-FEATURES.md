@@ -1597,121 +1597,63 @@ Worker logs in immediately
 **Time Required:** 2-3 minutes  
 **Manual Entry:** Yes (simple form)  
 **Dependency:** None (works anytime)  
-**Backup if Zoho fails:** YES (always available)  
 
 **KEY: [+ Create Worker] button is ALWAYS visible and ALWAYS works** ✓
 
 ---
 
-## 13B. ZOHO RECRUIT INTEGRATION (AUTO-CREATE via Webhook)
+## 14. VERIFICATION-FIRST ONBOARDING (Verify Before Creating Account)
 
-**What it does:** Auto-pulls "offer accepted" from Zoho → auto-creates worker in WOP
+**What it does:** Verify documents BEFORE creating accounts to save ₹1,200-1,800/year on rejections
 
-**How It Works (WEBHOOK - Automatic Messenger):**
-
-A webhook is an automatic connection:
-- When offer accepted in Zoho → Zoho automatically sends data to WOP
-- No manual work, no polling, no delays
-- Worker created in seconds
+**How It Works (Verification-First):**
 
 ```
-Zoho (HR marks: "ACCEPTED")
-         ↓
-Webhook triggers (automatic)
-         ↓
-WOP receives data
-         ↓
-Creates worker in Firestore
-Creates Drive folder
-Sends welcome email
-         ↓
-Worker ready to log in (seconds later)
+STEP 1: HR generates token & link (2 min)
+   ├─ HR fills worker details
+   ├─ Clicks [Generate Token & Link]
+   └─ Unique link created (7-day expiration)
+
+STEP 2: Worker uploads documents (5 min)
+   ├─ Worker clicks link (no login needed)
+   ├─ Uploads: PAN, Aadhaar, Degree, Marksheets, Bank proof
+   └─ Documents in temporary storage
+
+STEP 3: HR verifies documents (5-10 min)
+   ├─ HR views documents in temp storage
+   ├─ Marks: ✓ Verified OR ✗ Rejected (with reason)
+   └─ If rejected: Worker re-uploads via same link
+
+STEP 4: HR creates account (1 min)
+   ├─ Only if ALL documents verified ✓
+   ├─ Creates @katbotz.com account
+   └─ Moves documents to permanent storage
+   └─ Cost: ₹100/month (only for verified workers)
+
+STEP 5: Worker logs in
+   ├─ Documents already verified (no re-upload)
+   └─ Ready to start work immediately
 ```
 
-**Detailed Workflow:**
-1. Recruiter in Zoho Recruit marks candidate offer: "Accepted"
-2. Zoho webhook automatically sends data to WOP:
-   - Candidate name
-   - Email address (@katbotz.com)
-   - Position/Job title
-   - Department
-   - Joining date
-   - Worker type (Employee, Contractor, Intern)
-3. WOP backend receives webhook data and:
-   - Validates email is @katbotz.com
-   - Creates worker in Firestore (auto-generates worker_id)
-   - Creates Google Drive folder for documents
-   - Auto-generates document checklist (based on worker type)
-   - Sends welcome email to worker
-   - Logs action in audit trail
-4. Worker receives email: "Welcome! Your WOP account is ready"
-5. Worker can log in immediately and start uploading documents
+**Key Benefits:**
+- ✓ Save ₹1,200-1,800/year by not paying for rejected workers
+- ✓ Workers upload documents ONCE (no re-upload needed)
+- ✓ HR controls verification before spending money
+- ✓ Simple process (no webhooks, no automation)
+- ✓ Always works (no external dependencies)
 
-**Setup (Done Once - Week 3):**
-1. WOP backend deployed with webhook endpoint:
-   - URL: https://wop-backend.katbotz.com/api/zoho/worker-created
-2. Configure in Zoho Recruit → Settings → Webhooks:
-   - Event: "Offer Status Changed to Accepted"
-   - Send to: https://wop-backend.katbotz.com/api/zoho/worker-created
-3. Test: Mark offer as "Accepted" in Zoho
-4. Verify: Worker appears in WOP in seconds
-5. Done! Webhook runs automatically from then on
-
-**Data Synced:**
-- Name
-- Email (@katbotz.com)
-- Position/Department
-- Worker type
-- Joining date
-- Offer details
-
-**Webhook Reliability (FIX #5: Retry on Failure)**
-
-```
-What if WOP is down when Zoho sends webhook?
-
-Without retry:
-├─ Zoho sends data
-├─ WOP is offline (broken/down)
-├─ Webhook lost
-├─ Worker never created
-└─ HR: "Why no worker in WOP?"
-
-With retry system:
-├─ Zoho sends data
-├─ WOP logs it immediately (even if processing fails)
-├─ Returns: "200 OK" (tells Zoho: got it)
-├─ If fails: Auto-retry in 1 hour
-├─ If fails again: Retry in 2 hours
-├─ If fails 3x: Stop retrying, log in system
-├─ HR dashboard: Shows "Failed Zoho Webhooks"
-├─ HR can: Click [Create Worker Manually] (backup)
-└─ No data loss
-```
-
-**Failed Webhook Recovery (FIX #5):**
-```
-If Zoho webhook fails 3 times:
-
-HR Dashboard Shows:
-├─ Pending Zoho Workers (Failed Webhooks)
-├─ Candidate: Rohan Mehta
-├─ Email: rohan@katbotz.com
-├─ Error: "Invalid email domain" (or other reason)
-├─ Attempts: 3/3
-├─ Last tried: 2026-07-15 10:30 AM
-├─ Actions:
-│  ├─ [Manual Create Worker] (quick workaround)
-│  ├─ [Retry Now] (try webhook again)
-│  └─ [View Error Log] (see technical details)
-└─ Result: Can always create worker manually
-```
-
-**No manual data entry needed (automatic). But if webhook fails, manual fallback always works.** ✓
+**Timeline Summary:**
+| Step | Who | Time | Cost |
+|------|-----|------|------|
+| 1. Generate token | HR | 2 min | ₹0 |
+| 2. Upload docs | Worker | 5 min | ₹0 |
+| 3. Verify docs | HR | 5-10 min | ₹0 |
+| 4. Create account | HR | 1 min | ₹100/month |
+| 5. Log in | Worker | 1-2 min | ₹0 |
 
 ---
 
-## 14. GUSTO INTEGRATION (SYNC ONLY - US EMPLOYEES)
+## 15. GUSTO INTEGRATION (SYNC ONLY - US EMPLOYEES)
 
 **What it does:** Real-time sync of worker data between WOP and Gusto for US employees only
 
@@ -2331,7 +2273,7 @@ Other            → User selects from dropdown
 9. Invoice workflow (Submitted → Approved by HR → Paid)
 10. Personal to-do lists
 11. Automatic data deletion after 3 years
-12. Zoho Recruit integration (auto-create workers)
+12. Verification-first onboarding (verify before creating accounts)
 13. Gusto integration (US employees only)
 14. 7-role access control
 15. Audit trail and logging

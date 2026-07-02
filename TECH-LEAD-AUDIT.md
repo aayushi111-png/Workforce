@@ -147,42 +147,6 @@ Contract should have explicit:
 ### **✅ 8. INTEGRATIONS (MOSTLY CORRECT)**
 
 **What's right:**
-- ✅ Zoho Recruit webhook auto-creates workers — Correct
-- ✅ Webhook retry logic (FIX #5) — Correctly implemented
-- ✅ Duplicate email prevention (FIX #1) — Correctly implemented
-- ✅ Gusto sync for US employees only — Correct scope
-- ✅ W-4 requirement for US contractors (FIX #6) — Correctly implemented
-- ✅ Rate limiting for Gusto (FIX #9) — Correctly implemented
-- ✅ Manual fallback always available — Correct
-
-**🔴 LOOPHOLE #2 FOUND: No Webhook Authentication**
-
-```
-PROBLEM:
-Zoho webhook sends data to WOP endpoint:
-https://wop-backend.katbotz.com/api/zoho/worker-created
-
-Question: How does WOP know the request is from Zoho?
-├─ What prevents spoofing?
-├─ What if attacker sends fake webhook?
-├─ Could create fake workers with fake data
-└─ No authentication mentioned in spec
-
-Example attack:
-├─ Attacker calls: POST /api/zoho/worker-created
-├─ Sends: { name: "Attacker", email: "attacker@katbotz.com", ... }
-├─ System creates: Fake worker for attacker
-└─ Attacker logs in and accesses all data
-
-FIX NEEDED:
-Add webhook authentication:
-├─ Zoho signs each webhook with secret key
-├─ WOP verifies signature (HMAC-SHA256)
-├─ Without valid signature: Reject webhook
-├─ Prevent spoofing attacks
-└─ Industry standard: Webhook signing
-```
-
 ---
 
 ### **✅ 9. MULTI-CURRENCY (MOSTLY CORRECT)**
@@ -309,7 +273,7 @@ Add rate lookup/display:
 - ✅ Google Cloud Run — Serverless, auto-scales
 - ✅ Google OAuth — No password management
 - ✅ Cloud Logging — Audit trail
-- ✅ No external APIs except Zoho/Gusto — Good, reduces dependencies
+- ✅ No external APIs except Gusto — Good, reduces dependencies
 
 **No issues found.** ✅
 
@@ -377,7 +341,7 @@ Implementation:
 
 **Current Problem:**
 ```
-Zoho sends webhook to: https://wop-backend.katbotz.com/api/zoho/worker-created
+sends webhook to: https://wop-backend.katbotz.com/api/zoho/worker-created
 Anyone can send request and create fake workers.
 No authentication = Security risk.
 ```
@@ -389,10 +353,10 @@ Add HMAC-SHA256 signature verification:
 Step 1: Setup (Week 3)
 ├─ Generate webhook secret: xxxxxxxxxxxxxx
 ├─ Store in WOP (encrypted)
-├─ Store in Zoho config (marked as secret)
+├─ Store in config (marked as secret)
 └─ Both parties have same secret
 
-Step 2: Zoho sends webhook
+Step 2: sends webhook
 ├─ Includes: X-Webhook-Signature header
 ├─ Signature = HMAC-SHA256(payload, secret)
 └─ HTTP POST with signature
@@ -406,7 +370,7 @@ Step 3: WOP receives
 └─ Audit log: "Webhook verified from Zoho"
 
 Result:
-├─ Only Zoho (with secret) can send valid webhooks
+├─ Only (with secret) can send valid webhooks
 ├─ Attacker cannot forge signature
 ├─ All webhooks authenticated
 └─ Industry standard security

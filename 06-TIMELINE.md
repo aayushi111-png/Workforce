@@ -71,10 +71,10 @@
 
 ## WEEK 5 (July 28 – Aug 1) — Integrations & Advanced Features
 
-**Goal:** Zoho Recruit, Gusto, offboarding, auto-delete, notifications.
+**Goal:** Gusto, offboarding, auto-delete, notifications.
 
 **Daily breakdown:**
-- **Day 1 (July 28):** Zoho Recruit integration (auto-create workers from offers)
+- **Day 1 (July 28):** Recruit integration (auto-create workers from offers)
 - **Day 2 (July 29):** Gusto integration (US employees only, auto-sync)
 - **Day 3 (July 30):** Offboarding workflow (mark for exit, 3-year retention, auto-delete)
 - **Day 4 (July 31):** Notifications system (in-portal alerts)
@@ -91,7 +91,7 @@
 **Daily breakdown:**
 - **Day 1 (Aug 4):** Performance optimization (query indexing, caching)
 - **Day 2 (Aug 5):** Security hardening (encryption, session management)
-- **Day 3 (Aug 6):** Error handling (Zoho, Gusto sync failures, retries)
+- **Day 3 (Aug 6):** Error handling (Gusto sync failures, retries)
 - **Day 4 (Aug 7):** UI/UX polish (visual refinement, accessibility)
 - **Day 5 (Aug 8):** Code review and cleanup
 
@@ -104,7 +104,7 @@
 **Week 7 (Aug 11–15) — Full System Testing**
 - Priya (Senior HR) performs complete end-to-end testing
 - Test all workflows with real data
-- Test all integrations (Zoho, Gusto)
+- Test all integrations (Gusto)
 - Test backup and restore procedures
 - Document all bugs and issues
 - **Status:** Bug identification complete

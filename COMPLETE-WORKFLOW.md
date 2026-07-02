@@ -23,7 +23,7 @@
 3. DOCUMENT STORAGE (Cloud Storage + Google Drive)
    └─ Files encrypted, backed up, versioned, 3-year retention
 
-4. INTEGRATIONS (Zoho + Gusto)
+4. INTEGRATIONS (+ Gusto)
    └─ Auto-create workers (Zoho) + sync payroll (Gusto)
 ```
 
@@ -126,26 +126,26 @@ Step 10: HR Sees Success
 ═══════════════════════════════════════════════════════════════
 
 TIME TAKEN: 2-3 minutes (HR manual entry)
-WHEN TO USE: Always available, emergency hires, non-Zoho contractors
+WHEN TO USE: Always available, emergency hires, non-contractors
 ```
 
 ---
 
-#### **Scenario B: Zoho Auto-Create (Webhook Integration)**
+#### **Scenario B: Auto-Create (Webhook Integration)**
 
 ```
-Recruiter uses Zoho Recruit to hire:
+Recruiter uses Recruit to hire:
 
-Step 1: Zoho Recruit — Job Offer Process
+Step 1: Recruit — Job Offer Process
 ├─ Recruiter creates: Job opening
 ├─ Candidate applies
 ├─ Recruiter interviews candidate
 ├─ Decision: APPROVED
 └─ Clicks: Mark Offer as "Accepted" (in Zoho)
 
-Step 2: Zoho Triggers Webhook
+Step 2: Triggers Webhook
 ├─ Event: "Offer Status Changed to Accepted"
-├─ Zoho automatically sends to WOP:
+├─ automatically sends to WOP:
 │  ├─ Webhook URL: https://wop-backend.katbotz.com/api/zoho/worker-created
 │  ├─ Method: POST
 │  ├─ Data: JSON payload (encrypted HTTPS)
@@ -187,20 +187,20 @@ Step 6: Create Worker (Same as Manual)
 ├─ Audit log entry
 └─ Send welcome notification
 
-Step 7: Record Zoho Link
+Step 7: Record Link
 ├─ Store: zoho_candidate_id in worker record
 ├─ Purpose: Can query which workers came from Zoho
 └─ Audit trail: "Worker auto-created from Zoho"
 
 Step 8: Webhook Acknowledgment
 ├─ Return: HTTP 200 OK (tells Zoho: success)
-├─ Zoho sees: "Worker auto-created in WOP"
+├─ sees: "Worker auto-created in WOP"
 └─ Process complete
 
 ═══════════════════════════════════════════════════════════════
 
 TIME TAKEN: 5-10 seconds (fully automatic)
-WHEN TO USE: Regular hiring from Zoho Recruit
+WHEN TO USE: Regular hiring from Recruit
 FALLBACK: If webhook fails, HR can manually create
 ```
 
@@ -975,11 +975,11 @@ Example: If worker sues after 2 years
 ### **ZOHO RECRUIT INTEGRATION (Auto-create)**
 
 ```
-Zoho → WOP
+→ WOP
 
 Step 1: Recruiter marks offer "Accepted" in Zoho
 │
-Step 2: Zoho sends webhook
+Step 2: sends webhook
 ├─ URL: https://wop-backend.katbotz.com/api/zoho/worker-created
 ├─ Method: POST (HTTP request)
 ├─ Data: JSON payload
@@ -990,7 +990,7 @@ Step 2: Zoho sends webhook
 │  ├─ WOP verifies signature before trusting data
 │  ├─ If signature invalid: Reject with 401 error
 │  ├─ Prevents attackers from spoofing webhooks
-│  └─ Only Zoho can send valid requests
+│  └─ Only can send valid requests
 │
 Step 3: WOP receives webhook
 ├─ Logs receipt immediately (even if processing fails)
@@ -1008,7 +1008,7 @@ Step 4: If webhook fails
 └─ Result: No data loss, manual fallback always works
 
 WEBHOOK FLOW:
-Zoho Recruit (HR accepts offer)
+Recruit (HR accepts offer)
          ↓
     Webhook sends data
          ↓
@@ -1103,7 +1103,7 @@ DAY 0: MONDAY JUNE 20, 2026
 
 09:00 AM
 ├─ Recruiter marks offer "Accepted" in Zoho
-├─ Zoho sends webhook to WOP
+├─ sends webhook to WOP
 ├─ System creates worker (Rohan Mehta)
 ├─ Google Drive folder created
 ├─ Notification sent: "Your account is ready"
@@ -1293,7 +1293,7 @@ WORKER → WOP → FIRESTORE
       AUDIT TRAIL (Forever)
 
 FLOW:
-1. Worker created (manual or Zoho webhook)
+1. Worker created (manual or webhook)
 2. Worker logs in (Google OAuth)
 3. Worker uploads documents (encrypted → Cloud Storage)
 4. HR verifies documents (signed URLs → Google Cloud Viewer)
@@ -1310,7 +1310,7 @@ EVERYTHING CONNECTED:
 ├─ Authentication: Google OAuth
 ├─ Database: Firestore (encrypted)
 ├─ Storage: Cloud Storage + Drive
-├─ Integrations: Zoho + Gusto
+├─ Integrations: + Gusto
 ├─ Audit: Immutable logs (forever)
 ├─ Backup: Daily, 30-day rolling
 ├─ Encryption: CMEK AES-256 everywhere

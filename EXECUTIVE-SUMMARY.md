@@ -5,7 +5,7 @@
 ## **THE PITCH (2 MINUTE VERSION)**
 
 **Current Problem:**
-- Worker data scattered across Google Sheets, Drive, Zoho, Gmail
+- Worker data scattered across Google Sheets, Drive, Gmail
 - No centralized system of record
 - HR spends 5-10 hours/week on manual data entry
 - No audit trail for compliance
@@ -130,7 +130,7 @@ Dashboard:
    ├─ Approve document verification
    ├─ Mark workers for exit
    ├─ Access own audit logs
-   └─ Manage integrations (Zoho, Gusto)
+   └─ Manage integrations (Gusto)
 
 3. HR
    ├─ Verify documents (just check & approve)
@@ -240,24 +240,6 @@ Dashboard:
 - Contracts track currency + rate
 - Amendments create new versions if rate changes
 
-**15. Zoho Recruit Integration**
-- When recruiter marks offer "Accepted" in Zoho
-- Webhook auto-creates worker in WOP
-- Or HR can manually create anytime (always available)
-- If webhook fails: Auto-retry 3x, HR dashboard shows failures
-
-**16. Gusto Integration (US Employees Only)**
-- For US employees: Real-time sync of salary, department, position
-- When all documents verified: Auto-sync to Gusto
-- Gusto sets up payroll
-- Indian employees: NOT synced (payroll handled separately)
-
-**17. Legal Compliance**
-- 3-year data retention (all worker data)
-- Auto-delete after 3 years (DPDP Act compliant)
-- Audit trail kept forever (proof of deletion)
-- Immutable audit logs (Founder cannot delete)
-
 ---
 
 ### **PART 5: THE TECHNICAL STACK (Simple & Cheap)**
@@ -346,7 +328,7 @@ For 500 workers:
 
 **Compared to alternatives:**
 ```
-Zoho People:   ₹500-1000/employee/month  × 50 = ₹25,000-50,000/month
+People:   ₹500-1000/employee/month  × 50 = ₹25,000-50,000/month
 Workday:       ₹10,000+/month
 ADP:           ₹5,000-8,000/month
 
@@ -394,49 +376,6 @@ Week 4: Contractors + Contracts + Invoices
   └─ Student ID for interns
 
 Week 5: Integrations + Advanced Features
-  ├─ Zoho Recruit (auto-create workers)
-  ├─ Gusto sync (US employees)
-  ├─ Offboarding (mark exit, auto-delete after 3 years)
-  ├─ Notifications (in-portal)
-  └─ Audit trail (complete logging)
-
-Week 6: Polish + Security + Optimization
-  ├─ Performance optimization
-  ├─ Security hardening
-  ├─ Error handling
-  ├─ UI polish
-  └─ Code review
-
-Status: PRODUCTION-READY by Aug 13
-```
-
-**WEEK 7-8: Testing (Aug 14 – Aug 27)**
-```
-Week 7: Full System Testing
-  ├─ Priya (Senior HR) does complete end-to-end testing
-  ├─ Test all workflows with real data
-  ├─ Test all integrations (Zoho, Gusto)
-  ├─ Test backup and restore procedures
-  └─ Document all bugs
-
-Week 8: Bug Fixes + Handover Prep
-  ├─ Fix all critical bugs
-  ├─ Create operational runbook
-  ├─ Prepare GitHub access transfer
-  ├─ Prepare GCP credentials transfer
-  └─ Train KATBOTZ tech person
-```
-
-**WEEK 9: Handover (Aug 28 – Sept 3)**
-```
-Aug 28–29: Transfer GitHub + Credentials
-Aug 30–31: Transfer GCP project
-Sept 1–2: Final verification
-Sept 3: Sign-off and approval
-
-GO-LIVE: Sept 4, 2026 ✓
-```
-
 ---
 
 ### **PART 8: SECURITY & COMPLIANCE (Not Optional)**
@@ -608,7 +547,7 @@ KATBOTZ Tech Person: Owner
 ├─ Monitor system daily
 ├─ Fix bugs as they appear
 ├─ Handle user requests
-└─ Maintain integrations (Zoho, Gusto)
+└─ Maintain integrations (Gusto)
 
 Aayushi: Available as Consultant
 ├─ Emergency issues: ₹2,000-5,000 per issue
@@ -663,10 +602,10 @@ Mitigation: Complete handover to KATBOTZ tech person by Sept 3
 Result: Tech person can handle independently
 ```
 
-**Risk: Zoho/Gusto integration fails?**
+**Risk: Gusto integration fails?**
 ```
 Mitigation: Manual fallback always works
-├─ If Zoho webhook fails: HR manually creates worker (2-3 min)
+├─ If webhook fails: HR manually creates worker (2-3 min)
 ├─ If Gusto sync fails: HR manages payroll separately
 ├─ System doesn't break (integration is bonus, not requirement)
 ```
@@ -711,7 +650,7 @@ Result: Highly secure system
 ✓ Complete audit trail of all actions
 ✓ 3-year retention policy implemented
 ✓ Zero manual data entry (fully automated)
-✓ Zoho integration working (optional, manual backup works)
+✓ integration working (optional, manual backup works)
 ✓ Gusto integration working (US employees only)
 ✓ System handles 50-500 workers
 ✓ Response time < 2 seconds
@@ -753,7 +692,7 @@ HR Benefit:
 **Q: Can we deploy to cloud so remote workers can access?**
 A: Yes, WOP is on Google Cloud Run. Anyone with @katbotz.com email can access from anywhere.
 
-**Q: What if Zoho/Gusto integration breaks?**
+**Q: What if Gusto integration breaks?**
 A: Manual fallback works. HR can create workers manually (2-3 min) or manage payroll separately.
 
 **Q: Is the data safe?**
@@ -769,7 +708,7 @@ A: System scales automatically. Costs go up slightly but stay cheap ($5-10/month
 A: Full compliance. 3-year retention, auto-delete, immutable audit logs, encryption. Legal proof of all actions.
 
 **Q: Why is it so cheap compared to Zoho?**
-A: Zoho charges ₹500-1000 per employee per month. We use Google Cloud free tiers + pay-as-you-go. That's why ₹3-15/month vs ₹25,000+/month.
+A: charges ₹500-1000 per employee per month. We use Google Cloud free tiers + pay-as-you-go. That's why ₹3-15/month vs ₹25,000+/month.
 
 **Q: Can employees delete their own data?**
 A: No. Only Founder/HR can manage data. Workers can't delete documents (ensures compliance).
@@ -783,7 +722,7 @@ A: All data locked for 3 years (legal requirement). Auto-deleted after 3 years. 
 
 ```
 "Aayushi has built WOP — a complete HR management system that replaces 
-our scattered Google Sheets/Drive/Zoho setup with one secure, compliant 
+our scattered Google Sheets/Drive/setup with one secure, compliant 
 portal.
 
 6 weeks to build. 2 weeks to test. Live Sept 4.

@@ -53,7 +53,7 @@ If worker folder lost in Drive:
 
 ==== WEBHOOK TROUBLESHOOTING ====
 
-If Zoho is not creating workers in WOP:
+If is not creating workers in WOP:
 
 1. Check WOP backend is online:
    - GCP Console → Cloud Run
@@ -61,78 +61,6 @@ If Zoho is not creating workers in WOP:
    - If red: Redeploy
 
 2. Check webhook URL is correct:
-   - Zoho Recruit → Settings → Webhooks
-   - Should be: https://wop-backend.katbotz.com/api/zoho/worker-created
-   - If wrong: Update it
-
-3. Check webhook logs in Zoho:
-   - Zoho Recruit → Settings → Webhooks
-   - Click on "WOP Worker Creation"
-   - See recent deliveries
-   - If "Failed": Shows error message
-   - Fix error, test again
-
-4. Check WOP logs (Google Cloud Logging):
-   - GCP Console → Cloud Logging
-   - Filter: resource.type="cloud_run_revision"
-   - Look for errors when testing
-   - Common errors:
-     * "Invalid email domain" = Email not @katbotz.com
-     * "Missing required fields" = Zoho didn't send name/email
-     * "Connection refused" = WOP backend offline
-
-5. Test webhook manually:
-   curl -X POST https://wop-backend.katbotz.com/api/zoho/worker-created \
-     -H "Content-Type: application/json" \
-     -d '{
-       "zoho_candidate_id": "test-123",
-       "candidate_name": "Test Worker",
-       "email": "test@katbotz.com",
-       "position": "Engineer",
-       "department": "Engineering",
-       "joining_date": "2026-07-01",
-       "employment_type": "Employee"
-     }'
-   
-   If success: {"status": "success", "worker_id": "worker-123"}
-   If error: Shows what's wrong
-
-6. If still not working:
-   - Check FastAPI code in GitHub
-   - Check @app.post("/api/zoho/worker-created") endpoint
-   - Verify validation logic
-   - Check Firestore write permissions
-   - Check Drive API permissions
-```
-
-**CREDENTIALS.md** — Where everything is
-```
-GitHub: https://github.com/aayushi111-png/Workforce
-  Credentials: [saved in password manager]
-
-GCP Project: [project-name]
-  Credentials: [saved in password manager]
-
-SendGrid API Key: [if used]
-  [saved in password manager]
-
-Google OAuth App: [app-name]
-  [configured in GCP console]
-```
-
-**API.md** — How the backend works
-```
-Endpoints (FastAPI):
-  POST /auth/login → Verify Google OAuth token
-  GET /api/workers → List all workers (HR only)
-  POST /api/workers → Create worker (HR only)
-  PUT /api/workers/{id}/documents/{type} → Mark verified (HR only)
-  GET /api/workers/{id}/reviews → Get reviews
-  [etc.]
-```
-
-**FAQ.md** — Common questions
-```
 Q: How do I add a new worker?
 A: HR clicks "Create Worker" → fill form → system auto-creates checklist
 
