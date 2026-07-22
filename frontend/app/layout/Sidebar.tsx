@@ -15,8 +15,8 @@ export default function Sidebar() {
   const adminMenu = [
     { icon: '', label: 'Dashboard', href: '/dashboard?role=admin' },
     { icon: '', label: 'Employees', href: '/employees?role=admin' },
-    { icon: '', label: 'Onboarding', href: '/onboarding?role=admin' },
-    { icon: '', label: 'Documents', href: '/documents?role=admin' },
+    { icon: '', label: 'Organization', href: '/organization?role=admin' },
+    { icon: '', label: 'Onboarding & Docs', href: '/documents?role=admin' },
     { icon: '', label: 'Tasks', href: '/tasks?role=admin' },
     { icon: '', label: 'Attendance', href: '/attendance?role=admin' },
     { icon: '', label: 'Leave', href: '/leave?role=admin' },

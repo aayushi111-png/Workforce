@@ -3,10 +3,17 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Sidebar from '@/app/layout/Sidebar'
-import { useWorkforce, STAGE_META, REJECT_REASONS } from '@/app/lib/workforceStore'
+import { useWorkforce, STAGE_META, REJECT_REASONS, Stage } from '@/app/lib/workforceStore'
 import { useQueryParam } from '@/app/lib/useQueryParam'
 
 export const dynamic = 'force-dynamic'
+
+const PIPELINE_COLUMNS: { stage: Stage; title: string }[] = [
+  { stage: 'invited', title: 'Invited' },
+  { stage: 'verifying', title: 'Verifying' },
+  { stage: 'verified', title: 'Ready for Account' },
+  { stage: 'active', title: 'Onboarded' },
+]
 
 export default function DocumentsPage() {
   const role = useQueryParam('role')
@@ -80,9 +87,14 @@ function AdminDocuments() {
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
   const selected = workers.find(w => w.id === selectedId) || null
-  const [selectedDocs, setSelectedDocs] = useState<string[]>([])
-  const [reason, setReason] = useState(REJECT_REASONS[0])
-  const [showConfirm, setShowConfirm] = useState(false)
+  const [tab, setTab] = useState<'pipeline' | 'verify'>('pipeline')
+  // Per-document rejection drafts: presence of a key means "marked for rejection".
+  type RejDraft = { reason: string; note: string }
+  const [rejections, setRejections] = useState<Record<string, RejDraft>>({})
+
+  // Arriving with ?worker=<id> jumps straight into that person's verification.
+  useEffect(() => { if (preselect) setTab('verify') }, [preselect])
+  const openWorker = (id: string) => { setSelectedId(id); setTab('verify') }
 
   // Default to the preselected worker (from ?worker=) or the first in queue.
   useEffect(() => {
@@ -91,15 +103,29 @@ function AdminDocuments() {
   }, [preselect, workers.length])
 
   // Clear doc selection whenever the selected worker changes.
-  useEffect(() => { setSelectedDocs([]); setShowConfirm(false) }, [selectedId])
+  useEffect(() => { setRejections({}) }, [selectedId])
 
+  const selectedDocs = Object.keys(rejections)
   const rejectableKeys = selected ? selected.documents.filter(d => d.status !== 'not_uploaded' && d.status !== 'approved').map(d => d.key) : []
-  const toggleDoc = (key: string) => setSelectedDocs(prev => prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key])
-  const selectAllRejectable = () => setSelectedDocs(rejectableKeys)
-  const clearSelection = () => { setSelectedDocs([]); setShowConfirm(false) }
+  const toggleDoc = (key: string) => setRejections(prev => {
+    if (key in prev) { const { [key]: _, ...rest } = prev; return rest }
+    return { ...prev, [key]: { reason: REJECT_REASONS[0], note: '' } }
+  })
+  const setDocReason = (key: string, reason: string) => setRejections(prev => ({ ...prev, [key]: { ...prev[key], reason } }))
+  const setDocNote = (key: string, note: string) => setRejections(prev => ({ ...prev, [key]: { ...prev[key], note } }))
+  const selectAllRejectable = () => setRejections(prev => {
+    const next = { ...prev }
+    rejectableKeys.forEach(k => { if (!(k in next)) next[k] = { reason: REJECT_REASONS[0], note: '' } })
+    return next
+  })
+  const clearSelection = () => setRejections({})
   const confirmRejection = () => {
     if (!selected) return
-    selectedDocs.forEach(key => rejectDoc(selected.id, key, reason))
+    selectedDocs.forEach(key => {
+      const d = rejections[key]
+      const finalReason = d.note.trim() ? `${d.reason} — ${d.note.trim()}` : d.reason
+      rejectDoc(selected.id, key, finalReason)
+    })
     clearSelection()
   }
 
@@ -108,12 +134,68 @@ function AdminDocuments() {
       <Sidebar />
       <div className="min-h-screen bg-brand-off-white with-sidebar">
         <header className="bg-white border-b border-brand-gray sticky top-0 z-10">
-          <div className="px-8 py-5">
-            <Link href="/dashboard?role=admin" className="text-brand-slate-gray hover:text-brand-royal-blue text-sm">← Dashboard</Link>
-            <h1 className="text-2xl font-bold text-brand-charcoal mt-1">Document Verification</h1>
+          <div className="px-8 py-5 flex items-center justify-between gap-4 flex-wrap">
+            <div>
+              <Link href="/dashboard?role=admin" className="text-brand-slate-gray hover:text-brand-royal-blue text-sm">← Dashboard</Link>
+              <h1 className="text-2xl font-bold text-brand-charcoal mt-1">Onboarding &amp; Documents</h1>
+            </div>
+            <div className="flex items-center gap-1.5 bg-brand-off-white p-1 rounded-full border border-brand-gray">
+              {(['pipeline', 'verify'] as const).map(t => (
+                <button key={t} onClick={() => setTab(t)}
+                  className={`px-4 py-1.5 rounded-full text-xs font-semibold capitalize transition ${tab === t ? 'bg-brand-royal-blue text-white shadow' : 'text-brand-slate-gray hover:text-brand-charcoal'}`}>
+                  {t === 'pipeline' ? 'Pipeline' : 'Verify Documents'}
+                </button>
+              ))}
+            </div>
           </div>
         </header>
 
+        {tab === 'pipeline' && (
+          <main className="px-8 py-7">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 items-stretch min-h-[calc(100vh-200px)]">
+              {PIPELINE_COLUMNS.map(col => {
+                const items = workers.filter(w => w.stage === col.stage)
+                const meta = STAGE_META[col.stage]
+                return (
+                  <div key={col.stage} className="bg-white rounded-2xl border border-brand-gray p-4 flex flex-col">
+                    <div className="flex items-center justify-between mb-3 px-1">
+                      <h2 className="text-sm font-semibold text-brand-charcoal">{col.title}</h2>
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ color: meta.color, background: meta.bg }}>{items.length}</span>
+                    </div>
+                    <div className="space-y-2 flex-1">
+                      {items.map(w => {
+                        const approved = w.documents.filter(d => d.status === 'approved').length
+                        return (
+                          <button key={w.id} onClick={() => openWorker(w.id)}
+                            className="block w-full text-left p-3 rounded-xl border border-brand-gray hover:shadow-md hover:-translate-y-0.5 transition-all">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-full bg-brand-powder-blue text-brand-royal-blue flex items-center justify-center text-xs font-semibold">
+                                {w.name.split(' ').map(n => n[0]).slice(0, 2).join('')}
+                              </div>
+                              <div className="min-w-0">
+                                <p className="text-sm font-medium text-brand-charcoal truncate">{w.name}</p>
+                                <p className="text-xs text-brand-slate-gray truncate">{w.type} · {w.department}</p>
+                              </div>
+                            </div>
+                            <div className="mt-2.5">
+                              <div className="w-full bg-brand-off-white rounded-full h-1.5 overflow-hidden">
+                                <div className="h-full rounded-full bg-brand-royal-blue" style={{ width: `${(approved / w.documents.length) * 100}%` }} />
+                              </div>
+                              <p className="text-[11px] text-brand-slate-gray mt-1">{approved}/{w.documents.length} docs verified</p>
+                            </div>
+                          </button>
+                        )
+                      })}
+                      {items.length === 0 && <p className="text-xs text-brand-slate-gray px-1 py-4 text-center">Empty</p>}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </main>
+        )}
+
+        {tab === 'verify' && (
         <main className="px-8 py-7">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Queue list */}
@@ -158,7 +240,7 @@ function AdminDocuments() {
                   <div className="bg-white rounded-2xl border border-brand-gray overflow-hidden">
                     <div className="px-5 py-3 border-b border-brand-gray flex items-center justify-between bg-brand-off-white">
                       <span className="text-xs font-medium text-brand-slate-gray">
-                        Select documents to reject together{selectedDocs.length > 0 && ` — ${selectedDocs.length} selected`}
+                        Mark documents to reject, add a reason for each{selectedDocs.length > 0 && ` — ${selectedDocs.length} marked`}
                       </span>
                       {rejectableKeys.length > 0 && (
                         <button onClick={selectedDocs.length === rejectableKeys.length ? clearSelection : selectAllRejectable}
@@ -170,57 +252,63 @@ function AdminDocuments() {
                     <div className="divide-y divide-brand-gray">
                       {selected.documents.map(doc => {
                         const rejectable = doc.status !== 'not_uploaded' && doc.status !== 'approved'
-                        const checked = selectedDocs.includes(doc.key)
+                        const draft = rejections[doc.key]
+                        const checked = !!draft
                         return (
-                          <div key={doc.key} className={`p-5 flex items-center gap-4 transition ${checked ? 'bg-brand-powder-blue bg-opacity-20' : ''}`}>
-                            <input
-                              type="checkbox"
-                              disabled={!rejectable}
-                              checked={checked}
-                              onChange={() => toggleDoc(doc.key)}
-                              className="w-4 h-4 rounded border-brand-gray flex-shrink-0 disabled:opacity-30"
-                            />
-                            <div className="min-w-0 flex-1">
-                              <p className="font-medium text-brand-charcoal">{doc.label}</p>
-                              <p className="text-xs text-brand-slate-gray mt-0.5">
-                                {doc.status === 'not_uploaded' ? 'Not uploaded yet' : doc.fileName}
-                              </p>
-                              {doc.status === 'rejected' && <p className="text-xs text-brand-burgundy mt-0.5">Rejected: {doc.reason}</p>}
+                          <div key={doc.key} className={`p-5 transition ${checked ? 'bg-red-50' : ''}`}>
+                            <div className="flex items-center gap-4">
+                              <input
+                                type="checkbox"
+                                disabled={!rejectable}
+                                checked={checked}
+                                onChange={() => toggleDoc(doc.key)}
+                                className="w-4 h-4 rounded border-brand-gray flex-shrink-0 disabled:opacity-30"
+                              />
+                              <div className="min-w-0 flex-1">
+                                <p className="font-medium text-brand-charcoal">{doc.label}</p>
+                                <p className="text-xs text-brand-slate-gray mt-0.5">
+                                  {doc.status === 'not_uploaded' ? 'Not uploaded yet' : doc.fileName}
+                                </p>
+                                {doc.status === 'rejected' && <p className="text-xs text-brand-burgundy mt-0.5">Rejected: {doc.reason}</p>}
+                              </div>
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                <StatusPill status={doc.status} />
+                                {rejectable && (
+                                  <button onClick={() => verifyDoc(selected.id, doc.key)}
+                                    className="text-sm px-3 py-1.5 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition">Verify</button>
+                                )}
+                              </div>
                             </div>
-                            <div className="flex items-center gap-2 flex-shrink-0">
-                              <StatusPill status={doc.status} />
-                              {rejectable && (
-                                <button onClick={() => verifyDoc(selected.id, doc.key)}
-                                  className="text-sm px-3 py-1.5 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition">Verify</button>
-                              )}
-                            </div>
+                            {/* Per-document reason */}
+                            {checked && (
+                              <div className="mt-3 pl-8 space-y-2">
+                                <select value={draft.reason} onChange={e => setDocReason(doc.key, e.target.value)} className="w-full sm:w-56 text-sm">
+                                  {REJECT_REASONS.map(r => <option key={r}>{r}</option>)}
+                                </select>
+                                <textarea
+                                  value={draft.note}
+                                  onChange={e => setDocNote(doc.key, e.target.value)}
+                                  rows={2}
+                                  placeholder={`What's wrong with ${doc.label}? (optional, shown to the employee)`}
+                                  className="w-full text-sm"
+                                />
+                              </div>
+                            )}
                           </div>
                         )
                       })}
                     </div>
 
-                    {/* Bulk rejection action bar */}
+                    {/* Rejection action bar */}
                     {selectedDocs.length > 0 && (
-                      <div className="px-5 py-4 bg-red-50 border-t border-brand-gray space-y-2">
-                        {!showConfirm ? (
-                          <div className="flex items-center justify-between gap-3">
-                            <span className="text-sm text-brand-charcoal">{selectedDocs.length} document{selectedDocs.length > 1 ? 's' : ''} selected</span>
-                            <div className="flex items-center gap-2">
-                              <button onClick={clearSelection} className="text-sm px-3 py-2 rounded-lg border border-brand-gray text-brand-slate-gray">Clear</button>
-                              <button onClick={() => setShowConfirm(true)} className="text-sm px-4 py-2 rounded-lg bg-brand-burgundy text-white whitespace-nowrap">Reject Selected</button>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <select value={reason} onChange={e => setReason(e.target.value)} className="flex-1 min-w-[160px] text-sm">
-                              {REJECT_REASONS.map(r => <option key={r}>{r}</option>)}
-                            </select>
-                            <button onClick={confirmRejection} className="text-sm px-4 py-2 rounded-lg bg-brand-burgundy text-white whitespace-nowrap font-semibold">
-                              Confirm Rejection ({selectedDocs.length})
-                            </button>
-                            <button onClick={() => setShowConfirm(false)} className="text-sm px-3 py-2 rounded-lg border border-brand-gray text-brand-slate-gray">Back</button>
-                          </div>
-                        )}
+                      <div className="px-5 py-4 bg-red-50 border-t border-brand-gray flex items-center justify-between gap-3 flex-wrap">
+                        <span className="text-sm text-brand-charcoal">{selectedDocs.length} document{selectedDocs.length > 1 ? 's' : ''} marked for rejection</span>
+                        <div className="flex items-center gap-2">
+                          <button onClick={clearSelection} className="text-sm px-3 py-2 rounded-lg border border-brand-gray text-brand-slate-gray">Clear</button>
+                          <button onClick={confirmRejection} className="text-sm px-4 py-2 rounded-lg bg-brand-burgundy text-white whitespace-nowrap font-semibold">
+                            Confirm Rejection ({selectedDocs.length})
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -248,6 +336,7 @@ function AdminDocuments() {
             </div>
           </div>
         </main>
+        )}
       </div>
     </>
   )

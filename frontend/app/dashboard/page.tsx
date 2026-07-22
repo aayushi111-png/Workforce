@@ -303,7 +303,7 @@ function WorkQueue({ title, items, cta, accent }: {
             )
           })}
           {items.length > 4 && (
-            <Link href="/onboarding?role=admin" className="block text-center text-xs font-medium text-brand-royal-blue hover:underline pt-1">
+            <Link href="/documents?role=admin" className="block text-center text-xs font-medium text-brand-royal-blue hover:underline pt-1">
               +{items.length - 4} more
             </Link>
           )}
@@ -393,7 +393,7 @@ function AdminDashboard() {
                 <h2 className="text-lg font-bold text-brand-charcoal">Onboarding Pipeline</h2>
                 <p className="text-sm text-brand-slate-gray mt-0.5">Your active workload — verify documents, then create accounts.</p>
               </div>
-              <Link href="/onboarding?role=admin" className="btn-ghost text-sm">Open board →</Link>
+              <Link href="/documents?role=admin" className="btn-ghost text-sm">Open board →</Link>
             </div>
 
             {/* Stage strip */}
@@ -401,7 +401,7 @@ function AdminDashboard() {
               {stageStrip.map(s => {
                 const meta = STAGE_META[s.stage]
                 return (
-                  <Link key={s.stage} href="/onboarding?role=admin"
+                  <Link key={s.stage} href="/documents?role=admin"
                     className="rounded-xl border border-brand-gray p-4 hover:shadow-md hover:-translate-y-0.5 transition-all">
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full" style={{ background: meta.color }} />
@@ -517,7 +517,8 @@ function AdminDashboard() {
 
 /* ================= Employee (self-service) dashboard ================= */
 function EmployeeDashboard({ workerId }: { workerId: string | null }) {
-  const { workers, notifications, setGoal } = useWorkforce()
+  const { workers, notifications, setGoal, addNote, toggleNote } = useWorkforce()
+  const [noteText, setNoteText] = useState('')
   const me = workerId ? workers.find(w => w.id === workerId) : workers.find(w => w.stage !== 'active') || workers[0]
 
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
@@ -666,12 +667,33 @@ function EmployeeDashboard({ workerId }: { workerId: string | null }) {
               )}
             </div>
 
-            <Link href={`/notebook?role=employee&worker=${me.id}`} className="bg-white rounded-2xl border border-brand-gray p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all block">
-              <h2 className="text-base font-semibold text-brand-charcoal mb-3">My Notebook</h2>
-              <p className="text-3xl font-bold text-brand-charcoal">{todoCount}</p>
-              <p className="text-sm text-brand-slate-gray mt-1">open to-dos</p>
-              <p className="text-xs text-brand-royal-blue mt-3 font-medium">Open notebook →</p>
-            </Link>
+            <div className="bg-white rounded-2xl border border-brand-gray p-6 flex flex-col">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-base font-semibold text-brand-charcoal">My Notebook</h2>
+                <Link href={`/notebook?role=employee&worker=${me.id}`} className="text-xs font-medium text-brand-royal-blue hover:underline">Open →</Link>
+              </div>
+              <form
+                onSubmit={e => { e.preventDefault(); if (!noteText.trim()) return; addNote(me.id, 'todo', noteText.trim()); setNoteText('') }}
+                className="flex gap-2 mb-3"
+              >
+                <input value={noteText} onChange={e => setNoteText(e.target.value)} placeholder="Add a to-do…" className="flex-1 text-sm" />
+                <button type="submit" className="btn-primary text-sm whitespace-nowrap px-3">Add</button>
+              </form>
+              <div className="space-y-1 flex-1 overflow-y-auto max-h-44">
+                {me.notes.filter(n => n.kind === 'todo').slice(0, 6).map(t => (
+                  <div key={t.id} className="flex items-center gap-2.5 px-1 py-1 rounded-lg hover:bg-brand-off-white transition">
+                    <button onClick={() => toggleNote(me.id, t.id)}
+                      className={`w-4.5 h-4.5 w-[18px] h-[18px] rounded-md border-2 flex-shrink-0 flex items-center justify-center transition ${t.done ? 'bg-brand-royal-blue border-brand-royal-blue' : 'border-brand-gray'}`}>
+                      {t.done && <span className="text-white text-[10px]">✓</span>}
+                    </button>
+                    <span className={`flex-1 text-sm truncate ${t.done ? 'line-through text-brand-slate-gray' : 'text-brand-charcoal'}`}>{t.text}</span>
+                  </div>
+                ))}
+                {todoCount === 0 && me.notes.filter(n => n.kind === 'todo').length === 0 && (
+                  <p className="text-sm text-brand-slate-gray py-4 text-center">Nothing on your list yet.</p>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

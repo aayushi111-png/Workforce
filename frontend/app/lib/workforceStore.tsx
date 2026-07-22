@@ -46,8 +46,8 @@ export interface NoteItem {
 }
 
 export type AttendanceStatus = 'present' | 'wfh' | 'leave' | 'absent'
-export type LeaveType = 'Casual Leave' | 'Earned Leave' | 'Leave Without Pay' | 'Paternity Leave' | 'Sabbatical Leave' | 'Sick Leave'
-export const LEAVE_TYPES: LeaveType[] = ['Casual Leave', 'Earned Leave', 'Leave Without Pay', 'Paternity Leave', 'Sabbatical Leave', 'Sick Leave']
+export type LeaveType = 'Paid Leave' | 'Unpaid Leave'
+export const LEAVE_TYPES: LeaveType[] = ['Paid Leave', 'Unpaid Leave']
 
 export interface AttendanceRecord {
   date: string // 'YYYY-MM-DD'
@@ -117,14 +117,10 @@ export interface LeaveRequest {
 }
 export interface Holiday { id: string; date: string; name: string }
 
-/** Annual leave quota per type; null = uncapped (Leave Without Pay). */
+/** Annual leave quota per type; null = uncapped (Unpaid Leave). */
 export const LEAVE_QUOTAS: Record<LeaveType, number | null> = {
-  'Casual Leave': 12,
-  'Earned Leave': 15,
-  'Sick Leave': 10,
-  'Paternity Leave': 15,
-  'Sabbatical Leave': 30,
-  'Leave Without Pay': null,
+  'Paid Leave': 12,
+  'Unpaid Leave': null, // uncapped for now (quota TBD)
 }
 
 export type Gender = 'Male' | 'Female' | 'Other' | 'Prefer not to say'
@@ -451,9 +447,9 @@ function seed(): State {
     { id: 'a-6', message: 'Tom Baker marked inactive', color: '#800020', createdAt: SEED_DATE },
   ]
   const leaveRequests: LeaveRequest[] = [
-    { id: 'lr-1', workerId: 'w-neha', type: 'Casual Leave', from: '2026-07-24', to: '2026-07-25', days: 2, reason: 'Family function', status: 'pending', createdAt: SEED_DATE },
-    { id: 'lr-2', workerId: 'w-ananya-i', type: 'Sick Leave', from: '2026-07-21', to: '2026-07-21', days: 1, reason: 'Fever', status: 'pending', createdAt: SEED_DATE },
-    { id: 'lr-3', workerId: 'w-maya', type: 'Earned Leave', from: '2026-07-14', to: '2026-07-15', days: 2, reason: 'Short trip', status: 'approved', decidedBy: 'Priya Nair', decidedAt: SEED_DATE, createdAt: SEED_DATE },
+    { id: 'lr-1', workerId: 'w-neha', type: 'Paid Leave', from: '2026-07-24', to: '2026-07-25', days: 2, reason: 'Family function', status: 'pending', createdAt: SEED_DATE },
+    { id: 'lr-2', workerId: 'w-ananya-i', type: 'Unpaid Leave', from: '2026-07-21', to: '2026-07-21', days: 1, reason: 'Fever', status: 'pending', createdAt: SEED_DATE },
+    { id: 'lr-3', workerId: 'w-maya', type: 'Paid Leave', from: '2026-07-14', to: '2026-07-15', days: 2, reason: 'Short trip', status: 'approved', decidedBy: 'Priya Nair', decidedAt: SEED_DATE, createdAt: SEED_DATE },
   ]
   const holidays: Holiday[] = [
     { id: 'h-1', date: '2026-08-15', name: 'Independence Day' },
@@ -1100,11 +1096,24 @@ export interface Performance {
   attendanceRate: number // % present or wfh, over last 30 marked days
   goalRate: number // % of goals completed
   hoursRate: number // avg daily hours vs an 8h target, capped 100
+  reviewRate: number // latest manager review rating as %
+  hasReview: boolean
   daysMarked: number
   daysWorked: number
   goalsTotal: number
   avgDailyHours: number
   score: number // weighted overall 0-100 (missing metrics excluded)
+}
+
+/* Configurable score weights (sum need not be 100 — normalized at use). */
+export interface PerfWeights { reviews: number; goals: number; attendance: number; hours: number }
+export const DEFAULT_PERF_WEIGHTS: PerfWeights = { reviews: 35, goals: 30, attendance: 20, hours: 15 }
+export function getPerfWeights(): PerfWeights {
+  try {
+    const raw = localStorage.getItem('wop-settings-v1')
+    if (raw) { const s = JSON.parse(raw); if (s.perfWeights) return { ...DEFAULT_PERF_WEIGHTS, ...s.perfWeights } }
+  } catch { /* ignore */ }
+  return DEFAULT_PERF_WEIGHTS
 }
 
 /** Age in whole years from a 'YYYY-MM-DD' date of birth, anchored to `today` for determinism. */
@@ -1131,9 +1140,10 @@ export function experienceDuration(dateOfJoining: string, today = todayStr()): s
   return `${years} yr${years === 1 ? '' : 's'} ${rem} mo${rem === 1 ? '' : 's'}`
 }
 
-/** Weighted scorecard over the last 30 days: goals 50%, attendance 30%, hours 20%.
- *  Metrics with no data are excluded and the remaining weights renormalized, so a
- *  worker isn't penalized for a dimension that simply hasn't been recorded. */
+/** Weighted scorecard over the last 30 days. Weights (reviews/goals/attendance/
+ *  hours) are configurable in Settings. Metrics with no data are excluded and the
+ *  remaining weights renormalized, so a worker isn't penalized for a dimension
+ *  that simply hasn't been recorded. */
 export function computePerformance(w: Worker): Performance {
   const last30 = lastNDays(30)
 
@@ -1153,13 +1163,92 @@ export function computePerformance(w: Worker): Performance {
   const avgDailyHours = workedDays.length ? Math.round((totalHours / workedDays.length) * 10) / 10 : 0
   const hoursRate = workedDays.length ? Math.min(100, Math.round((avgDailyHours / 8) * 100)) : 0
 
-  // weighted, renormalized over metrics that have data
-  const parts: [number, number][] = []
-  if (goalsTotal) parts.push([goalRate, 0.5])
-  if (recent.length) parts.push([attendanceRate, 0.3])
-  if (workedDays.length) parts.push([hoursRate, 0.2])
-  const wsum = parts.reduce((s, [, wt]) => s + wt, 0)
-  const score = wsum ? Math.round(parts.reduce((s, [v, wt]) => s + v * wt, 0) / wsum) : 0
+  // reviews — most recent manager rating (1–5) as a %
+  const hasReview = w.reviews.length > 0
+  const reviewRate = hasReview ? Math.round((w.reviews[0].rating / 5) * 100) : 0
 
-  return { attendanceRate, goalRate, hoursRate, daysMarked: recent.length, daysWorked: workedDays.length, goalsTotal, avgDailyHours, score }
+  // weighted, renormalized over metrics that have data
+  const wt = getPerfWeights()
+  const parts: [number, number][] = []
+  if (hasReview) parts.push([reviewRate, wt.reviews])
+  if (goalsTotal) parts.push([goalRate, wt.goals])
+  if (recent.length) parts.push([attendanceRate, wt.attendance])
+  if (workedDays.length) parts.push([hoursRate, wt.hours])
+  const wsum = parts.reduce((s, [, k]) => s + k, 0)
+  const score = wsum ? Math.round(parts.reduce((s, [v, k]) => s + v * k, 0) / wsum) : 0
+
+  return { attendanceRate, goalRate, hoursRate, reviewRate, hasReview, daysMarked: recent.length, daysWorked: workedDays.length, goalsTotal, avgDailyHours, score }
+}
+
+/* ---------- Performance trend (recent 7 days vs the prior 7) ---------- */
+function shiftYmd(ymd: string, days: number): string {
+  const d = new Date(ymd + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + days); return d.toISOString().slice(0, 10)
+}
+function windowStat(w: Worker, days: string[]): number | null {
+  const marked = days.filter(d => w.attendance.some(a => a.date === d))
+  const present = marked.filter(d => { const a = w.attendance.find(x => x.date === d)!; return a.status === 'present' || a.status === 'wfh' }).length
+  const attRate = marked.length ? (present / marked.length) * 100 : null
+  const worked = days.filter(d => w.timeSessions.some(s => s.date === d))
+  const hrs = worked.reduce((s, d) => s + hoursForDate(w.timeSessions, d), 0)
+  const hrsRate = worked.length ? Math.min(100, (hrs / worked.length / 8) * 100) : null
+  const vals = [attRate, hrsRate].filter((v): v is number => v !== null)
+  return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null
+}
+/** Momentum: (recent 7-day attendance+hours) minus (prior 7-day). Positive = improving. */
+export function performanceTrend(w: Worker): number {
+  const cur = windowStat(w, lastNDays(7))
+  const prev = windowStat(w, lastNDays(7, shiftYmd(todayStr(), -7)))
+  if (cur === null || prev === null) return 0
+  return Math.round(cur - prev)
+}
+
+/* ---------- Employee lifecycle ---------- */
+export type LifecycleStage = 'Onboarding' | 'Probation' | 'Active' | 'Exited'
+export const LIFECYCLE_META: Record<LifecycleStage, { color: string; bg: string }> = {
+  Onboarding: { color: '#B45309', bg: '#FEF3E2' },
+  Probation: { color: '#162660', bg: '#E8EEFB' },
+  Active: { color: '#0F7A46', bg: '#E8F6EF' },
+  Exited: { color: '#800020', bg: '#F7E7EA' },
+}
+export function lifecycleStage(w: Worker): LifecycleStage {
+  if (w.status === 'inactive') return 'Exited'
+  if (w.stage !== 'active') return 'Onboarding'
+  const probEnd = shiftYmd(w.dateOfJoining, 90)
+  return todayStr() < probEnd ? 'Probation' : 'Active'
+}
+
+export interface Milestone { label: string; date: string; done: boolean }
+/** Upcoming/past lifecycle milestones: probation end, next work anniversary, next review due. */
+export function milestones(w: Worker): Milestone[] {
+  const today = todayStr()
+  const out: Milestone[] = []
+  const probEnd = shiftYmd(w.dateOfJoining, 90)
+  out.push({ label: 'Probation ends', date: probEnd, done: today >= probEnd })
+  // next work anniversary
+  const [jy, jm, jd] = w.dateOfJoining.split('-').map(Number)
+  let annYear = Number(today.slice(0, 4))
+  const annThis = `${annYear}-${String(jm).padStart(2, '0')}-${String(jd).padStart(2, '0')}`
+  if (annThis < today) annYear++
+  const ann = `${annYear}-${String(jm).padStart(2, '0')}-${String(jd).padStart(2, '0')}`
+  const years = annYear - jy
+  out.push({ label: `${years}-year work anniversary`, date: ann, done: false })
+  // next review due (last review + 90d, else joining + 90d)
+  const lastReview = w.reviews[0]?.createdAt?.slice(0, 10) || w.dateOfJoining
+  const reviewDue = shiftYmd(lastReview, 90)
+  out.push({ label: 'Next review due', date: reviewDue, done: false })
+  return out.sort((a, b) => a.date.localeCompare(b.date))
+}
+
+export interface JourneyEvent { date: string; label: string; color: string }
+/** A per-employee chronological journey derived from existing records (newest first). */
+export function journeyEvents(w: Worker, leaveRequests: LeaveRequest[]): JourneyEvent[] {
+  const evs: JourneyEvent[] = []
+  evs.push({ date: w.dateOfJoining, label: `Joined as ${w.designation}`, color: '#162660' })
+  if (w.accountCreated) evs.push({ date: w.createdAt.slice(0, 10), label: 'Onboarding completed · account created', color: '#10B981' })
+  w.projects.forEach(p => evs.push({ date: p.startDate, label: `Assigned to ${p.name}`, color: '#5B77C4' }))
+  w.reviews.forEach(r => evs.push({ date: r.createdAt.slice(0, 10), label: `${r.period} review · ${r.rating}★ by ${r.reviewer}`, color: '#0F7A46' }))
+  w.feedback.forEach(f => evs.push({ date: f.createdAt.slice(0, 10), label: `1:1 note: ${f.text.length > 48 ? f.text.slice(0, 48) + '…' : f.text}`, color: '#64748B' }))
+  leaveRequests.filter(r => r.workerId === w.id && r.status === 'approved').forEach(r => evs.push({ date: r.from, label: `${r.type} — ${r.days}d`, color: '#B45309' }))
+  if (w.dateOfExit) evs.push({ date: w.dateOfExit, label: 'Marked inactive / exited', color: '#800020' })
+  return evs.sort((a, b) => b.date.localeCompare(a.date))
 }

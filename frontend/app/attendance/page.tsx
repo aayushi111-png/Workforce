@@ -368,7 +368,7 @@ function TeamAttendance() {
                         const meta = ATTENDANCE_META[s]
                         const on = rec?.status === s
                         return (
-                          <button key={s} onClick={() => markAttendance(w.id, markDate, s, s === 'leave' ? (rec?.leaveType || 'Casual Leave') : undefined)}
+                          <button key={s} onClick={() => markAttendance(w.id, markDate, s, s === 'leave' ? (rec?.leaveType || 'Paid Leave') : undefined)}
                             className="px-3 py-1.5 rounded-lg text-xs font-semibold transition border"
                             style={{ color: on ? '#fff' : meta.color, background: on ? meta.color : meta.bg, borderColor: on ? meta.color : 'transparent' }}>
                             {meta.label}
@@ -379,7 +379,7 @@ function TeamAttendance() {
                     {/* leave-type dropdown appears when Leave is selected for this worker/date */}
                     {rec?.status === 'leave' && (
                       <select
-                        value={rec.leaveType || 'Casual Leave'}
+                        value={rec.leaveType || 'Paid Leave'}
                         onChange={e => markAttendance(w.id, markDate, 'leave', e.target.value as LeaveType)}
                         className="!w-auto text-xs py-1.5">
                         {LEAVE_TYPES.map(lt => <option key={lt} value={lt}>{lt}</option>)}

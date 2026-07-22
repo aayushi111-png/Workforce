@@ -20,6 +20,7 @@ const DEFAULTS = {
   officeLat: 26.9124,
   officeLon: 75.7873,
   officeRadiusM: 300,
+  perfWeights: { reviews: 35, goals: 30, attendance: 20, hours: 15 },
 }
 type Settings = typeof DEFAULTS
 
@@ -75,6 +76,18 @@ export default function SettingsPage() {
                 <Field label="Radius (meters)"><input type="number" min={50} value={s.officeRadiusM} onChange={e => set('officeRadiusM', Number(e.target.value))} /></Field>
               </Grid>
               <p className="text-xs text-brand-slate-gray">A clock-in within this radius is tagged "In office"; further away is "Remote"; far off is flagged "Outside geofence" for HR review. Advisory only — true enforcement needs a server-side check.</p>
+            </Section>
+
+            <Section title="Performance Score Weights">
+              <Grid>
+                <Field label="Reviews (%)"><input type="number" min={0} max={100} value={s.perfWeights.reviews} onChange={e => set('perfWeights', { ...s.perfWeights, reviews: Number(e.target.value) })} /></Field>
+                <Field label="Goals (%)"><input type="number" min={0} max={100} value={s.perfWeights.goals} onChange={e => set('perfWeights', { ...s.perfWeights, goals: Number(e.target.value) })} /></Field>
+                <Field label="Attendance (%)"><input type="number" min={0} max={100} value={s.perfWeights.attendance} onChange={e => set('perfWeights', { ...s.perfWeights, attendance: Number(e.target.value) })} /></Field>
+                <Field label="Hours (%)"><input type="number" min={0} max={100} value={s.perfWeights.hours} onChange={e => set('perfWeights', { ...s.perfWeights, hours: Number(e.target.value) })} /></Field>
+              </Grid>
+              <p className="text-xs text-brand-slate-gray">
+                How the 0–100 performance score is weighted (total {s.perfWeights.reviews + s.perfWeights.goals + s.perfWeights.attendance + s.perfWeights.hours}%; they’re auto-normalized). Any dimension with no data is excluded and the rest re-weighted.
+              </p>
             </Section>
 
             <Section title="HR Notifications">

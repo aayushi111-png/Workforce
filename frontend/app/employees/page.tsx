@@ -6,7 +6,9 @@ import Sidebar from '@/app/layout/Sidebar'
 import {
   useWorkforce, STAGE_META, WorkerType, Gender, EmploymentType, EmployeeStatus,
   TIMEZONES, ageFromDob, experienceDuration, fmtDate, computePerformance,
+  lifecycleStage, LIFECYCLE_META, milestones, journeyEvents,
 } from '@/app/lib/workforceStore'
+import { useQueryParam } from '@/app/lib/useQueryParam'
 
 export const dynamic = 'force-dynamic'
 
@@ -68,6 +70,10 @@ export default function EmployeesPage() {
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS)
   const [previewId, setPreviewId] = useState<string | null>(null)
   const preview = previewId ? workers.find(w => w.id === previewId) || null : null
+
+  // Deep-link: open a worker's details when arriving with ?worker=<id> (e.g. from the org chart).
+  const linkedWorker = useQueryParam('worker')
+  useEffect(() => { if (linkedWorker) setPreviewId(linkedWorker) }, [linkedWorker])
 
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
   const linkFor = (token: string) => `${origin}/onboard/${token}`
@@ -482,11 +488,15 @@ function WorkerPreview({ worker: w, onClose }: {
   worker: PreviewWorker
   onClose: () => void
 }) {
-  const { updateWorker } = useWorkforce()
+  const { updateWorker, leaveRequests } = useWorkforce()
   const approved = w.documents.filter(d => d.status === 'approved').length
   const age = ageFromDob(w.dob)
   const meta = STAGE_META[w.stage]
   const perf = computePerformance(w)
+  const life = lifecycleStage(w)
+  const lifeMeta = LIFECYCLE_META[life]
+  const stones = milestones(w)
+  const journey = journeyEvents(w, leaveRequests)
 
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState<Draft>(pickDraft(w))
@@ -518,6 +528,7 @@ function WorkerPreview({ worker: w, onClose }: {
               <p className="text-white/70 text-sm truncate">{w.designation} · {w.department}</p>
               <div className="flex items-center gap-2 mt-1.5">
                 <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-white/15">{meta.label}</span>
+                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-white/15">{life}</span>
                 <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${w.status === 'active' ? 'bg-emerald-500/30' : 'bg-red-500/30'}`}>
                   {w.status === 'active' ? 'Active' : 'Inactive'}
                 </span>
@@ -659,6 +670,40 @@ function WorkerPreview({ worker: w, onClose }: {
                 {w.status === 'inactive' && <Row label="Date of exit" value={w.dateOfExit ? fmtDate(w.dateOfExit) : '—'} />}
               </>
             )}
+          </PreviewSection>
+
+          {/* Lifecycle */}
+          <PreviewSection title="Lifecycle">
+            <div className="flex items-center justify-between py-1.5">
+              <span className="text-sm text-brand-slate-gray">Current stage</span>
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ color: lifeMeta.color, background: lifeMeta.bg }}>{life}</span>
+            </div>
+            <div className="pt-2">
+              <p className="text-xs font-semibold text-brand-slate-gray uppercase tracking-wide mb-2">Milestones</p>
+              <div className="space-y-1.5">
+                {stones.map(m => (
+                  <div key={m.label} className="flex items-center justify-between text-sm">
+                    <span className={m.done ? 'text-brand-slate-gray line-through' : 'text-brand-charcoal'}>
+                      {m.done ? '✓ ' : ''}{m.label}
+                    </span>
+                    <span className="text-xs text-brand-slate-gray">{fmtDate(m.date)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="pt-3">
+              <p className="text-xs font-semibold text-brand-slate-gray uppercase tracking-wide mb-2">Journey</p>
+              <div className="relative pl-5">
+                <span className="absolute left-1.5 top-1 bottom-1 w-px bg-brand-gray" />
+                {journey.map((e, i) => (
+                  <div key={i} className="relative pb-3 last:pb-0">
+                    <span className="absolute -left-[14px] top-1 w-2.5 h-2.5 rounded-full ring-4 ring-brand-off-white" style={{ background: e.color }} />
+                    <p className="text-sm text-brand-charcoal">{e.label}</p>
+                    <p className="text-xs text-brand-slate-gray">{fmtDate(e.date)}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </PreviewSection>
 
           {/* Documents — read-only (verification happens in the Onboarding section) */}

@@ -30,7 +30,7 @@ function MyLeave({ workerId }: { workerId: string | null }) {
   const me = workerId ? workers.find(w => w.id === workerId) : undefined
   const today = todayStr()
 
-  const [type, setType] = useState<LeaveType>('Casual Leave')
+  const [type, setType] = useState<LeaveType>('Paid Leave')
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
   const [reason, setReason] = useState('')

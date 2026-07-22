@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Sidebar from '@/app/layout/Sidebar'
 import {
-  useWorkforce, computePerformance, Performance, Review, FeedbackNote,
+  useWorkforce, computePerformance, performanceTrend, getPerfWeights, Worker, Review, FeedbackNote,
   ReviewPeriod, REVIEW_PERIODS, fmtHours, fmtDateTime,
 } from '@/app/lib/workforceStore'
 import { useQueryParam } from '@/app/lib/useQueryParam'
@@ -23,11 +23,16 @@ export default function PerformancePage() {
 /* ---------- shared scorecard ---------- */
 function scoreColor(v: number) { return v >= 75 ? '#0F7A46' : v >= 50 ? '#B45309' : '#800020' }
 
-function Scorecard({ perf }: { perf: Performance }) {
+function Scorecard({ worker }: { worker: Worker }) {
+  const perf = computePerformance(worker)
+  const trend = performanceTrend(worker)
+  const wt = getPerfWeights()
+  const latestRating = worker.reviews[0]?.rating
   const bars = [
-    { label: 'Goals completed', value: perf.goalRate, has: perf.goalsTotal > 0, sub: `${perf.goalsTotal} goals` },
-    { label: 'Attendance', value: perf.attendanceRate, has: perf.daysMarked > 0, sub: `${perf.daysMarked} days marked` },
-    { label: 'Hours logged', value: perf.hoursRate, has: perf.daysWorked > 0, sub: perf.daysWorked ? `${fmtHours(perf.avgDailyHours)}/day avg` : 'no time data' },
+    { label: 'Reviews', value: perf.reviewRate, has: perf.hasReview, sub: perf.hasReview ? `latest ${latestRating}★` : 'no reviews', w: wt.reviews },
+    { label: 'Goals completed', value: perf.goalRate, has: perf.goalsTotal > 0, sub: `${perf.goalsTotal} goals`, w: wt.goals },
+    { label: 'Attendance', value: perf.attendanceRate, has: perf.daysMarked > 0, sub: `${perf.daysMarked} days marked`, w: wt.attendance },
+    { label: 'Hours logged', value: perf.hoursRate, has: perf.daysWorked > 0, sub: perf.daysWorked ? `${fmtHours(perf.avgDailyHours)}/day avg` : 'no time data', w: wt.hours },
   ]
   const R = 52, C = 2 * Math.PI * R
   return (
@@ -42,6 +47,11 @@ function Scorecard({ perf }: { perf: Performance }) {
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-3xl font-bold" style={{ color: scoreColor(perf.score) }}>{perf.score}</span>
           <span className="text-[10px] text-brand-slate-gray">/ 100</span>
+          {trend !== 0 && (
+            <span className={`text-[10px] font-semibold mt-0.5 ${trend > 0 ? 'text-emerald-600' : 'text-brand-burgundy'}`}>
+              {trend > 0 ? '▲' : '▼'} {Math.abs(trend)}
+            </span>
+          )}
         </div>
       </div>
       {/* sub-metrics */}
@@ -49,7 +59,7 @@ function Scorecard({ perf }: { perf: Performance }) {
         {bars.map(b => (
           <div key={b.label}>
             <div className="flex justify-between text-sm mb-1">
-              <span className="text-brand-charcoal">{b.label} <span className="text-xs text-brand-slate-gray">· {b.sub}</span></span>
+              <span className="text-brand-charcoal">{b.label} <span className="text-xs text-brand-slate-gray">· {b.sub} · {b.w}%</span></span>
               <span className="font-semibold text-brand-charcoal">{b.has ? `${b.value}%` : '—'}</span>
             </div>
             <div className="w-full bg-brand-off-white rounded-full h-2 overflow-hidden">
@@ -57,7 +67,7 @@ function Scorecard({ perf }: { perf: Performance }) {
             </div>
           </div>
         ))}
-        <p className="text-xs text-brand-slate-gray pt-1">Weighted: goals 50% · attendance 30% · hours 20% (last 30 days).</p>
+        <p className="text-xs text-brand-slate-gray pt-1">Weighted score over the last 30 days · trend vs the previous week. Weights configurable in Settings.</p>
       </div>
     </div>
   )
@@ -132,7 +142,7 @@ function MyPerformance({ workerId }: { workerId: string | null }) {
             <div className="max-w-3xl space-y-6">
               <div className="bg-white rounded-2xl border border-brand-gray p-6">
                 <h2 className="text-base font-semibold text-brand-charcoal mb-5">Scorecard</h2>
-                <Scorecard perf={computePerformance(me)} />
+                <Scorecard worker={me} />
               </div>
               <div className="bg-white rounded-2xl border border-brand-gray p-6">
                 <h2 className="text-base font-semibold text-brand-charcoal mb-4">Reviews</h2>
@@ -223,7 +233,7 @@ function AdminPerformance() {
                         <p className="text-sm text-brand-slate-gray">{selected.designation} · {selected.department}</p>
                       </div>
                     </div>
-                    <Scorecard perf={computePerformance(selected)} />
+                    <Scorecard worker={selected} />
                   </div>
 
                   {/* Reviews */}
